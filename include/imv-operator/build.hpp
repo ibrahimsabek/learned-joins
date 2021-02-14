@@ -6,10 +6,11 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "tbb/tbb.h"
-#include "profile.hpp"
+//#include "tbb/tbb.h"
+//#include "profile.hpp"
 #include "no_partitioning_join.h"
-using std::__cxx11::string;
+//using std::__cxx11::string;
+using std::string;
 using std::make_pair;
 using std::pair;
 using std::vector;

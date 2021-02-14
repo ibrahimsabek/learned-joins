@@ -19,10 +19,11 @@
 #include <vector>
 
 #include "imv-operator/npj.hpp"
-#include "tbb/tbb.h"
-#include "profile.hpp"
+//#include "tbb/tbb.h"
+//#include "profile.hpp"
 
-using std::__cxx11::string;
+//using std::__cxx11::string;
+using std::string;
 using std::make_pair;
 using std::pair;
 using std::vector;
@@ -823,7 +824,7 @@ void *npo_thread(void *param) {
   return 0;
 }
 
-void tbb_run(relation_t *relR, relation_t *relS, int nthreads) {
+/*void tbb_run(relation_t *relR, relation_t *relS, int nthreads) {
   int nrThreads = nthreads;
 
   tbb::task_scheduler_init scheduler(nrThreads);
@@ -889,7 +890,7 @@ void tbb_run(relation_t *relR, relation_t *relS, int nthreads) {
   destroy_hashtable(ht);
 
   scheduler.terminate();
-}
+}*/
 
 /** \copydoc NPO */
 result_t *NPO(relation_t *relR, relation_t *relS, int nthreads) {

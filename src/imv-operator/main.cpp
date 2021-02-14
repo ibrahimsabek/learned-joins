@@ -256,7 +256,7 @@
 #include "imv-operator/affinity.h"      /* pthread_attr_setaffinity_np & sched_setaffinity */
 #include "imv-operator/config.h"     /* autoconf header */
 #include "imv-operator/prefetch.hpp"     /* autoconf header */
-#include "imv-operator/aggregation.hpp"
+//#include "imv-operator/aggregation.hpp"
 #include "imv-operator/build.hpp"
 
 #ifdef JOIN_RESULT_MATERIALIZE
@@ -303,7 +303,8 @@ extern int numalocalize; /* defined in generator.c */
 extern int nthreads; /* defined in generator.c */
 
 /** all available algorithms */
-static struct algo_t algos[] = { { "NPO", NPO }, { "BUILD", BUILD }, { "BTS", BTS }, { "AGG", AGG }, { "GEN", NPO }, { { 0 }, 0 } };
+//static struct algo_t algos[] = { { "NPO", NPO }, { "BUILD", BUILD }, { "BTS", BTS }, { "AGG", AGG }, { "GEN", NPO }, { { 0 }, 0 } };
+static struct algo_t algos[] = { { "NPO", NPO }, { "BUILD", BUILD }, { "GEN", NPO }, { { 0 }, 0 } };
 
 /* command line handling functions */
 void print_help();
