@@ -153,56 +153,6 @@ target_include_directories(imv_operator PUBLIC
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-add_library(configs
-    src/configs/base_configs_backup.h
-    src/configs/base_configs.h
-    src/configs/eth_configs_backup.h
-    src/configs/eth_configs.h
-    src/configs/rmi_configs.h
-  )
-target_include_directories(configs PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
-
-
-add_library(utils
-    src/utils/eth_avx_merge/avx_multiwaymerge.h
-    src/utils/eth_avx_merge/merge.h
-    src/utils/eth_avx_merge/scalar_multiwaymerge.h
-    src/utils/eth_avx_sort/avxcommon.h    
-    src/utils/eth_avx_sort/avxintrin_emu.h    
-    src/utils/eth_avx_sort/avxsort_core.h    
-    src/utils/eth_avx_sort/avxsort_multiway.h    
-    src/utils/eth_avx_sort/avxsort.h    
-    src/utils/affinity.h
-    src/utils/algorithms.h
-    src/utils/barrier.h
-    src/utils/base_utils.h
-    src/utils/cpu_mapping_one_numa.h
-    src/utils/cpu_mapping.h
-    src/utils/data_generation.h
-    src/utils/data_structures.h
-    src/utils/eth_data_structures.h
-    src/utils/eth_generic_task_queue.h
-    src/utils/io.h
-    src/utils/learned_sort_avx.h
-    src/utils/learned_sort_for_sort_merge.h
-    src/utils/learned_sort.h
-    src/utils/lock.h
-    src/utils/math.h
-    src/utils/memory.h
-    src/utils/numa_shuffle.h
-    src/utils/perf_event.h
-    src/utils/rdtsc.h
-  )
-target_include_directories(configs PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
-
-  target_link_libraries(configs)
-
 # Enable tests
 enable_testing()
 set(CTEST_OUTPUT_ON_FAILURE "1")
