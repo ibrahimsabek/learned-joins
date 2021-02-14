@@ -21,7 +21,7 @@
 #include <numa.h>   /* for automatic NUMA-mappings */
 #endif
 
-#include "../configs/base_configs.h"
+#include "configs/base_configs.h"
 
 // Returns SMT aware logical to physical CPU mapping for a given thread id. 
 int get_cpu_id(int thread_id);

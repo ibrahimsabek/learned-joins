@@ -4,9 +4,9 @@
 #include <pthread.h>
 #include <stdlib.h>
 
-#include "../configs/base_configs.h"
-#include "base_utils.h"
-#include "perf_event.h"
+#include "configs/base_configs.h"
+#include "utils/base_utils.h"
+#include "utils/perf_event.h"
 
 /******* Input/Output Types **************/
 /*****************************************/

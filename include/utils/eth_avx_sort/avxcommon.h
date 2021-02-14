@@ -13,8 +13,8 @@
 
 #include <immintrin.h> /* AVX intrinsics */
 
-#include "../../configs/base_configs.h"
-#include "../base_utils.h"
+#include "configs/base_configs.h"
+#include "utils/base_utils.h"
 
 typedef struct block4  {int64_t val[4]; } block4;
 typedef struct block8  {int64_t val[8]; } block8;

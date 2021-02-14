@@ -17,13 +17,13 @@
 #include <stdio.h>  /* printf() */
 #include <math.h>   /* log2()   */
 
-#include "../../configs/base_configs.h"
-#include "../../configs/eth_configs.h"
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
 
-#include "../base_utils.h"
-#include "../data_structures.h" /* tuple_t, relation_t */
-#include "../eth_data_structures.h"
-#include "../math.h"
+#include "utils/base_utils.h"
+#include "utils/data_structures.h" /* tuple_t, relation_t */
+#include "utils/eth_data_structures.h"
+#include "utils/math.h"
 
 
 /**

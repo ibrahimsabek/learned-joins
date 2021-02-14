@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base_configs.h"
+#include "configs/base_configs.h"
 
 /************* Common configs for ETH radix join algorithms **************/
 /** number of total radix bits used for partitioning. */

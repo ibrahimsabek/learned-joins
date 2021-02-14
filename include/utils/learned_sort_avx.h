@@ -7,7 +7,7 @@
 
 #include <immintrin.h> /* AVX intrinsics */
 
-#include "learned_sort.h"
+#include "utils/learned_sort.h"
 
 #define IMV_AVX
 

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "data_structures.h"
+#include "utils/data_structures.h"
 
 // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
 // Authored by Giorgio Vinciguerra. 

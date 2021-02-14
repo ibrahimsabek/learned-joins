@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base_configs.h"
+#include "configs/base_configs.h"
 
 #define NUM_RADIX_BITS 10
 

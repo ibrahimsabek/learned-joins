@@ -2,12 +2,12 @@
 
 #include <unordered_map> 
 
-#include "../configs/eth_configs.h"
-#include "../utils/math.h"
-#include "../utils/memory.h"
-#include "data_structures.h"
-#include "eth_generic_task_queue.h"
-#include "learned_sort_for_sort_merge.h"
+#include "configs/eth_configs.h"
+#include "utils/math.h"
+#include "utils/memory.h"
+#include "utils/data_structures.h"
+#include "utils/eth_generic_task_queue.h"
+#include "utils/learned_sort_for_sort_merge.h"
 
 using namespace learned_sort_for_sort_merge;
 

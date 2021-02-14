@@ -14,7 +14,7 @@
 #define BARRIER_H
 
 #include <pthread.h>            /* pthread_* */
-#include "../../config.h"          /* HAVE_PTHREAD_BARRIER_WAIT */
+#include "config.h"          /* HAVE_PTHREAD_BARRIER_WAIT */
 
 #ifndef HAVE_PTHREAD_BARRIER_WAIT /* If POSIX BARRIERS are not supported */
 

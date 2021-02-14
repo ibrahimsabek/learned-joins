@@ -34,12 +34,12 @@
 #include <iterator>
 #include <vector>
 
-#include "../configs/base_configs.h"
+#include "configs/base_configs.h"
 
 #ifdef USE_AVXSORT_AS_STD_SORT
-#include "eth_avx_sort/avxsort.h"
+#include "utils/eth_avx_sort/avxsort.h"
 #ifdef USE_AVXMERGE_AS_STD_MERGE
-#include "eth_avx_merge/merge.h"
+#include "utils/eth_avx_merge/merge.h"
 #endif
 #endif
 

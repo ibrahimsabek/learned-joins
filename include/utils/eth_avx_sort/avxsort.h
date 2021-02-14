@@ -14,14 +14,14 @@
 
 #include <stdint.h>
 
-#include "../../configs/base_configs.h"
-#include "../../configs/eth_configs.h"
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
 
-#include "../data_structures.h" 
-#include "../eth_data_structures.h" 
-#include "../memory.h"
+#include "utils/data_structures.h" 
+#include "utils/eth_data_structures.h" 
+#include "utils/memory.h"
 
-#include "avxsort_core.h"
+#include "utils/eth_avx_sort/avxsort_core.h"
 
 /**
  * @defgroup sorting Sorting routines

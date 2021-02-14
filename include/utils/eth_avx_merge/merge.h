@@ -14,15 +14,15 @@
 
 #include <stdint.h>
 
-#include "../../configs/base_configs.h"
-#include "../../configs/eth_configs.h"
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
 
-#include "../base_utils.h"
-#include "../data_structures.h" /* tuple_t, relation_t */
-#include "../eth_data_structures.h"
-#include "../math.h"
+#include "utils/base_utils.h"
+#include "utils/data_structures.h" /* tuple_t, relation_t */
+#include "utils/eth_data_structures.h"
+#include "utils/math.h"
 
-#include "../eth_avx_sort/avxsort_core.h" /* Just because of inlines. TODO: fix this */
+#include "utils/eth_avx_sort/avxsort_core.h" /* Just because of inlines. TODO: fix this */
 
 /**
  * Merges two sorted lists of length len into a new sorted list of length

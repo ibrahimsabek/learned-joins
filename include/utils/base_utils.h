@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../configs/base_configs.h"
+#include "configs/base_configs.h"
 
 /* just to enable compilation with g++ */
 //#if defined(__cplusplus)

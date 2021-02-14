@@ -17,16 +17,16 @@
 #include <stdlib.h> /* posix_memalign(), size_t */
 #include <stdio.h>  /* perror() */
 
-#include "../../configs/base_configs.h"
-#include "../../configs/eth_configs.h"
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
 
-#include "../data_structures.h" 
-#include "../eth_data_structures.h" 
-#include "../memory.h"
+#include "utils/data_structures.h" 
+#include "utils/eth_data_structures.h" 
+#include "utils/memory.h"
 
-#include "avxsort.h"               /* avxsort() */
-#include "../eth_avx_merge/avx_multiwaymerge.h"     /* avx_multiway_merge() */
-#include "../eth_avx_merge/merge.h"                 /* avx_merge_int64() */
+#include "utils/eth_avx_sort/avxsort.h"               /* avxsort() */
+#include "utils/eth_avx_merge/avx_multiwaymerge.h"     /* avx_multiway_merge() */
+#include "utils/eth_avx_merge/merge.h"                 /* avx_merge_int64() */
 
 
 /**

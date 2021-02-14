@@ -14,12 +14,12 @@
 #ifndef NUMA_SHUFFLE_H_
 #define NUMA_SHUFFLE_H_
 
-#include "../configs/base_configs.h"
-#include "data_structures.h" /* enum numa_strategy_t */
-#include "eth_data_structures.h"
-#include "cpu_mapping.h" /* get_cpu_id() */
-#include "cpu_mapping_one_numa.h" /* get_cpu_id_develop() */
-#include "data_generation.h"   /* knuth_shuffle() */
+#include "configs/base_configs.h"
+#include "utils/data_structures.h" /* enum numa_strategy_t */
+#include "utils/eth_data_structures.h"
+#include "utils/cpu_mapping.h" /* get_cpu_id() */
+#include "utils/cpu_mapping_one_numa.h" /* get_cpu_id_develop() */
+#include "utils/data_generation.h"   /* knuth_shuffle() */
 
 
 /**

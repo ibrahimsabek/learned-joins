@@ -7,8 +7,8 @@
 #include <fstream>
 #include <vector>
 
-#include "data_structures.h"
-#include "memory.h"
+#include "utils/data_structures.h"
+#include "utils/memory.h"
 
 //based on the ETH implementation 
 // persisting a relation to the disk

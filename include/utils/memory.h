@@ -5,8 +5,8 @@
 #include <smmintrin.h>          /* simd only for 32-bit keys – SSE4.1 */
 #include <immintrin.h>
 
-#include "../configs/base_configs.h"
-#include "data_structures.h"
+#include "configs/base_configs.h"
+#include "utils/data_structures.h"
 
 #ifdef HAVE_LIBNUMA
 #include <numa.h>               /* numa_alloc_local(), numa_free() */

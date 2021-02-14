@@ -17,18 +17,18 @@
 #include <algorithm>            /* sort()  */
 #endif
 
-#include "../../configs/base_configs.h"
-#include "../../configs/eth_configs.h"
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
 
-#include "../../utils/math.h"
+#include "utils/math.h"
 
-#include "avxcommon.h"
+#include "utils/eth_avx_sort/avxcommon.h"
 
 /* #include "iacaMarks.h" */
 
  /* just make the code compile without AVX support */
 #ifndef HAVE_AVX
-#include "avxintrin_emu.h"
+#include "utils/eth_avx_sort/avxintrin_emu.h"
 #endif
 
 /*******************************************************************************

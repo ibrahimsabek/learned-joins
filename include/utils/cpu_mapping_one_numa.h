@@ -4,7 +4,7 @@
 
 #include <unistd.h> /* sysconf */
 
-#include "../configs/base_configs.h"
+#include "configs/base_configs.h"
 
 static int inited_develop = 0;
 static int max_cpus_develop;

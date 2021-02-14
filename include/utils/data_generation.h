@@ -8,12 +8,12 @@
 #include <random>
 #include <type_traits>
 
-#include "../configs/base_configs.h"
-#include "data_structures.h"
-#include "memory.h"
-#include "math.h"
-#include "barrier.h"
-#include "cpu_mapping.h"
+#include "configs/base_configs.h"
+#include "utils/data_structures.h"
+#include "utils/memory.h"
+#include "utils/math.h"
+#include "utils/barrier.h"
+#include "utils/cpu_mapping.h"
 
 #define ZERO_PAYLOAD
 

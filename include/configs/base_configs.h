@@ -6,9 +6,9 @@
 
 #define MAX_CPU_NODES 512
 
-#define CUSTOM_CPU_MAPPING "src/configs/cpu-mapping.txt"
+#define CUSTOM_CPU_MAPPING "configs/cpu-mapping.txt"
 
-#define CUSTOM_CPU_MAPPING_V2 "src/configs/cpu-mapping-v2.txt"
+#define CUSTOM_CPU_MAPPING_V2 "configs/cpu-mapping-v2.txt"
 
 #define HAVE_LIBNUMA 1
 
