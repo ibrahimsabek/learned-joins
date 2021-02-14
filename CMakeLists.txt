@@ -14,7 +14,7 @@ else()
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 endif()
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 OPTION(VECTORWISE_BRANCHING "Use branching vectorwise primitives" OFF)
