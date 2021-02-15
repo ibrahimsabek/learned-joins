@@ -171,3 +171,9 @@ endif()
     PRIVATE src)
 
   target_link_libraries(operator imv_operator)
+
+  add_executable(joins_runner src/benchmark_runners/joins_runner.cpp)
+  target_include_directories(joins_runner PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    PRIVATE src)
