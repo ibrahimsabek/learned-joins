@@ -55,7 +55,7 @@ class BenchmarkHelper {
   }
 
 #ifndef DEVELOPMENT_MODE
-  void fill_perf_events_stats(PerfEvent * start_to_partition_event, PerfEvent * partition_to_end_event)
+  /*void fill_perf_events_stats(PerfEvent * start_to_partition_event, PerfEvent * partition_to_end_event)
   {
     unsigned i;
 
@@ -100,7 +100,7 @@ class BenchmarkHelper {
     perfEventStats->total_joining_instructions_per_cycle = partition_to_end_event->getIPC();
     perfEventStats->total_joining_cpus = partition_to_end_event->getCPUs();
     perfEventStats->total_joining_ghz = partition_to_end_event->getGHz();
-  }
+  }*/
 #endif
 
   void clean_up()
