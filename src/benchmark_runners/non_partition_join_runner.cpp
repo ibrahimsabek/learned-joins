@@ -490,11 +490,11 @@ void * npj_join_thread(void * param)
                 npj_total_num = 0;
                 npj_global_curse = 0;
             }
-            if((fid < npj_pf_num - 1) && (rp < RUN_NUMS - 1)){
+            //if((fid < npj_pf_num - 1) && (rp < RUN_NUMS - 1)){
                 // clean-up the overflow buffers and hashtable
                 destroy_hashtable(args->ht);
                 free_bucket_buffer(overflowbuf);
-            }
+            //}
         }
     }
 
