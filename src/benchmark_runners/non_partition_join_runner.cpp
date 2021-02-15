@@ -411,17 +411,13 @@ void * npj_join_thread(void * param)
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
-        strcpy(npj_pfun[3].fun_name, "IMV");
-        strcpy(npj_pfun[2].fun_name, "Naive");
         strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[0].fun_name, "Naive");
 
-        npj_pfun[3].fun_ptr = npj_build_rel_r_partition_imv;
-        npj_pfun[2].fun_ptr = npj_build_rel_r_partition;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
-        npj_pf_num = 4;
+        npj_pf_num = 2;
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
@@ -498,11 +494,13 @@ void * npj_join_thread(void * param)
                 npj_global_curse = 0;
             }
             
-            if(args->tid == 0)
-                destroy_hashtable(args->ht);
-            BARRIER_ARRIVE(args->barrier, rv);
+            if((fid < npj_pf_num - 1) || (rp < RUN_NUMS - 1)){
+                if(args->tid == 0)
+                    destroy_hashtable(args->ht);
+                BARRIER_ARRIVE(args->barrier, rv);
 
-            free_bucket_buffer(overflowbuf);
+                free_bucket_buffer(overflowbuf);
+            }
             
         }
     }
