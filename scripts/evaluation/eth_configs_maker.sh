@@ -192,4 +192,4 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
 
         echo -n $'#define NPJ_SIMDStateSize '$NPJ_SIMDStateSize; echo -n $'\n\n';
 
-        )" > $(dirname "$0")/../../src/configs/eth_configs.h
+        )" > $(dirname "$0")/../../include/configs/eth_configs.h

@@ -5,8 +5,8 @@ INTEL_E5=0
 INTEL_XEON=1
 MAX_CPU_NODES=512
 HAVE_LIBNUMA=1
-CUSTOM_CPU_MAPPING='"'src/configs/cpu-mapping.txt'"'
-CUSTOM_CPU_MAPPING_V2='"'src/configs/cpu-mapping-v2.txt'"'
+CUSTOM_CPU_MAPPING='"'../../include/configs/cpu-mapping.txt'"'
+CUSTOM_CPU_MAPPING_V2='"'../../include/configs/cpu-mapping-v2.txt'"'
 MAX_THREADS=$MAX_CPU_NODES 
 CACHE_LINE_SIZE=64
 SMALL_PADDING_TUPLES_MULTIPLIER=3 
@@ -505,4 +505,4 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
 
         echo -n $'#define LS_FOR_SORT_MERGE_PDIS '$LS_FOR_SORT_MERGE_PDIS; echo -n $'\n\n';
 
-        )" > $(dirname "$0")/../../src/configs/base_configs.h
+        )" > $(dirname "$0")/../../include/configs/base_configs.h
