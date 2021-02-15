@@ -92,7 +92,7 @@ int main(int argc, char **argv)
   perfEventStats.total_joining_ghz += benchmark_helper.perfEventStats->total_joining_ghz;
   #endif
 
-  printf("partitioning_time in usec: %lf, joining_time in usec: %lf, total_time in usec: %lf \n", timingStats.total_partitioning_time_usec, timingStats.total_joining_time_usec, timingStats.total_algorithm_time_usec);
+  printf("join results: %ld, partitioning_time in usec: %lf, joining_time in usec: %lf, total_time in usec: %lf \n", results->totalresults, timingStats.total_partitioning_time_usec, timingStats.total_joining_time_usec, timingStats.total_algorithm_time_usec);
 #endif
 
   return 0;
