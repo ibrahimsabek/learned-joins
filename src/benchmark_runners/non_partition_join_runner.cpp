@@ -427,7 +427,10 @@ void * npj_join_thread(void * param)
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             init_bucket_buffer(&overflowbuf);
-            allocate_hashtable(&args->ht, nbuckets);
+            if(args->tid == 0)
+                allocate_hashtable(&args->ht, nbuckets);
+            BARRIER_ARRIVE(args->barrier, rv);
+
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
 
@@ -491,7 +494,10 @@ void * npj_join_thread(void * param)
                 npj_global_curse = 0;
             }
             
-            destroy_hashtable(args->ht);
+            if(args->tid == 0)
+                destroy_hashtable(args->ht);
+            BARRIER_ARRIVE(args->barrier, rv);
+
             free_bucket_buffer(overflowbuf);
             
         }
