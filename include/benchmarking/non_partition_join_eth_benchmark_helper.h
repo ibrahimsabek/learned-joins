@@ -44,11 +44,11 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
         allocate_hashtable(&ht, nbuckets);
 
 #ifdef DEVELOPMENT_MODE
-        for(uint32_t j = 0; j < nbuckets; j++)
+        /*for(uint32_t j = 0; j < nbuckets; j++)
         {
             build_visits_map[j] = 0;
             probe_visits_map[j] = 0;            
-        }        
+        }*/        
 #endif
 
         for(i = 0; i < NUM_THREADS; i++)
@@ -56,13 +56,13 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
             (*(args + i)).tid = i;
             (*(args + i)).ht = ht; 
 #ifdef DEVELOPMENT_MODE
-            (*(args + i)).build_hash_bucket_visits = &build_visits_map;
+        /*    (*(args + i)).build_hash_bucket_visits = &build_visits_map;
             (*(args + i)).probe_hash_bucket_visits = &probe_visits_map;
             (*(args + i)).keys_hash_latch = &keys_hash_latch;            
             (*(args + i)).build_keys_list = &build_keys_list;
             (*(args + i)).build_keys_hash_list = &build_keys_hash_list;
             (*(args + i)).probe_keys_list = &probe_keys_list;
-            (*(args + i)).probe_keys_hash_list = &probe_keys_hash_list;
+            (*(args + i)).probe_keys_hash_list = &probe_keys_hash_list;*/
 #endif
             /* assing part of the relR for next thread */
             (*(args + i)).relR.num_tuples = (i == (NUM_THREADS-1)) ? numR : numRthr;
@@ -102,7 +102,7 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
             /* no partitionig phase, but we use partition variables to store building stats */
             gettimeofday(&args->start_time, NULL);
         #ifndef DEVELOPMENT_MODE
-            args->e_start_to_partition.startCounters();
+            //args->e_start_to_partition.startCounters();
         #endif
         }
 
@@ -112,13 +112,13 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
         build_data.ht = args->ht;
         build_data.overflowbuf = &overflowbuf;
 #ifdef DEVELOPMENT_MODE
-        build_data.build_hash_bucket_visits = args->build_hash_bucket_visits;
+        /*build_data.build_hash_bucket_visits = args->build_hash_bucket_visits;
         build_data.probe_hash_bucket_visits = args->probe_hash_bucket_visits; 
         build_data.keys_hash_latch = args->keys_hash_latch; 
         build_data.build_keys_list = args->build_keys_list;
         build_data.build_keys_hash_list = args->build_keys_hash_list;        
         build_data.probe_keys_list = args->probe_keys_list;
-        build_data.probe_keys_hash_list = args->probe_keys_hash_list;        
+        build_data.probe_keys_hash_list = args->probe_keys_hash_list;*/        
 #endif        
 
     #ifdef NPJ_ETH_AVX_IMV 
@@ -144,8 +144,8 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
         if(args->tid == 0){
            gettimeofday(&args->partition_end_time, NULL);
         #ifndef DEVELOPMENT_MODE
-           args->e_start_to_partition.stopCounters();
-           args->e_partition_to_end.startCounters();
+           //args->e_start_to_partition.stopCounters();
+           //args->e_partition_to_end.startCounters();
         #endif
         }
 
@@ -163,7 +163,7 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
         if(args->tid == 0){
             gettimeofday(&args->end_time, NULL);
         #ifndef DEVELOPMENT_MODE
-            args->e_partition_to_end.stopCounters();
+            //args->e_partition_to_end.stopCounters();
         #endif
         }
 
@@ -236,7 +236,7 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
 
         this->fill_timing_stats(&args[0].start_time, &args[0].partition_end_time, &args[0].end_time);
     #ifndef DEVELOPMENT_MODE
-        this->fill_perf_events_stats(&args[0].e_start_to_partition, &args[0].e_partition_to_end);            
+        //this->fill_perf_events_stats(&args[0].e_start_to_partition, &args[0].e_partition_to_end);            
     #endif
     
         return joinresult;
@@ -266,13 +266,13 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
     };
 
 #ifdef DEVELOPMENT_MODE
-    unordered_map<uint64_t, uint64_t> build_visits_map;
+    /*unordered_map<uint64_t, uint64_t> build_visits_map;
     unordered_map<uint64_t, uint64_t> probe_visits_map;
     volatile char keys_hash_latch;
     vector<KeyType> build_keys_list;
     vector<uint64_t> build_keys_hash_list;
     vector<KeyType> probe_keys_list;
-    vector<uint64_t> probe_keys_hash_list; 
+    vector<uint64_t> probe_keys_hash_list;*/ 
 #endif
 
  protected:
