@@ -344,7 +344,7 @@ int main(int argc, char **argv) {
   cmd_params.perfout = NULL;
   cmd_params.nonunique_keys = 0;
   cmd_params.fullrange_keys = 0;
-  cmd_params.basic_numa = 1;
+  cmd_params.basic_numa = 0;
   cmd_params.loadfileR = NULL;
   cmd_params.loadfileS = NULL;
 
