@@ -13,6 +13,11 @@
 #include "benchmarking/non_partition_join_eth_benchmark_helper.h"
 #endif
 
+#define KeyType RELATION_KEY_TYPE
+#define PayloadType RELATION_PAYLOAD_TYPE
+#define TaskType Task<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>
+#define NUM_THREADS NUM_THREADS_FOR_EVALUATION
+
 int main(int argc, char **argv) 
 {
     Relation<KeyType, PayloadType> rel_r;
