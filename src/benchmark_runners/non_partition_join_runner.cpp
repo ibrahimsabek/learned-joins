@@ -411,15 +411,17 @@ void * npj_join_thread(void * param)
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
+        strcpy(npj_pfun[3].fun_name, "IMV");
         strcpy(npj_pfun[2].fun_name, "Naive");
         strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[0].fun_name, "Naive");
 
+        npj_pfun[3].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[2].fun_ptr = npj_build_rel_r_partition;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
-        npj_pf_num = 3;
+        npj_pf_num = 4;
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
