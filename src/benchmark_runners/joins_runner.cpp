@@ -33,19 +33,19 @@ int main(int argc, char **argv)
     string curr_rel_s_path = RELATION_S_PATH;
 
     result = load_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str(), curr_num_tuples_r);
-    ASSERT_EQ(result, 0);
+    //ASSERT_EQ(result, 0);
     result = load_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str(), curr_num_tuples_s);
-    ASSERT_EQ(result, 0);
+    //ASSERT_EQ(result, 0);
 #else
     // creating new datasets on-the-flay 
     result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, 0);
-    ASSERT_EQ(result, 0);
+    //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation<KeyType, PayloadType>(&rel_r, rel_r_path.c_str());
     #endif
     
     result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, 0);
-    ASSERT_EQ(result, 0);
+    //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation<KeyType, PayloadType>(&rel_s, rel_s_path.c_str());
     #endif
