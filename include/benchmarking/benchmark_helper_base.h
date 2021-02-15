@@ -26,7 +26,7 @@ class BenchmarkHelper {
   {
     timingStats = (TimingStats *) malloc(sizeof(TimingStats));
   #ifndef DEVELOPMENT_MODE
-    perfEventStats = (PerfEventStats *) malloc(sizeof(PerfEventStats));
+    //perfEventStats = (PerfEventStats *) malloc(sizeof(PerfEventStats));
   #endif
   }
   
@@ -107,12 +107,12 @@ class BenchmarkHelper {
   {
     free(timingStats);
   #ifndef DEVELOPMENT_MODE
-    free(perfEventStats);
+    //free(perfEventStats);
   #endif
   }
 
   TimingStats * timingStats;
 #ifndef DEVELOPMENT_MODE
-  PerfEventStats * perfEventStats;
+  //PerfEventStats * perfEventStats;
 #endif
 };

@@ -54,7 +54,7 @@ int main(int argc, char **argv)
   Result * results;
   TimingStats timingStats;
 #ifndef DEVELOPMENT_MODE
-  PerfEventStats perfEventStats;
+  //PerfEventStats perfEventStats;
 #endif
 
 #ifdef USE_ETH_NON_PARTITION_JOIN_GOOGLE_BENCHMARK
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
   timingStats.total_algorithm_time_usec += benchmark_helper.timingStats->total_algorithm_time_usec;
 
   #ifndef DEVELOPMENT_MODE
-  perfEventStats.total_partitioning_cycles += benchmark_helper.perfEventStats->total_partitioning_cycles;
+  /*perfEventStats.total_partitioning_cycles += benchmark_helper.perfEventStats->total_partitioning_cycles;
   perfEventStats.total_partitioning_instructions += benchmark_helper.perfEventStats->total_partitioning_instructions;
   perfEventStats.total_partitioning_l1_misses += benchmark_helper.perfEventStats->total_partitioning_l1_misses;
   perfEventStats.total_partitioning_llc_misses += benchmark_helper.perfEventStats->total_partitioning_llc_misses;
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
   perfEventStats.total_joining_task_clock += benchmark_helper.perfEventStats->total_joining_task_clock;
   perfEventStats.total_joining_instructions_per_cycle += benchmark_helper.perfEventStats->total_joining_instructions_per_cycle;
   perfEventStats.total_joining_cpus += benchmark_helper.perfEventStats->total_joining_cpus;
-  perfEventStats.total_joining_ghz += benchmark_helper.perfEventStats->total_joining_ghz;
+  perfEventStats.total_joining_ghz += benchmark_helper.perfEventStats->total_joining_ghz;*/
   #endif
 
   printf("join results: %ld, partitioning_time in usec: %lf, joining_time in usec: %lf, total_time in usec: %lf \n", results->totalresults, timingStats.total_partitioning_time_usec, timingStats.total_joining_time_usec, timingStats.total_algorithm_time_usec);
