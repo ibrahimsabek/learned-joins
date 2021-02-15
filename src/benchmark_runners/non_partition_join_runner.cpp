@@ -5,6 +5,7 @@
 #include "emmintrin.h"
 #include "immintrin.h"
 #include "smmintrin.h"
+#include <sys/time.h> /* gettimeofday */
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
@@ -533,6 +534,7 @@ void * npj_join_thread(void * param)
 void initialize_npj_join_thread_args(Relation<KeyType, PayloadType> * rel_r, 
                                  Relation<KeyType, PayloadType> * rel_s,
                                  Hashtable<KeyType, PayloadType> * ht, 
+                                 pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
                                  ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args){
     int i;
@@ -574,7 +576,7 @@ void initialize_npj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).relS.tuples = rel_s->tuples + numSthr * i;
         numS -= numSthr;
 
-        (*(args + i)).barrier = &barrier;
+        (*(args + i)).barrier = barrier_ptr;
         (*(args + i)).threadresult  = &(joinresult->resultlist[i]);
     }
 }
@@ -584,7 +586,7 @@ int main(int argc, char **argv)
     Relation<KeyType, PayloadType> rel_r;
     Relation<KeyType, PayloadType> rel_s;
     
-    int result = 0;
+    int64_t result = 0;
     uint64_t curr_num_tuples_r = RELATION_R_NUM_TUPLES;
     uint64_t curr_num_tuples_s = RELATION_S_NUM_TUPLES; 
 
@@ -617,7 +619,6 @@ int main(int argc, char **argv)
     pthread_attr_t attr;
     cpu_set_t set;
     
-    int64_t result = 0;
     joinresult = (Result *) malloc(sizeof(Result));
 
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> args[NUM_THREADS];
@@ -639,7 +640,7 @@ int main(int argc, char **argv)
 #endif        
     allocate_hashtable(&ht, nbuckets);
 
-    initialize_npj_join_thread_args(rel_r, rel_s, ht, joinresult, args_ptr);
+    initialize_npj_join_thread_args(&rel_r, &rel_s, ht, &barrier, joinresult, args_ptr);
 
     npj_global_curse = 0;
     npj_global_upper = rel_r.num_tuples;
