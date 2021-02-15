@@ -18,7 +18,7 @@
  * Common type definitions used by all join implementations.
  * @{
  */
-//#define KEY_8B 1
+#define KEY_8B 1
 #ifdef KEY_8B /* 64-bit key/value, 16B tuples */
 typedef int64_t intkey_t;
 typedef int64_t value_t;
