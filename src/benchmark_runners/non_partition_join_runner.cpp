@@ -808,14 +808,6 @@ void * npj_join_thread(void * param)
                 npj_global_curse = 0;
             }
             
-            /*if((fid < npj_pf_num - 1) || (rp < RUN_NUMS - 1)){
-                if(args->tid == 0)
-                    destroy_hashtable(args->ht);
-                BARRIER_ARRIVE(args->barrier, rv);
-
-                free_bucket_buffer(overflowbuf);
-            }*/
-            
             BARRIER_ARRIVE(args->barrier, rv);
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
@@ -836,6 +828,14 @@ void * npj_join_thread(void * param)
                 deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 printf("---- %5s Probe costs time (ms) = %10.4lf\n", npj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
             }
+
+            //if((fid < npj_pf_num - 1) || (rp < RUN_NUMS - 1)){
+                if(args->tid == 0)
+                    destroy_hashtable(args->ht);
+                BARRIER_ARRIVE(args->barrier, rv);
+
+                free_bucket_buffer(overflowbuf);
+            //}
 
         }
     }
