@@ -829,14 +829,14 @@ void * npj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
+            }
 
             #if NPJ_MORSE_SIZE
                 //TODO: to be done
             #else
                 args->num_results = npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
             #endif
-            }
-
+            
             BARRIER_ARRIVE(args->barrier, rv);
 
             // probe phase finished, thread-0 checkpoints the time
