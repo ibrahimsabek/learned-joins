@@ -806,8 +806,9 @@ void * npj_join_thread(void * param)
                 printf("---- %5s Build costs time (ms) = %10.4lf\n", npj_pfun[fid].fun_name, deltaT * 1.0 / 1000);
                 npj_total_num = 0;
                 npj_global_curse = 0;
+                printf("fid: %d rp: %d \n", fid, rp);
             }
-            
+        
             if(!((fid == (npj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
                 if(args->tid == 0)
                     destroy_hashtable(args->ht);
