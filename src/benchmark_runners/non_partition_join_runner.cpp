@@ -810,6 +810,8 @@ void * npj_join_thread(void * param)
             }
         
             if(!((fid == (npj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
+            if(args->tid == 0)
+                printf("here \n");
                 if(args->tid == 0)
                     destroy_hashtable(args->ht);
                 BARRIER_ARRIVE(args->barrier, rv);
