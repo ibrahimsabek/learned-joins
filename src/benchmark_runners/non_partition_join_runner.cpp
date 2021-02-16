@@ -155,16 +155,15 @@ void npj_build_rel_r_partition_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType
     __m512i v_offset = _mm512_set1_epi64(0), v_base_offset_upper = _mm512_set1_epi64(rel_r_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)), v_base_offset, v_ht_cell, 
       v_cell_hash, v_neg_one512 = _mm512_set1_epi64(-1), v_zero512 = _mm512_set1_epi64(0), v_ht_addr = _mm512_set1_epi64((uint64_t) ht->buckets), 
       v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_next_off = _mm512_set1_epi64(8), v_addr, v_all_ones = _mm512_set1_epi64(-1),
-      v_conflict, v_new_bucket, v_next, v_key_off = _mm512_set1_epi64(16), v_count_off = _mm512_set1_epi64(4);
+      v_conflict, v_new_bucket, v_next, v_key_off = _mm512_set1_epi64(16), v_count_off = _mm512_set1_epi64(4), 
+      c1 = _mm512_set1_epi64(0x85ebca6b), c2 = _mm512_set1_epi64(0xc2b2ae35), s1, x1, s2, x2, s3, 
+      v_factor = _mm512_set1_epi64(ht->hash_mask), v_shift = _mm512_set1_epi64(ht->skip_bits);
 
     __m256i v256_one = _mm256_set1_epi32(1);
     uint64_t *new_bucket = (uint64_t*) &v_new_bucket;
     Bucket<KeyType, PayloadType> * bucket;
     __attribute__((aligned(CACHE_LINE_SIZE))) uint64_t cur_offset = 0, base_off[NPJ_MAX_VECTOR_SCALE], *ht_pos;
 
-    #ifndef USE_MURMUR3_HASH
-    __m512i v_factor = _mm512_set1_epi64(ht->hash_mask), v_shift = _mm512_set1_epi64(ht->skip_bits); 
-    #endif
 
     for (int i = 0; i <= NPJ_VECTOR_SCALE; ++i) 
     {
@@ -227,8 +226,20 @@ void npj_build_rel_r_partition_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType
                 v_cell_hash = _mm512_srlv_epi64(v_cell_hash, v_shift);
                 v_cell_hash = _mm512_mullo_epi64(v_cell_hash, v_bucket_size);
             #else
-                //TODO: murmur3 hashing to be implemented
-                printf("Murmur3 hashing is not implemented in the probe phase yet!! \n");
+                s1 = _mm512_srli_epi64(state[k].key, 16);
+                x1 = _mm512_xor_epi64(state[k].key, s1);
+                s1 = _mm512_mullo_epi64(x1, c1); 
+
+                s2 = _mm512_srli_epi64(s1, 13);
+                x2 = _mm512_xor_epi64(s1, s2);
+                s2 = _mm512_mullo_epi64(x2, c2); 
+
+                s3 = _mm512_srli_epi64(s2, 16);
+                v_cell_hash = _mm512_xor_epi64(s2, s3);
+
+                v_cell_hash = _mm512_and_epi64(v_cell_hash, v_factor);
+                v_cell_hash = _mm512_srlv_epi64(v_cell_hash, v_shift);
+                v_cell_hash = _mm512_mullo_epi64(v_cell_hash, v_bucket_size);           
             #endif
 
                 state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, v_cell_hash, v_ht_addr);
@@ -493,7 +504,9 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
     int32_t k = 0, num, num_temp, done = 0, new_add = 0;
     __m512i v_ht_cell, v_base_offset_upper = _mm512_set1_epi64(rel_s_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)), v_offset, v_base_offset, v_cell_hash,
             v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_ht_addr = _mm512_set1_epi64((uint64_t)ht->buckets), v_neg_one512 = _mm512_set1_epi64(-1),
-            v_zero512 = _mm512_set1_epi64(0), v_tuple_size = _mm512_set1_epi64(16), v_next_off = _mm512_set1_epi64(8);
+            v_zero512 = _mm512_set1_epi64(0), v_tuple_size = _mm512_set1_epi64(16), v_next_off = _mm512_set1_epi64(8),
+            c1 = _mm512_set1_epi64(0x85ebca6b), c2 = _mm512_set1_epi64(0xc2b2ae35), s1, x1, s2, x2, s3, 
+            v_factor = _mm512_set1_epi64(ht->hash_mask), v_shift = _mm512_set1_epi64(ht->skip_bits);
     __attribute__((aligned(CACHE_LINE_SIZE))) __mmask8 mask[NPJ_VECTOR_SCALE + 1], m_valid_bucket = 0, m_match = 0;
     __attribute__((aligned(CACHE_LINE_SIZE))) uint64_t cur_offset = 0, base_off[NPJ_MAX_VECTOR_SCALE], *ht_pos;
 
@@ -509,11 +522,8 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
     for (int i = 0; i <= NPJ_SIMDStateSize; ++i) {
         state[i].stage = 1;
         state[i].m_have_tuple = 0;
-    }
-
-    #ifndef USE_MURMUR3_HASH
-    __m512i v_factor = _mm512_set1_epi64(ht->hash_mask), v_shift = _mm512_set1_epi64(ht->skip_bits); 
-    #endif   
+    } 
+   
 
     for (uint64_t cur = 0; 1;) 
     {
@@ -558,8 +568,20 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
                 v_cell_hash = _mm512_srlv_epi64(v_cell_hash, v_shift);
                 v_cell_hash = _mm512_mullo_epi64(v_cell_hash, v_bucket_size);
             #else
-                //TODO: murmur3 hashing to be implemented
-                printf("Murmur3 hashing is not implemented in the probe phase yet!! \n");
+                s1 = _mm512_srli_epi64(state[k].key, 16);
+                x1 = _mm512_xor_epi64(state[k].key, s1);
+                s1 = _mm512_mullo_epi64(x1, c1); 
+
+                s2 = _mm512_srli_epi64(s1, 13);
+                x2 = _mm512_xor_epi64(s1, s2);
+                s2 = _mm512_mullo_epi64(x2, c2); 
+
+                s3 = _mm512_srli_epi64(s2, 16);
+                v_cell_hash = _mm512_xor_epi64(s2, s3);
+
+                v_cell_hash = _mm512_and_epi64(v_cell_hash, v_factor);
+                v_cell_hash = _mm512_srlv_epi64(v_cell_hash, v_shift);
+                v_cell_hash = _mm512_mullo_epi64(v_cell_hash, v_bucket_size);  
             #endif            
                 state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, v_cell_hash, v_ht_addr);
                 state[k].stage = 2;
@@ -716,7 +738,7 @@ void * npj_join_thread(void * param)
     int rv;   int deltaT = 0;
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
 
-    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / 1/*NUM_THREADS*/);
+    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
         strcpy(npj_pfun[1].fun_name, "IMV");
@@ -957,7 +979,7 @@ int main(int argc, char **argv)
 #ifdef INPUT_HASH_TABLE_SIZE       
     uint32_t nbuckets = hash_table_size;
 #else
-    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / 1/*NUM_THREADS*/);
+    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
 #endif        
     allocate_hashtable(&ht, nbuckets);
 
