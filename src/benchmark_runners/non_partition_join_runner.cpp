@@ -736,9 +736,9 @@ void * npj_join_thread(void * param)
     BARRIER_ARRIVE(args->barrier, rv);
     
     ETHNonPartitionJoinBuild<KeyType, PayloadType> build_data; 
-    for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
+    for (int fid = 0; fid < npj_pf_num/*1*/; ++fid) 
     {
-        for (int rp = 0; rp < 1/*RUN_NUMS*/; ++rp) 
+        for (int rp = 0; rp < RUN_NUMS/*1*/; ++rp) 
         {
             init_bucket_buffer(&overflowbuf);
             if(args->tid == 0)
@@ -808,7 +808,7 @@ void * npj_join_thread(void * param)
                 npj_global_curse = 0;
             }
             
-            if((fid < npj_pf_num - 1) || (rp < RUN_NUMS - 1)){
+            if(!((fid == (npj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
                 if(args->tid == 0)
                     destroy_hashtable(args->ht);
                 BARRIER_ARRIVE(args->barrier, rv);
