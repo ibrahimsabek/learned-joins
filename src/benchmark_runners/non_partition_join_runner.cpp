@@ -816,13 +816,6 @@ void * npj_join_thread(void * param)
                 free_bucket_buffer(overflowbuf);
             }*/
             
-        }
-    }
-
-    for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
-    {
-        for (int rp = 0; rp < 1/*RUN_NUMS*/; ++rp) 
-        {
             BARRIER_ARRIVE(args->barrier, rv);
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
@@ -843,8 +836,36 @@ void * npj_join_thread(void * param)
                 deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 printf("---- %5s Probe costs time (ms) = %10.4lf\n", npj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
             }
+
         }
     }
+
+    //for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
+    //{
+    //    for (int rp = 0; rp < 1/*RUN_NUMS*/; ++rp) 
+    //    {
+    //        BARRIER_ARRIVE(args->barrier, rv);
+    //        if(args->tid == 0){
+    //            gettimeofday(&args->partition_end_time, NULL);
+    //        }
+
+    //    #if NPJ_MORSE_SIZE
+    //        //TODO: to be done
+    //    #else
+    //        npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
+    //    #endif
+
+    //        BARRIER_ARRIVE(args->barrier, rv);
+
+    //        // probe phase finished, thread-0 checkpoints the time
+    //        if(args->tid == 0){
+    //            gettimeofday(&args->end_time, NULL);
+
+    //            deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+    //            printf("---- %5s Probe costs time (ms) = %10.4lf\n", npj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
+    //        }
+    //    }
+    //}
 
     //TODO: loop here for the prob function as well
     // probe for matching tuples from the assigned part of relS  
