@@ -825,9 +825,9 @@ void * npj_join_thread(void * param)
     //npj_pfun1[0].fun_ptr(NULL, &args->relS, &build_data);
 
     //Probe phase
-    for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
+    for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
-        for (int rp = 0; rp < 1/*RUN_NUMS*/; ++rp) 
+        for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             BARRIER_ARRIVE(args->barrier, rv);
             if(args->tid == 0){
