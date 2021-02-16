@@ -174,7 +174,7 @@ struct ETHNonPartitionJoinThread {
     Relation<KeyType, PayloadType>     relR;
     Relation<KeyType, PayloadType>     relS;
     pthread_barrier_t * barrier;
-    int64_t             num_results;
+    int64_t             num_results = 0;
 
     /* results of the thread */
     ThreadResult * threadresult;
