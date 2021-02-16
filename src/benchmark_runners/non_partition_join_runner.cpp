@@ -833,7 +833,7 @@ void * npj_join_thread(void * param)
             #if NPJ_MORSE_SIZE
                 //TODO: to be done
             #else
-                npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
+                args->num_results = npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
             #endif
             }
 
