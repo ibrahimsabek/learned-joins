@@ -743,7 +743,7 @@ void * npj_join_thread(void * param)
             init_bucket_buffer(&overflowbuf);
             if(args->tid == 0)
                 allocate_hashtable(&args->ht, nbuckets);
-            BARRIER_ARRIVE(args->barrier, rv);
+            //BARRIER_ARRIVE(args->barrier, rv);
 
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
@@ -818,7 +818,7 @@ void * npj_join_thread(void * param)
         }
     }
 
-    
+    //Probe phase
     //for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
     //{
     //    for (int rp = 0; rp < 1/*RUN_NUMS*/; ++rp) 
@@ -845,36 +845,6 @@ void * npj_join_thread(void * param)
     //        }
     //    }
     //}
-
-    //TODO: loop here for the prob function as well
-    // probe for matching tuples from the assigned part of relS  
-    /*#ifdef NPJ_ETH_AVX_IMV      
-        args->num_results = join_steps.template probe_rel_s_partition_imv<ETHNonPartitionJoinBuild<KeyType, PayloadType>>(NULL, &args->relS, &build_data, args->tid); 
-    #else
-        args->num_results = join_steps.template probe_rel_s_partition<ETHNonPartitionJoinBuild<KeyType, PayloadType>>(NULL, &args->relS, &build_data);
-    #endif
-
-        // for a reliable timing we have to wait until all finishes
-        BARRIER_ARRIVE(args->barrier, rv);
-
-        // probe phase finished, thread-0 checkpoints the time
-        if(args->tid == 0){
-            gettimeofday(&args->end_time, NULL);
-        #ifndef DEVELOPMENT_MODE
-            //args->e_partition_to_end.stopCounters();
-        #endif
-        }
-
-    #ifdef PERF_COUNTERS
-        if(args->tid == 0) 
-        {
-            //TODO: performance counters to be implemented
-        }
-        // Just to make sure we get consistent performance numbers
-        BARRIER_ARRIVE(args->barrier, rv);
-    #endif
-    */
-
 
     return 0;
 }
