@@ -818,8 +818,10 @@ void * npj_join_thread(void * param)
             } 
         }
     }
-    printf("here thread %d\n", args->tid);
+    printf("here before thread %d\n", args->tid);
     BARRIER_ARRIVE(args->barrier, rv);
+    printf("here after thread %d\n", args->tid);
+
     npj_pfun1[0].fun_ptr(NULL, &args->relS, &build_data);
 
     //Probe phase
