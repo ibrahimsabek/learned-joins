@@ -716,7 +716,7 @@ void * npj_join_thread(void * param)
     int rv;   int deltaT = 0;
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
 
-    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / 1/*NUM_THREADS*/);
 
     if (args->tid == 0) {
         strcpy(npj_pfun[1].fun_name, "IMV");
@@ -957,7 +957,7 @@ int main(int argc, char **argv)
 #ifdef INPUT_HASH_TABLE_SIZE       
     uint32_t nbuckets = hash_table_size;
 #else
-    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / 1/*NUM_THREADS*/);
 #endif        
     allocate_hashtable(&ht, nbuckets);
 
