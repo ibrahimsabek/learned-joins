@@ -725,11 +725,11 @@ void * npj_join_thread(void * param)
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
-        strcpy(npj_pfun1[0].fun_name, "IMV");
-        strcpy(npj_pfun1[1].fun_name, "Naive");
+        strcpy(npj_pfun1[1].fun_name, "IMV");
+        strcpy(npj_pfun1[0].fun_name, "Naive");
 
-        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_imv;
-        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition;
+        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_imv;
+        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition;
 
         npj_pf_num = 2;
     }
@@ -820,9 +820,6 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-    //printf("here after thread %d\n", args->tid);
-    //if(args->tid == 1)
-    //npj_pfun1[0].fun_ptr(NULL, &args->relS, &build_data);
 
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
