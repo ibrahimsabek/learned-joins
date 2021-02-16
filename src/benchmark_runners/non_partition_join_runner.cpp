@@ -820,10 +820,10 @@ void * npj_join_thread(void * param)
         }
     }
 
-    usleep(200000);
+    //usleep(200000);
     BARRIER_ARRIVE(args->barrier, rv);
-    printf("here after thread %d\n", args->tid);
-
+    //printf("here after thread %d\n", args->tid);
+    if(args->tid == 0)
     npj_pfun1[0].fun_ptr(NULL, &args->relS, &build_data);
 
     //Probe phase
