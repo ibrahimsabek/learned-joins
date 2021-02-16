@@ -819,7 +819,7 @@ void * npj_join_thread(void * param)
         }
     }
 
-    for (int fid = 0; fid < npj_pf_num; ++fid) 
+/*    for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
@@ -844,7 +844,7 @@ void * npj_join_thread(void * param)
             deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
             printf("---- %5s Probe costs time (ms) = %10.4lf\n", npj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
         }
-    }
+    }*/
 
     //TODO: loop here for the prob function as well
     // probe for matching tuples from the assigned part of relS  
