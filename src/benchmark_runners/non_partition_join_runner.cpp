@@ -818,7 +818,7 @@ void * npj_join_thread(void * param)
             } 
         }
     }
-
+    printf("here thread %d\n", args->tid);
     BARRIER_ARRIVE(args->barrier, rv);
     npj_pfun1[0].fun_ptr(NULL, &args->relS, &build_data);
 
