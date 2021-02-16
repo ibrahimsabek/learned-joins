@@ -808,13 +808,13 @@ void * npj_join_thread(void * param)
                 npj_global_curse = 0;
             }
             
-            if((fid < npj_pf_num - 1) || (rp < RUN_NUMS - 1)){
+            /*if((fid < npj_pf_num - 1) || (rp < RUN_NUMS - 1)){
                 if(args->tid == 0)
                     destroy_hashtable(args->ht);
                 BARRIER_ARRIVE(args->barrier, rv);
 
                 free_bucket_buffer(overflowbuf);
-            }
+            }*/
             
         }
     }
