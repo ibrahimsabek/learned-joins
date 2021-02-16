@@ -52,6 +52,12 @@ volatile static struct Fun {
 } npj_pfun[2];
 volatile static int npj_pf_num = 0;
 
+typedef uint64_t (*NPJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output);
+volatile static struct Fun1 {
+  NPJProbeFun fun_ptr;
+  char fun_name[8];
+} npj_pfun1[2];
+
 //TOOD: to put the morse-driven implementation here !!!!!
 void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
 {
@@ -402,6 +408,308 @@ void npj_build_rel_r_partition_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType
     }
 }
 
+uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
+{
+    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
+#ifdef DEVELOPMENT_MODE
+    /*unordered_map<uint64_t, uint64_t>* probe_visits_map = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->probe_hash_bucket_visits;        
+    vector<KeyType>* probe_keys_list = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->probe_keys_list;  
+    vector<uint64_t>* probe_keys_hash_list = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->probe_keys_hash_list;        
+    volatile char* keys_hash_latch = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->keys_hash_latch;*/       
+#endif
+    
+    uint64_t i, j;
+    uint64_t matches;
+
+#ifndef USE_MURMUR3_HASH
+    const uint64_t hashmask = ht->hash_mask;
+    const uint64_t skipbits = ht->skip_bits;
+#endif
+#ifdef PREFETCH_NPJ    
+    size_t prefetch_index = PREFETCH_DISTANCE;
+#endif
+    
+    matches = 0;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {
+#ifdef PREFETCH_NPJ        
+        if (prefetch_index < rel_s_partition->num_tuples) {
+#ifndef USE_MURMUR3_HASH
+			uint64_t idx_prefetch = HASH(rel_s_partition->tuples[prefetch_index++].key,
+                                        hashmask, skipbits);
+#else
+            uint64_t idx_prefetch_hash = murmur_hash_32(rel_s_partition->tuples[prefetch_index++].key);
+            uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
+#endif
+			__builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
+        }
+#endif
+
+#ifndef USE_MURMUR3_HASH        
+        uint64_t idx = HASH(rel_s_partition->tuples[i].key, hashmask, skipbits);        
+#else
+        uint64_t idx_hash = murmur_hash_32(rel_s_partition->tuples[i].key);
+        uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
+#endif
+        Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
+
+#ifdef DEVELOPMENT_MODE
+        /*lock(&b->latch);
+        (*probe_visits_map)[idx]++;
+        unlock(&b->latch);*/
+
+        //lock(keys_hash_latch);
+        //(*probe_keys_list).push_back(rel_s_partition->tuples[i].key);
+        //(*probe_keys_hash_list).push_back(idx);
+        //unlock(keys_hash_latch);
+#endif
+
+        do {
+        #ifdef SINGLE_TUPLE_PER_BUCKET    
+            if(rel_s_partition->tuples[i].key == b->tuples[0].key){
+                    matches ++;
+            }
+        #else
+            for(j = 0; j < b->count; j++) {
+                if(rel_s_partition->tuples[i].key == b->tuples[j].key){
+                    matches ++;
+                }
+            }
+        #endif
+
+            b = b->next;/* follow overflow pointer */
+        } while(b);
+    }
+
+    return matches;
+}
+
+uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
+{
+    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
+    uint64_t matches = 0;
+
+    int32_t k = 0, num, num_temp, done = 0, new_add = 0;
+    __m512i v_ht_cell, v_base_offset_upper = _mm512_set1_epi64(rel_s_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)), v_offset, v_base_offset, v_cell_hash,
+            v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_ht_addr = _mm512_set1_epi64((uint64_t)ht->buckets), v_neg_one512 = _mm512_set1_epi64(-1),
+            v_zero512 = _mm512_set1_epi64(0), v_tuple_size = _mm512_set1_epi64(16), v_next_off = _mm512_set1_epi64(8);
+    __attribute__((aligned(CACHE_LINE_SIZE))) __mmask8 mask[NPJ_VECTOR_SCALE + 1], m_valid_bucket = 0, m_match = 0;
+    __attribute__((aligned(CACHE_LINE_SIZE))) uint64_t cur_offset = 0, base_off[NPJ_MAX_VECTOR_SCALE], *ht_pos;
+
+    for (int i = 0; i <= NPJ_VECTOR_SCALE; ++i) 
+    {
+        base_off[i] = i * sizeof(Tuple<KeyType, PayloadType>);
+        mask[i] = (1 << i) - 1;
+    }
+    v_base_offset = _mm512_load_epi64(base_off);
+
+    __attribute__((aligned(CACHE_LINE_SIZE)))  StateSIMDForETHNPJ state[NPJ_SIMDStateSize + 1];
+    // init # of the state
+    for (int i = 0; i <= NPJ_SIMDStateSize; ++i) {
+        state[i].stage = 1;
+        state[i].m_have_tuple = 0;
+    }
+
+    #ifndef USE_MURMUR3_HASH
+    __m512i v_factor = _mm512_set1_epi64(ht->hash_mask), v_shift = _mm512_set1_epi64(ht->skip_bits); 
+    #endif   
+
+    for (uint64_t cur = 0; 1;) 
+    {
+        k = (k >= NPJ_SIMDStateSize) ? 0 : k;
+
+        if (cur >= rel_s_partition->num_tuples) {
+            if (state[k].m_have_tuple == 0 && state[k].stage != 3) {
+                ++done;
+                state[k].stage = 3;
+                ++k;
+                continue;
+            }
+            if ((done >= NPJ_SIMDStateSize)) {
+                if (state[NPJ_SIMDStateSize].m_have_tuple > 0) {
+                    k = NPJ_SIMDStateSize;
+                    state[NPJ_SIMDStateSize].stage = 0;
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        switch (state[k].stage) 
+        {
+            case 1: 
+            {
+                _mm_prefetch((char *)(((void *)rel_s_partition->tuples) + cur_offset + NPJ_PDIS), _MM_HINT_T0);
+                _mm_prefetch((char *)(((void *)rel_s_partition->tuples) + cur_offset + NPJ_PDIS + CACHE_LINE_SIZE), _MM_HINT_T0);
+                //_mm_prefetch((char *)(((void *)rel_s_partition->tuples) + cur_offset + NPJ_PDIS + 2 * CACHE_LINE_SIZE), _MM_HINT_T0);
+
+                v_offset = _mm512_add_epi64(_mm512_set1_epi64(cur_offset), v_base_offset);
+                // count the number of empty tuples
+                cur_offset = cur_offset + base_off[NPJ_VECTOR_SCALE];
+                cur = cur + NPJ_VECTOR_SCALE;
+
+                state[k].m_have_tuple = _mm512_cmpgt_epi64_mask(v_base_offset_upper, v_offset);
+                state[k].key = _mm512_mask_i64gather_epi64(state[k].key, state[k].m_have_tuple, v_offset, ((void *)rel_s_partition->tuples), 1);
+                
+                // Perform hashing for the keys
+            #ifndef USE_MURMUR3_HASH
+                v_cell_hash = _mm512_and_epi64(state[k].key, v_factor);
+                v_cell_hash = _mm512_srlv_epi64(v_cell_hash, v_shift);
+                v_cell_hash = _mm512_mullo_epi64(v_cell_hash, v_bucket_size);
+            #else
+                //TODO: murmur3 hashing to be implemented
+                printf("Murmur3 hashing is not implemented in the probe phase yet!! \n");
+            #endif            
+                state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, v_cell_hash, v_ht_addr);
+                state[k].stage = 2;
+
+                ht_pos = (uint64_t *) &state[k].ht_off;
+                for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                    _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                }
+            }
+            break;
+
+            case 2: 
+            {
+                v_ht_cell = _mm512_mask_i64gather_epi64(v_neg_one512, state[k].m_have_tuple, state[k].ht_off, 0, 1);
+                m_valid_bucket = _mm512_cmpneq_epi64_mask(v_ht_cell, v_zero512);
+                state[k].m_have_tuple = _mm512_kand(m_valid_bucket, state[k].m_have_tuple);
+                state[k].stage = 0;
+                num = _mm_popcnt_u32(state[k].m_have_tuple);
+
+                if (num == NPJ_VECTOR_SCALE) 
+                {
+                    ht_pos = (uint64_t *) &state[k].ht_off;
+                    for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                        _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                    }
+
+                } else if(num ==0) 
+                {
+                    state[k].stage = 1;
+                    --k;
+                    break;
+                } 
+                else
+                {
+                     if (done < NPJ_SIMDStateSize) {
+                        num_temp = _mm_popcnt_u32(state[NPJ_SIMDStateSize].m_have_tuple);
+                        if (num + num_temp < NPJ_VECTOR_SCALE) {
+                            // compress v
+                            state[k].ht_off = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].ht_off);
+                            state[k].key = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].key);
+                            // expand v -> temp
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].ht_off, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].key, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].key);
+                            state[NPJ_SIMDStateSize].m_have_tuple = mask[num + num_temp];
+                            state[k].m_have_tuple = 0;
+                            state[k].stage = 1;
+                            --k;
+                            break;
+                        } else {
+                            // expand temp -> v
+                            state[k].ht_off = _mm512_mask_expand_epi64(state[k].ht_off, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].ht_off);
+                            state[k].key = _mm512_mask_expand_epi64(state[k].key, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].key);
+
+                            // compress temp
+                            state[NPJ_SIMDStateSize].m_have_tuple = _mm512_kand(state[NPJ_SIMDStateSize].m_have_tuple, _mm512_knot(mask[NPJ_VECTOR_SCALE - num]));
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].key);
+                            state[k].m_have_tuple = mask[NPJ_VECTOR_SCALE];
+                            state[NPJ_SIMDStateSize].m_have_tuple = (state[NPJ_SIMDStateSize].m_have_tuple >> (NPJ_VECTOR_SCALE - num));
+                            state[k].stage = 0;
+
+                            ht_pos = (uint64_t *) &state[k].ht_off;
+                            for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                                _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+
+            case 0: 
+            {
+                v_ht_cell = _mm512_mask_i64gather_epi64(v_neg_one512, state[k].m_have_tuple, _mm512_add_epi64(state[k].ht_off, v_tuple_size), 0, 1); 
+
+                //TODO: handle the case of multiple tuples in the same bucket
+                m_match = _mm512_cmpeq_epi64_mask(state[k].key, v_ht_cell);
+                m_match = _mm512_kand(m_match, state[k].m_have_tuple);
+                new_add = _mm_popcnt_u32(m_match);
+                matches += new_add;
+
+                // update next
+                state[k].ht_off = _mm512_mask_i64gather_epi64(v_zero512, state[k].m_have_tuple, _mm512_add_epi64(state[k].ht_off, v_next_off), 0, 1);
+                state[k].m_have_tuple = _mm512_kand(_mm512_cmpneq_epi64_mask(state[k].ht_off, v_zero512), state[k].m_have_tuple);
+
+                num = _mm_popcnt_u32(state[k].m_have_tuple);
+
+                if (num == NPJ_VECTOR_SCALE) {
+
+                    ht_pos = (uint64_t *) &state[k].ht_off;
+                    for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                        _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                    }
+
+                } else if(num ==0) {
+                    state[k].stage = 1;
+                    --k;
+                    break;
+                } 
+                else
+                {
+                    if (done < NPJ_SIMDStateSize) 
+                    {
+                        num_temp = _mm_popcnt_u32(state[NPJ_SIMDStateSize].m_have_tuple);
+                        if (num + num_temp < NPJ_VECTOR_SCALE) 
+                        {
+                            // compress v
+                            state[k].ht_off = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].ht_off);
+                            state[k].key = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].key);
+                            // expand v -> temp
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].ht_off, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].key, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].key);
+                            state[NPJ_SIMDStateSize].m_have_tuple = mask[num + num_temp];
+                            state[k].m_have_tuple = 0;
+                            state[k].stage = 1;
+                            --k;
+                            break;
+                        } 
+                        else 
+                        {
+                            // expand temp -> v
+                            state[k].ht_off = _mm512_mask_expand_epi64(state[k].ht_off, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].ht_off);
+                            state[k].key = _mm512_mask_expand_epi64(state[k].key, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].key);
+
+                            // compress temp
+                            state[NPJ_SIMDStateSize].m_have_tuple = _mm512_kand(state[NPJ_SIMDStateSize].m_have_tuple, _mm512_knot(mask[NPJ_VECTOR_SCALE - num]));
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].key);
+                            state[k].m_have_tuple = mask[NPJ_VECTOR_SCALE];
+                            state[NPJ_SIMDStateSize].m_have_tuple = (state[NPJ_SIMDStateSize].m_have_tuple >> (NPJ_VECTOR_SCALE - num));
+                            state[k].stage = 0;
+
+                            ht_pos = (uint64_t *) &state[k].ht_off;
+                            for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                                _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                            }
+                
+                        }
+                    }
+                }
+            }
+            break;
+
+        }
+        ++k;
+    }
+
+    return matches;
+}
+
 void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
@@ -416,6 +724,12 @@ void * npj_join_thread(void * param)
 
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
+
+        strcpy(npj_pfun1[1].fun_name, "IMV");
+        strcpy(npj_pfun1[0].fun_name, "Naive");
+
+        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_imv;
+        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition;
 
         npj_pf_num = 2;
     }
@@ -502,6 +816,33 @@ void * npj_join_thread(void * param)
                 free_bucket_buffer(overflowbuf);
             }
             
+        }
+    }
+
+    for (int fid = 0; fid < npj_pf_num; ++fid) 
+    {
+        for (int rp = 0; rp < RUN_NUMS; ++rp) 
+        {
+            BARRIER_ARRIVE(args->barrier, rv);
+            if(args->tid == 0){
+                gettimeofday(&args->partition_end_time, NULL);
+            }
+
+        #if NPJ_MORSE_SIZE
+            //TODO: to be done
+        #else
+            npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
+        #endif
+
+            BARRIER_ARRIVE(args->barrier, rv);
+
+            // probe phase finished, thread-0 checkpoints the time
+            if(args->tid == 0){
+                gettimeofday(&args->end_time, NULL);
+            }
+
+            deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+            printf("---- %5s Probe costs time (ms) = %10.4lf\n", npj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
         }
     }
 
