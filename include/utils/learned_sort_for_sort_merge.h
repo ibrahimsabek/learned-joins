@@ -657,8 +657,8 @@ void * learned_sort_for_sort_merge::train_threaded(void * param)
     if(tid==0)
     {
       // Populate the training data for the root model
-      for (unsigned int i = 0; i < total_sample_count/*SAMPLE_SZ*/; ++i) {
-        (*args->training_data)[0][0].push_back({(*rmi.training_sample)[i], 1. * i / total_sample_count/*SAMPLE_SZ*/});
+      for (unsigned int i = 0; i < total_sample_count; ++i) {
+        (*args->training_data)[0][0].push_back({(*rmi.training_sample)[i], 1. * i / total_sample_count});
       }
 
       // Train the root model using linear interpolation
