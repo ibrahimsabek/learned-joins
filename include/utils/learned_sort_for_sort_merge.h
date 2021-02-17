@@ -27,13 +27,6 @@
 #endif
 #endif
 
-#ifndef KeyType
-#define KeyType RELATION_KEY_TYPE
-#define PayloadType RELATION_PAYLOAD_TYPE
-#define TaskType Task<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>
-#define NUM_THREADS NUM_THREADS_FOR_EVALUATION
-#endif
-
 using std::vector;
 using std::cerr;
 using std::endl;
@@ -139,7 +132,7 @@ RMI<KeyType, PayloadType> train(
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
 // Training function based on two datasets
-void * train_threaded(void *);
+//void * train_threaded(void *);
 
 template<class KeyType, class PayloadType>
 RMI<KeyType, PayloadType> train(
@@ -489,7 +482,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
 }  // end of training function
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
-
+/*
 void * learned_sort_for_sort_merge::train_threaded(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
@@ -789,7 +782,7 @@ void * learned_sort_for_sort_merge::train_threaded(void * param)
       args->rmi->trained = true;
     }
 }
-
+*/
 template<class KeyType, class PayloadType>
 learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_merge::train(
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params &p,
