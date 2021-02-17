@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "utils/data_structures.h"
+#include "utils/barrier.h"
+
 #include "configs/base_configs.h"
 
 #ifdef USE_AVXSORT_AS_STD_SORT
@@ -477,6 +479,307 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
 }  // end of training function
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
+
+void * learned_sort_for_sort_merge::train_threaded(void * param)
+{
+    ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
+    int rv;
+    int tid = args->tid;
+
+    static const unsigned int NUM_LAYERS = args->p.arch.size();
+    if(tid == 0)
+    {
+      for (unsigned int layer_idx = 0; layer_idx < NUM_LAYERS; ++layer_idx) {
+        (*args->training_data)[layer_idx].resize(args->p.arch[layer_idx]);
+      }
+    }
+
+    //----------------------------------------------------------//
+    //                           SAMPLE                         //
+    //----------------------------------------------------------//
+
+    // Determine sample size
+    unsigned int INPUT_SZ_R = args->original_relR->num_tuples;
+    unsigned int INPUT_SZ_S = args->original_relS->num_tuples;
+    const unsigned int SAMPLE_SZ_R = std::min<unsigned int>(
+        INPUT_SZ_R, std::max<unsigned int>(args->p.sampling_rate * INPUT_SZ_R,
+                                        RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
+    const unsigned int SAMPLE_SZ_S = std::min<unsigned int>(
+        INPUT_SZ_S, std::max<unsigned int>(args->p.sampling_rate * INPUT_SZ_S,
+                                        RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
+    //const unsigned int SAMPLE_SZ = SAMPLE_SZ_R + SAMPLE_SZ_S;        
+    
+    // Start sampling
+    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR_start_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR_end_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS_start_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS_end_sampling_ptr;
+
+    uint32_t * sample_count = args->sample_count; 
+    Tuple<KeyType, PayloadType> * tmp_training_sample = args->rmi->tmp_training_sample + args->tmp_training_sample_offset;
+    
+    uint32_t * sample_count_R = args->sample_count_R; 
+    Tuple<KeyType, PayloadType> * tmp_training_sample_R = args->rmi->tmp_training_sample_R + args->tmp_training_sample_R_offset;
+    unsigned int offset_R = static_cast<unsigned int>(1. * INPUT_SZ_R / SAMPLE_SZ_R);
+    for (auto i = relR_start_sampling_ptr; i < relR_end_sampling_ptr; i += offset_R) {
+      // NOTE:  We don't directly assign SAMPLE_SZ to rmi.training_sample_sz
+      //        to avoid issues with divisibility
+      tmp_training_sample[sample_count[tid]] = *i;
+      ++sample_count[tid];
+
+      tmp_training_sample_R[sample_count_R[tid]] = *i;
+      ++sample_count_R[tid];
+    }
+    
+    uint32_t * sample_count_S = args->sample_count_S;
+    Tuple<KeyType, PayloadType> * tmp_training_sample_S = args->rmi->tmp_training_sample_S + args->tmp_training_sample_S_offset;
+    unsigned int offset_S = static_cast<unsigned int>(1. * INPUT_SZ_S / SAMPLE_SZ_S);
+    for (auto i = relS_start_sampling_ptr; i < relS_end_sampling_ptr; i += offset_S) {
+      // NOTE:  We don't directly assign SAMPLE_SZ to rmi.training_sample_sz
+      //        to avoid issues with divisibility
+      tmp_training_sample[sample_count[tid]] = *i;
+      ++sample_count[tid];
+
+      tmp_training_sample_S[sample_count_S[tid]] = *i;
+      ++sample_count_S[tid];
+    }
+    BARRIER_ARRIVE(args->barrier, rv);
+
+    #ifdef USE_AVXSORT_AS_STD_SORT          
+
+    uint32_t total_sample_count = 0; 
+      
+    if(tid == 0)
+    {
+      for(int i = 0; i < NUM_THREADS; i++)
+        total_sample_count += sample_count[i];
+
+      Tuple<KeyType, PayloadType> * sorted_training_sample = args->rmi->sorted_training_sample;
+      int64_t * inputptr =  (int64_t *)(args->rmi->tmp_training_sample);
+      int64_t * outputptr = (int64_t *)(sorted_training_sample);
+      avxsort_int64(&inputptr, &outputptr, total_sample_count);
+      Tuple<KeyType, PayloadType>* tmp_outputptr = (Tuple<KeyType, PayloadType>*) outputptr;
+      for(unsigned int k = 0; k < total_sample_count; k++){
+        sorted_training_sample[k].key = tmp_outputptr[k].key;
+        sorted_training_sample[k].payload = tmp_outputptr[k].payload;
+      } 
+      args->rmi->training_sample = &(sorted_training_sample);
+      args->rmi->training_sample_size = total_sample_count;
+    }
+
+    if(tid == 1)
+    {
+      uint32_t total_sample_count_R = 0; 
+      for(int i = 0; i < NUM_THREADS; i++)
+        total_sample_count_R += sample_count_R[i];
+
+      Tuple<KeyType, PayloadType> * sorted_training_sample_R = args->rmi->sorted_training_sample_R;
+      int64_t * inputptr_R =  (int64_t *)(args->rmi->tmp_training_sample_R);
+      int64_t * outputptr_R = (int64_t *)(sorted_training_sample_R);
+      avxsort_int64(&inputptr_R, &outputptr_R, total_sample_count_R);
+      Tuple<KeyType, PayloadType>* tmp_outputptr_R = (Tuple<KeyType, PayloadType>*) outputptr_R;
+      for(unsigned int k = 0; k < total_sample_count_R; k++){
+        sorted_training_sample_R[k].key = tmp_outputptr_R[k].key;
+        sorted_training_sample_R[k].payload = tmp_outputptr_R[k].payload;
+      } 
+      args->rmi->training_sample_R = &(sorted_training_sample_R);
+      args->rmi->training_sample_size_R = total_sample_count_R;
+    }
+
+    if(tid == 2)
+    {
+      uint32_t total_sample_count_S = 0; 
+      for(int i = 0; i < NUM_THREADS; i++)
+        total_sample_count_S += sample_count_S[i];
+
+      Tuple<KeyType, PayloadType> * sorted_training_sample_S = args->rmi->sorted_training_sample_S;
+      int64_t * inputptr_S =  (int64_t *)(args->rmi->tmp_training_sample_S);
+      int64_t * outputptr_S = (int64_t *)(args->rmi->sorted_training_sample_S);
+      avxsort_int64(&inputptr_S, &outputptr_S, total_sample_count_S);
+      Tuple<KeyType, PayloadType>* tmp_outputptr_S = (Tuple<KeyType, PayloadType>*) outputptr_S;
+      for(unsigned int k = 0; k < total_sample_count_S; k++){
+        sorted_training_sample_S[k].key = tmp_outputptr_S[k].key;
+        sorted_training_sample_S[k].payload = tmp_outputptr_S[k].payload;
+      } 
+      args->rmi->training_sample_S = &(sorted_training_sample_S);
+      args->rmi->training_sample_size_S = total_sample_count_S;
+    }
+    #else
+    uint32_t total_sample_count = 0;
+    if(tid == 0)
+    {
+      for(int i = 0; i < NUM_THREADS; i++)
+        total_sample_count += sample_count[i];
+
+      std::sort((int64_t *)(args->rmi->tmp_training_sample), (int64_t *)(args->rmi->tmp_training_sample) + total_sample_count - 1);
+      args->rmi->training_sample = &(args->rmi->tmp_training_sample);
+      args->rmi->training_sample_size = total_sample_count;
+    }
+
+    if(tid == 1)
+    {
+      uint32_t total_sample_count_R = 0; 
+      for(int i = 0; i < NUM_THREADS; i++)
+        total_sample_count_R += sample_count_R[i];
+
+      std::sort((int64_t *)(args->rmi->tmp_training_sample_R), (int64_t *)(args->rmi->tmp_training_sample_R) + total_sample_count_R - 1);
+      args->rmi->training_sample_R = &(args->rmi->tmp_training_sample_R);
+      args->rmi->training_sample_size_R = total_sample_count_R;
+    }
+
+    if(tid == 2)
+    {
+      uint32_t total_sample_count_S = 0; 
+      for(int i = 0; i < NUM_THREADS; i++)
+        total_sample_count_S += sample_count_S[i];
+
+      std::sort((int64_t *)(args->rmi->tmp_training_sample_S), (int64_t *)(args->rmi->tmp_training_sample_S) + total_sample_count_S - 1);
+      args->rmi->training_sample_S = &(args->rmi->tmp_training_sample_S);
+      args->rmi->training_sample_size_S = total_sample_count_S;
+    }
+    #endif
+
+
+    BARRIER_ARRIVE(args->barrier, rv);
+
+    // Stop early if the array is identical
+    if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
+      return;
+    }
+
+    //----------------------------------------------------------//
+    //                     TRAIN THE MODELS                     //
+    //----------------------------------------------------------//
+
+    if(tid==0)
+    {
+      // Populate the training data for the root model
+      for (unsigned int i = 0; i < total_sample_count/*SAMPLE_SZ*/; ++i) {
+        (*args->training_data)[0][0].push_back({(*rmi.training_sample)[i], 1. * i / total_sample_count/*SAMPLE_SZ*/});
+      }
+
+      // Train the root model using linear interpolation
+      auto *current_training_data = &(*args->training_data)[0][0];
+      typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
+
+      // Find the min and max values in the training set
+      training_point<KeyType, PayloadType> min = current_training_data->front();
+      training_point<KeyType, PayloadType> max = current_training_data->back();
+
+      // Calculate the slope and intercept terms
+      current_model->slope =
+          1. / (max.x.key - min.x.key);  // Assuming min.y = 0 and max.y = 1
+      current_model->intercept = -current_model->slope * min.x.key;
+
+      // Extrapolate for the number of models in the next layer
+      current_model->slope *= args->p.arch[1] - 1;
+      current_model->intercept *= args->p.arch[1] - 1;
+
+      // Populate the training data for the next layer
+      for (const auto &d : *current_training_data) {
+        // Predict the model index in next layer
+        unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+
+        // Normalize the rank between 0 and the number of models in the next layer
+        rank =
+            std::max(static_cast<unsigned int>(0), std::min(args->p.arch[1] - 1, rank));
+
+        // Place the data in the predicted training bucket
+        training_data[1][rank].push_back(d);
+      }
+
+      // Train the leaf models
+      for (unsigned int model_idx = 0; model_idx < args->p.arch[1]; ++model_idx) {
+        // Update iterator variables
+        current_training_data = &training_data[1][model_idx];
+        current_model = &args->rmi->models[1][model_idx];
+
+        // Interpolate the min points in the training buckets
+        if (model_idx ==
+            0) {  // The current model is the first model in the current layer
+
+          if (current_training_data->size() <
+              2) {  // Case 1: The first model in this layer is empty
+            current_model->slope = 0;
+            current_model->intercept = 0;
+
+            // Insert a fictive training point to avoid propagating more than one
+            // empty initial models.
+            training_point<KeyType, PayloadType> tp;
+            tp.x.key = 0;
+            tp.x.payload = 0;
+            tp.y = 0;
+            current_training_data->push_back(tp);
+          } else {  // Case 2: The first model in this layer is not empty
+
+            min = current_training_data->front();
+            max = current_training_data->back();
+
+            current_model->slope =
+                (max.y) / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
+            current_model->intercept = min.y - current_model->slope * min.x.key;
+          }
+        } else if (model_idx == args->p.arch[1] - 1) {
+          if (current_training_data
+                  ->empty()) {  // Case 3: The final model in this layer is empty
+
+            current_model->slope = 0;
+            current_model->intercept = 1;
+          } else {  // Case 4: The last model in this layer is not empty
+
+            min = training_data[1][model_idx - 1].back();
+            max = current_training_data->back();
+
+            current_model->slope =
+                (min.y - 1) / (min.x.key - max.x.key);  // Hallucinating as if max.y = 1
+            current_model->intercept = min.y - current_model->slope * min.x.key;
+          }
+        } else {  // The current model is not the first model in the current layer
+
+          if (current_training_data
+                  ->empty()) {  // Case 5: The intermediate model in
+            // this layer is empty
+            current_model->slope = 0;
+            current_model->intercept =
+                training_data[1][model_idx - 1].back().y;  // If the previous model
+                                                          // was empty too, it will
+                                                          // use the fictive
+                                                          // training points
+
+            // Insert a fictive training point to avoid propagating more than one
+            // empty initial models.
+            // NOTE: This will _NOT_ throw to DIV/0 due to identical x's and y's
+            // because it is working backwards.
+            training_point<KeyType, PayloadType> tp;
+            tp.x = training_data[1][model_idx - 1].back().x;
+            tp.y = training_data[1][model_idx - 1].back().y;
+            current_training_data->push_back(tp);
+          } else {  // Case 6: The intermediate leaf model is not empty
+
+            min = training_data[1][model_idx - 1].back();
+            max = current_training_data->back();
+
+            current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
+            current_model->intercept = min.y - current_model->slope * min.x.key;
+          }
+        }
+      }
+
+      // NOTE:
+      // The last stage (layer) of this model contains weights that predict the CDF
+      // of the keys (i.e. Range is [0-1])
+      // When using this model to predict the position of the keys in the sorted
+      // order, you MUST scale the
+      // weights of the last layer to whatever range you are predicting for. The
+      // inner layers of the model have
+      // already been extrapolated to the length of the stage.git
+      //
+      // This is a design choice to help with the portability of the model.
+      //
+      rmi.trained = true;
+    }
+}
+
 template<class KeyType, class PayloadType>
 learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_merge::train(
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params &p,

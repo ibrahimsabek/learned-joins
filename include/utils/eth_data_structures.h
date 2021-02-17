@@ -178,6 +178,26 @@ struct ETHNonPartitionJoinThread {
 
     /* results of the thread */
     ThreadResult * threadresult;
+    
+    /**** start stuff for learning RMI models ****/
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
+    Relation<KeyType, PayloadType> *     original_relR;
+    Relation<KeyType, PayloadType> *     original_relS;
+    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr;
+    Tuple<KeyType, PayloadType> * tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_sorted_training_sample_in;
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data;
+    uint32_t tmp_training_sample_R_offset, tmp_training_sample_S_offset, tmp_training_sample_offset;
+    uint32_t * sample_count, * sample_count_R, * sample_count_S;
+    /**** end stuff for learning RMI models ****/
 
     /* stats about the thread */
     struct timeval start_time, partition_end_time, end_time;
