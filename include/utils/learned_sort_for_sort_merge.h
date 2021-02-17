@@ -27,6 +27,13 @@
 #endif
 #endif
 
+#ifndef KeyType
+#define KeyType RELATION_KEY_TYPE
+#define PayloadType RELATION_PAYLOAD_TYPE
+#define TaskType Task<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>
+#define NUM_THREADS NUM_THREADS_FOR_EVALUATION
+#endif
+
 using std::vector;
 using std::cerr;
 using std::endl;
