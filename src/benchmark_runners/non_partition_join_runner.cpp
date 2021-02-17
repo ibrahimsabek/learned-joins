@@ -912,7 +912,7 @@ void * train_threaded(void * param)
     {
       // Populate the training data for the root model
       for (unsigned int i = 0; i < total_sample_count; ++i) {
-        (*args->training_data)[0][0].push_back({(*rmi.training_sample)[i], 1. * i / total_sample_count});
+        (*args->training_data)[0][0].push_back({(*args->rmi->training_sample)[i], 1. * i / total_sample_count});
       }
 
       // Train the root model using linear interpolation
