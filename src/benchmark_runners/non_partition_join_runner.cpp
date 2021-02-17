@@ -743,11 +743,12 @@ void * train_threaded(void * param)
     int rv;
     int tid = args->tid;
 
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
     static const unsigned int NUM_LAYERS = args->p.arch.size();
     if(tid == 0)
     {
       for (unsigned int layer_idx = 0; layer_idx < NUM_LAYERS; ++layer_idx) {
-        (*args->training_data)[layer_idx].resize(args->p.arch[layer_idx]);
+        (*training_data)[layer_idx].resize(args->p.arch[layer_idx]);
       }
     }
 
@@ -912,11 +913,11 @@ void * train_threaded(void * param)
     {
       // Populate the training data for the root model
       for (unsigned int i = 0; i < total_sample_count; ++i) {
-        (*args->training_data)[0][0].push_back({(*args->rmi->training_sample)[i], 1. * i / total_sample_count});
+        (*training_data)[0][0].push_back({(*args->rmi->training_sample)[i], 1. * i / total_sample_count});
       }
 
       // Train the root model using linear interpolation
-      auto *current_training_data = &(*args->training_data)[0][0];
+      auto *current_training_data = &(*training_data)[0][0];
       typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
 
       // Find the min and max values in the training set
@@ -942,13 +943,13 @@ void * train_threaded(void * param)
             std::max(static_cast<unsigned int>(0), std::min(args->p.arch[1] - 1, rank));
 
         // Place the data in the predicted training bucket
-        training_data[1][rank].push_back(d);
+        (*training_data)[1][rank].push_back(d);
       }
 
       // Train the leaf models
       for (unsigned int model_idx = 0; model_idx < args->p.arch[1]; ++model_idx) {
         // Update iterator variables
-        current_training_data = &training_data[1][model_idx];
+        current_training_data = &(*training_data)[1][model_idx];
         current_model = &args->rmi->models[1][model_idx];
 
         // Interpolate the min points in the training buckets
@@ -984,7 +985,7 @@ void * train_threaded(void * param)
             current_model->intercept = 1;
           } else {  // Case 4: The last model in this layer is not empty
 
-            min = training_data[1][model_idx - 1].back();
+            min = (*training_data)[1][model_idx - 1].back();
             max = current_training_data->back();
 
             current_model->slope =
@@ -998,7 +999,7 @@ void * train_threaded(void * param)
             // this layer is empty
             current_model->slope = 0;
             current_model->intercept =
-                training_data[1][model_idx - 1].back().y;  // If the previous model
+                (*training_data)[1][model_idx - 1].back().y;  // If the previous model
                                                           // was empty too, it will
                                                           // use the fictive
                                                           // training points
@@ -1008,12 +1009,12 @@ void * train_threaded(void * param)
             // NOTE: This will _NOT_ throw to DIV/0 due to identical x's and y's
             // because it is working backwards.
             training_point<KeyType, PayloadType> tp;
-            tp.x = training_data[1][model_idx - 1].back().x;
-            tp.y = training_data[1][model_idx - 1].back().y;
+            tp.x = (*training_data)[1][model_idx - 1].back().x;
+            tp.y = (*training_data)[1][model_idx - 1].back().y;
             current_training_data->push_back(tp);
           } else {  // Case 6: The intermediate leaf model is not empty
 
-            min = training_data[1][model_idx - 1].back();
+            min = (*training_data)[1][model_idx - 1].back();
             max = current_training_data->back();
 
             current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
