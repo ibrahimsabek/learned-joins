@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "utils/data_structures.h"
+#include "utils/eth_data_structures.h"
 #include "utils/barrier.h"
 
 #include "configs/base_configs.h"
@@ -131,6 +132,8 @@ RMI<KeyType, PayloadType> train(
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
 // Training function based on two datasets
+void * train_threaded(void *);
+
 template<class KeyType, class PayloadType>
 RMI<KeyType, PayloadType> train(
     typename RMI<KeyType, PayloadType>::Params &,
@@ -776,7 +779,7 @@ void * learned_sort_for_sort_merge::train_threaded(void * param)
       //
       // This is a design choice to help with the portability of the model.
       //
-      rmi.trained = true;
+      args->rmi->trained = true;
     }
 }
 
