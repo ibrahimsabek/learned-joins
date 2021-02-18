@@ -1333,17 +1333,17 @@ int main(int argc, char **argv)
     
     // Sampling and building RMI models for relations R and S together
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params rmi_params;
-    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, relR->num_tuples);
-    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, relS->num_tuples);
+    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, rel_r.num_tuples);
+    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, rel_s.num_tuples);
     SAMPLE_SZ_R = std::min<unsigned int>(
-        relR->num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * relR->num_tuples,
+        rel_r.num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * rel_r.num_tuples,
                                         learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE)) + 1;
     r_tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
     #ifdef USE_AVXSORT_AS_STD_SORT
     r_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
     #endif
     SAMPLE_SZ_S = std::min<unsigned int>(
-        relS->num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * relS->num_tuples,
+        rel_s.num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * rel_s.num_tuples,
                                         learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE)) + 1;
     s_tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_S * sizeof(Tuple<KeyType, PayloadType>));
     #ifdef USE_AVXSORT_AS_STD_SORT
