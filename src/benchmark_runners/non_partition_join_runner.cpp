@@ -1357,9 +1357,9 @@ int main(int argc, char **argv)
     sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned((SAMPLE_SZ_R + SAMPLE_SZ_S) * sizeof(Tuple<KeyType, PayloadType>));
     #endif
 
-    RMI<KeyType, PayloadType> rmi(rmi_params, tmp_training_sample_in, sorted_training_sample_in, 
-                                  tmp_training_sample_R_in, sorted_training_sample_R_in,
-                                  tmp_training_sample_S_in, sorted_training_sample_S_in);
+    RMI<KeyType, PayloadType> rmi(rmi_params, tmp_training_sample_in, sorted_training_sample_in,
+                                              r_tmp_training_sample_in, r_sorted_training_sample_in,
+                                              s_tmp_training_sample_in, s_sorted_training_sample_in);
     vector<vector<vector<training_point<KeyType, PayloadType>>>> training_data(rmi_params.arch.size());
 
     uint32_t * sample_count = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
