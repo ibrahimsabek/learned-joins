@@ -737,9 +737,8 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
 }
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
-void * train_threaded(void * param)
+void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
 {
-    ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;
     int tid = args->tid;
 
@@ -768,10 +767,10 @@ void * train_threaded(void * param)
     //const unsigned int SAMPLE_SZ = SAMPLE_SZ_R + SAMPLE_SZ_S;        
     
     // Start sampling
-    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR_start_sampling_ptr;
-    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR_end_sampling_ptr;
-    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS_start_sampling_ptr;
-    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS_end_sampling_ptr;
+    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR.tuples;
+    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR.tuples + (args->relR.num_tuples - 1);
+    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS.tuples;
+    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS.tuples + (args->relS.num_tuples - 1);
 
     uint32_t * sample_count = args->sample_count; 
     Tuple<KeyType, PayloadType> * tmp_training_sample = args->rmi->tmp_training_sample + args->tmp_training_sample_offset;
@@ -779,7 +778,7 @@ void * train_threaded(void * param)
     uint32_t * sample_count_R = args->sample_count_R; 
     Tuple<KeyType, PayloadType> * tmp_training_sample_R = args->rmi->tmp_training_sample_R + args->tmp_training_sample_R_offset;
     unsigned int offset_R = static_cast<unsigned int>(1. * INPUT_SZ_R / SAMPLE_SZ_R);
-    for (auto i = relR_start_sampling_ptr; i < relR_end_sampling_ptr; i += offset_R) {
+    for (auto i = relR_start_sampling_ptr; i <= relR_end_sampling_ptr; i += offset_R) {
       // NOTE:  We don't directly assign SAMPLE_SZ to rmi.training_sample_sz
       //        to avoid issues with divisibility
       tmp_training_sample[sample_count[tid]] = *i;
@@ -792,7 +791,7 @@ void * train_threaded(void * param)
     uint32_t * sample_count_S = args->sample_count_S;
     Tuple<KeyType, PayloadType> * tmp_training_sample_S = args->rmi->tmp_training_sample_S + args->tmp_training_sample_S_offset;
     unsigned int offset_S = static_cast<unsigned int>(1. * INPUT_SZ_S / SAMPLE_SZ_S);
-    for (auto i = relS_start_sampling_ptr; i < relS_end_sampling_ptr; i += offset_S) {
+    for (auto i = relS_start_sampling_ptr; i <= relS_end_sampling_ptr; i += offset_S) {
       // NOTE:  We don't directly assign SAMPLE_SZ to rmi.training_sample_sz
       //        to avoid issues with divisibility
       tmp_training_sample[sample_count[tid]] = *i;
@@ -1043,8 +1042,12 @@ void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0;
-    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
 
+    sample_and_train_models_threaded(args);
+
+    BARRIER_ARRIVE(args->barrier, rv);
+
+/*    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
@@ -1083,12 +1086,9 @@ void * npj_join_thread(void * param)
             }
         #endif
 
-            /* wait at a barrier until each thread starts and start timer */
             BARRIER_ARRIVE(args->barrier, rv);
 
-            /* the first thread checkpoints the start time */
             if(args->tid == 0){
-                /* no partitionig phase, but we use partition variables to store building stats */
                 gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
                 //args->e_start_to_partition.startCounters();
@@ -1096,13 +1096,13 @@ void * npj_join_thread(void * param)
             }
 
         #ifdef DEVELOPMENT_MODE
-            /*build_data.build_hash_bucket_visits = args->build_hash_bucket_visits;
-            build_data.probe_hash_bucket_visits = args->probe_hash_bucket_visits; 
-            build_data.keys_hash_latch = args->keys_hash_latch; 
-            build_data.build_keys_list = args->build_keys_list;
-            build_data.build_keys_hash_list = args->build_keys_hash_list;        
-            build_data.probe_keys_list = args->probe_keys_list;
-            build_data.probe_keys_hash_list = args->probe_keys_hash_list;*/        
+            //build_data.build_hash_bucket_visits = args->build_hash_bucket_visits;
+            //build_data.probe_hash_bucket_visits = args->probe_hash_bucket_visits; 
+            //build_data.keys_hash_latch = args->keys_hash_latch; 
+            //build_data.build_keys_list = args->build_keys_list;
+            //build_data.build_keys_hash_list = args->build_keys_hash_list;        
+            //build_data.probe_keys_list = args->probe_keys_list;
+            //build_data.probe_keys_hash_list = args->probe_keys_hash_list;       
         #endif        
 
         #if NPJ_MORSE_SIZE
@@ -1111,7 +1111,6 @@ void * npj_join_thread(void * param)
             npj_pfun[fid].fun_ptr(&build_data, &args->relR, NULL);
         #endif
 
-            /* wait at a barrier until each thread completes build phase */
             BARRIER_ARRIVE(args->barrier, rv);
 
         #ifdef PERF_COUNTERS
@@ -1119,11 +1118,9 @@ void * npj_join_thread(void * param)
             {
                 //TODO: performance counters to be implemented
             }
-            /* Just to make sure we get consistent performance numbers */
             BARRIER_ARRIVE(args->barrier, rv);
         #endif
 
-            /* build phase finished, thread-0 checkpoints the time */
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
 
@@ -1177,23 +1174,37 @@ void * npj_join_thread(void * param)
             }
         }
     }
-
+*/
     return 0;
 }
 
 void initialize_npj_join_thread_args(Relation<KeyType, PayloadType> * rel_r, 
                                  Relation<KeyType, PayloadType> * rel_s,
                                  Hashtable<KeyType, PayloadType> * ht, 
+                                 learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
+                                 learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p,
+                                 unsigned int SAMPLE_SZ_R, unsigned int SAMPLE_SZ_S,
+                                 Tuple<KeyType, PayloadType> * tmp_training_sample_in,
+                                 Tuple<KeyType, PayloadType> * sorted_training_sample_in,
+                                 Tuple<KeyType, PayloadType> * r_tmp_training_sample_in,
+                                 Tuple<KeyType, PayloadType> * r_sorted_training_sample_in,
+                                 Tuple<KeyType, PayloadType> * s_tmp_training_sample_in,
+                                 Tuple<KeyType, PayloadType> * s_sorted_training_sample_in,
+                                 vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data,
+                                 uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S,
                                  pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
                                  ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args){
     int i;
     uint64_t numR, numS, numRthr, numSthr; /* total and per thread num */
+    unsigned int SAMPLE_SZ_Rthr, SAMPLE_SZ_Sthr;
 
     numR = rel_r->num_tuples;
     numS = rel_s->num_tuples;
     numRthr = numR / NUM_THREADS;
     numSthr = numS / NUM_THREADS;
+    SAMPLE_SZ_Rthr = SAMPLE_SZ_R / NUM_THREADS;
+    SAMPLE_SZ_Sthr = SAMPLE_SZ_S / NUM_THREADS;
 
 #ifdef DEVELOPMENT_MODE
     /*for(uint32_t j = 0; j < nbuckets; j++)
@@ -1225,6 +1236,26 @@ void initialize_npj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).relS.num_tuples = (i == (NUM_THREADS-1)) ? numS : numSthr;
         (*(args + i)).relS.tuples = rel_s->tuples + numSthr * i;
         numS -= numSthr;
+
+        /**** start stuff for learning RMI models ****/
+        (*(args + i)).rmi = rmi;
+        (*(args + i)).p = p;
+        (*(args + i)).original_relR = rel_r;
+        (*(args + i)).original_relS = rel_s;
+        (*(args + i)).tmp_training_sample_in = tmp_training_sample_in;
+        (*(args + i)).sorted_training_sample_in = sorted_training_sample_in;
+        (*(args + i)).r_tmp_training_sample_in = r_tmp_training_sample_in;
+        (*(args + i)).r_sorted_training_sample_in = r_sorted_training_sample_in;
+        (*(args + i)).s_tmp_training_sample_in = s_tmp_training_sample_in;
+        (*(args + i)).s_sorted_training_sample_in = s_sorted_training_sample_in;
+        (*(args + i)).training_data = training_data;
+        (*(args + i)).tmp_training_sample_R_offset = SAMPLE_SZ_Rthr * i;
+        (*(args + i)).tmp_training_sample_S_offset = SAMPLE_SZ_Sthr * i;
+        (*(args + i)).tmp_training_sample_offset = (SAMPLE_SZ_Rthr + SAMPLE_SZ_Sthr) * i;
+        (*(args + i)).sample_count = sample_count;
+        (*(args + i)).sample_count_R = sample_count_R;
+        (*(args + i)).sample_count_S = sample_count_S;
+        /**** end stuff for learning RMI models ****/
 
         (*(args + i)).barrier = barrier_ptr;
         (*(args + i)).threadresult  = &(joinresult->resultlist[i]);
@@ -1290,7 +1321,62 @@ int main(int argc, char **argv)
 #endif        
     allocate_hashtable(&ht, nbuckets);
 
-    initialize_npj_join_thread_args(&rel_r, &rel_s, ht, &barrier, joinresult, args_ptr);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // start stuff for sampling and building RMI models for both relations R and S
+    //////////////////////////////////////////////////////////////////////////////
+    Tuple<KeyType, PayloadType>* r_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType>* r_sorted_training_sample_in;
+    Tuple<KeyType, PayloadType>* s_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType>* s_sorted_training_sample_in;
+    unsigned int SAMPLE_SZ_R, SAMPLE_SZ_S;
+    
+    // Sampling and building RMI models for relations R and S together
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params rmi_params;
+    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, relR->num_tuples);
+    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, relS->num_tuples);
+    SAMPLE_SZ_R = std::min<unsigned int>(
+        relR->num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * relR->num_tuples,
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE)) + 1;
+    r_tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
+    #ifdef USE_AVXSORT_AS_STD_SORT
+    r_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
+    #endif
+    SAMPLE_SZ_S = std::min<unsigned int>(
+        relS->num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * relS->num_tuples,
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE)) + 1;
+    s_tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_S * sizeof(Tuple<KeyType, PayloadType>));
+    #ifdef USE_AVXSORT_AS_STD_SORT
+    s_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_S * sizeof(Tuple<KeyType, PayloadType>));
+    #endif
+    
+    Tuple<KeyType, PayloadType>* tmp_training_sample_in;
+    Tuple<KeyType, PayloadType>* sorted_training_sample_in;
+    tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned((SAMPLE_SZ_R + SAMPLE_SZ_S) * sizeof(Tuple<KeyType, PayloadType>));
+    #ifdef USE_AVXSORT_AS_STD_SORT
+    sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned((SAMPLE_SZ_R + SAMPLE_SZ_S) * sizeof(Tuple<KeyType, PayloadType>));
+    #endif
+
+    RMI<KeyType, PayloadType> rmi(rmi_params, tmp_training_sample_in, sorted_training_sample_in, 
+                                  tmp_training_sample_R_in, sorted_training_sample_R_in,
+                                  tmp_training_sample_S_in, sorted_training_sample_S_in);
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> training_data(rmi_params.arch.size());
+
+    uint32_t * sample_count = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
+    uint32_t * sample_count_R = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
+    uint32_t * sample_count_S = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t));
+
+    //////////////////////////////////////////////////////////////////////////////
+    // End stuff for sampling and building RMI models for both relations R and S
+    //////////////////////////////////////////////////////////////////////////////
+
+    //initialize_npj_join_thread_args(&rel_r, &rel_s, ht, &barrier, joinresult, args_ptr);
+    initialize_npj_join_thread_args(&rel_r, &rel_s, ht, &rmi, rmi_params,
+                                 SAMPLE_SZ_R, SAMPLE_SZ_S,
+                                 tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
+                                 r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
+                                 &training_data, sample_count, sample_count_R, sample_count_S,
+                                 &barrier, joinresult, args_ptr);
 
     npj_global_curse = 0;
     npj_global_upper = rel_r.num_tuples;

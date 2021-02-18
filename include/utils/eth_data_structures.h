@@ -184,10 +184,6 @@ struct ETHNonPartitionJoinThread {
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
     Relation<KeyType, PayloadType> *     original_relR;
     Relation<KeyType, PayloadType> *     original_relS;
-    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr;
-    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr;
-    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr;
-    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr;
     Tuple<KeyType, PayloadType> * tmp_training_sample_in;
     Tuple<KeyType, PayloadType> * sorted_training_sample_in;
     Tuple<KeyType, PayloadType> * r_tmp_training_sample_in;
@@ -213,7 +209,7 @@ struct ETHNonPartitionJoinThread {
     vector<KeyType> * probe_keys_list;
     vector<uint64_t> * probe_keys_hash_list;    
 #endif     
-};
+} __attribute__((aligned(CACHE_LINE_SIZE)));
 
 
 
