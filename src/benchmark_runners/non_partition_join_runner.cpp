@@ -903,18 +903,19 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
       return;
     }
-/*
+
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
 
     if(tid==0)
     {
+        
       // Populate the training data for the root model
       for (unsigned int i = 0; i < total_sample_count; ++i) {
-        (*training_data)[0][0].push_back({(*args->rmi->training_sample)[i], 1. * i / total_sample_count});
+        (*training_data)[0][0].push_back({((*(args->rmi->training_sample))[i]), 1. * i / total_sample_count});
       }
-
+/*
       // Train the root model using linear interpolation
       auto *current_training_data = &(*training_data)[0][0];
       typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
@@ -1034,8 +1035,9 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       // This is a design choice to help with the portability of the model.
       //
       args->rmi->trained = true;
+      */
     }
-    */
+
 }
 #endif
 
