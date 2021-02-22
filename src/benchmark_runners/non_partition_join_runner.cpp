@@ -913,6 +913,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
         
       // Populate the training data for the root model
       for (unsigned int i = 0; i < total_sample_count; ++i) {
+        printf("key %ld, payload %ld, value %lf \n", ((*(args->rmi->training_sample))[i]).key, ((*(args->rmi->training_sample))[i]).payload, 1. * i / total_sample_count);
         (*training_data)[0][0].push_back({((*(args->rmi->training_sample))[i]), 1. * i / total_sample_count});
       }
 /*
