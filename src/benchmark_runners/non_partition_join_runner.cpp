@@ -1052,9 +1052,9 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0;
 
-    sample_and_train_models_threaded(args);
+    //sample_and_train_models_threaded(args);
 
-    //BARRIER_ARRIVE(args->barrier, rv);
+    BARRIER_ARRIVE(args->barrier, rv);
 
 /*    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
