@@ -899,9 +899,9 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     BARRIER_ARRIVE(args->barrier, rv);
 
     // Stop early if the array is identical
-    if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
-      return;
-    }
+    //if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
+    //  return;
+    //}
 
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
