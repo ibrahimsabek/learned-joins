@@ -750,7 +750,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
         (*training_data)[layer_idx].resize(args->p.arch[layer_idx]);
       }
     }
-/*
+
     //----------------------------------------------------------//
     //                           SAMPLE                         //
     //----------------------------------------------------------//
@@ -801,7 +801,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       ++sample_count_S[tid];
     }
     BARRIER_ARRIVE(args->barrier, rv);
-
+/*
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
     uint32_t total_sample_count = 0; 
@@ -1040,7 +1040,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       
     }
 */
-    printf("here before last barrier tid %d \n", tid);
+    //printf("here before last barrier tid %d \n", tid);
     //BARRIER_ARRIVE(args->barrier, rv);
     printf("here after last barrier tid %d \n", tid);
 }
