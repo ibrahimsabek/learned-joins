@@ -801,7 +801,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       ++sample_count_S[tid];
     }
     BARRIER_ARRIVE(args->barrier, rv);
-/*
+
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
     uint32_t total_sample_count = 0; 
@@ -895,13 +895,13 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       args->rmi->training_sample_size_S = total_sample_count_S;
     }
     #endif
-*/
+
     //BARRIER_ARRIVE(args->barrier, rv);
 
     // Stop early if the array is identical
-    //if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
-    //  return;
-    //}
+    if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
+      return;
+    }
 
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
