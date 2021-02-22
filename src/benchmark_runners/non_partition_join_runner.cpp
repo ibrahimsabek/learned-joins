@@ -739,9 +739,9 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
 void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
 {
-/*  int rv;
+    int rv;
     int tid = args->tid;
-
+/*
     vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
     static const unsigned int NUM_LAYERS = args->p.arch.size();
     if(tid == 0)
