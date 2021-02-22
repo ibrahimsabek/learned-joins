@@ -739,7 +739,7 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
 void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
 {
-    int rv;
+/*  int rv;
     int tid = args->tid;
 
     vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
@@ -907,7 +907,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
 
-/*    if(tid==0)
+    if(tid==0)
     {
     printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
     printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);        
@@ -1043,7 +1043,6 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     printf("here before last barrier tid %d \n", tid);
     //BARRIER_ARRIVE(args->barrier, rv);
     printf("here after last barrier tid %d \n", tid);
-
 }
 #endif
 
@@ -1052,7 +1051,7 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0;
 
-    //sample_and_train_models_threaded(args);
+    sample_and_train_models_threaded(args);
 
     BARRIER_ARRIVE(args->barrier, rv);
 
