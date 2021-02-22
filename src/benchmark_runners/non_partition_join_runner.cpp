@@ -802,7 +802,6 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     }
     BARRIER_ARRIVE(args->barrier, rv);
 
-printf("Inside 1 tid %d sample_count %ld sample_count_R %ld sample_count_S %ld\n", tid, sample_count[tid], sample_count_R[tid], sample_count_S[tid]);
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
     uint32_t total_sample_count = 0; 
