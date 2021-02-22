@@ -822,17 +822,6 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       } 
       args->rmi->training_sample = &(sorted_training_sample);
       args->rmi->training_sample_size = total_sample_count;
-
-      for(uint64_t i = 0; i < total_sample_count - 1; i++)
-      {
-          if(sorted_training_sample[i].key > sorted_training_sample[i + 1].key)
-          {
-              printf("Inside 2 tid %d first.key %ld first.payload %ld second.key %ld second.payload %ld\n", tid, sorted_training_sample[i].key, sorted_training_sample[i].payload, sorted_training_sample[i + 1].key, sorted_training_sample[i + 1].payload);
-          }
-      }
-
-printf("Inside 2 tid %d total_sample_count %ld SAMPLE_SZ_R+SAMPLE_SZ_S %ld\n", tid, total_sample_count, SAMPLE_SZ_R + SAMPLE_SZ_S);
-
     }
 
     if(tid == 1)
@@ -852,16 +841,6 @@ printf("Inside 2 tid %d total_sample_count %ld SAMPLE_SZ_R+SAMPLE_SZ_S %ld\n", t
       } 
       args->rmi->training_sample_R = &(sorted_training_sample_R);
       args->rmi->training_sample_size_R = total_sample_count_R;
-
-      for(uint64_t i = 0; i < total_sample_count_R - 1; i++)
-      {
-          if(sorted_training_sample_R[i].key > sorted_training_sample_R[i + 1].key)
-          {
-              printf("Inside 2 tid %d first.key %ld first.payload %ld second.key %ld second.payload %ld\n", tid, sorted_training_sample_R[i].key, sorted_training_sample_R[i].payload, sorted_training_sample_R[i + 1].key, sorted_training_sample_R[i + 1].payload);
-          }
-      }
-printf("Inside 2 tid %d total_sample_count_R %ld SAMPLE_SZ_R %ld\n", tid, total_sample_count_R, SAMPLE_SZ_R);
-
     }
 
     if(tid == 2)
@@ -881,16 +860,6 @@ printf("Inside 2 tid %d total_sample_count_R %ld SAMPLE_SZ_R %ld\n", tid, total_
       } 
       args->rmi->training_sample_S = &(sorted_training_sample_S);
       args->rmi->training_sample_size_S = total_sample_count_S;
-
-      for(uint64_t i = 0; i < total_sample_count_S - 1; i++)
-      {
-          if(sorted_training_sample_S[i].key > sorted_training_sample_S[i + 1].key)
-          {
-              printf("Inside 2 tid %d first.key %ld first.payload %ld second.key %ld second.payload %ld\n", tid, sorted_training_sample_S[i].key, sorted_training_sample_S[i].payload, sorted_training_sample_S[i + 1].key, sorted_training_sample_S[i + 1].payload);
-          }
-      }
-printf("Inside 2 tid %d total_sample_count_S %ld SAMPLE_SZ_S %ld\n", tid, total_sample_count_S, SAMPLE_SZ_S);
-
     }
     #else
     uint32_t total_sample_count = 0;
