@@ -903,7 +903,6 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-    printf("here tid %d\n", tid);
 
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
@@ -1041,6 +1040,8 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       args->rmi->trained = true;
       */
     }
+
+    BARRIER_ARRIVE(args->barrier, rv);
 
 }
 #endif
