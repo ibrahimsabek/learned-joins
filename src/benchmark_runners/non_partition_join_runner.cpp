@@ -802,7 +802,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     }
     BARRIER_ARRIVE(args->barrier, rv);
 
-printf("Inside 1 tid %d\n", tid);
+printf("Inside 1 tid %d sample_count %ld sample_count_R %ld sample_count_S %ld\n", tid, sample_count[tid], sample_count_R[tid], sample_count_S[tid]);
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
     uint32_t total_sample_count = 0; 
@@ -811,6 +811,7 @@ printf("Inside 1 tid %d\n", tid);
     {
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count += sample_count[i];
+printf("Inside 2 tid %d total_sample_count %ld SAMPLE_SZ_R+SAMPLE_SZ_S %ld\n", tid, total_sample_count, SAMPLE_SZ_R + SAMPLE_SZ_S);
 
       Tuple<KeyType, PayloadType> * sorted_training_sample = args->rmi->sorted_training_sample;
       int64_t * inputptr =  (int64_t *)(args->rmi->tmp_training_sample);
@@ -831,6 +832,8 @@ printf("Inside 1 tid %d\n", tid);
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count_R += sample_count_R[i];
 
+printf("Inside 2 tid %d total_sample_count_R %ld SAMPLE_SZ_R %ld\n", tid, total_sample_count_R, SAMPLE_SZ_R);
+
       Tuple<KeyType, PayloadType> * sorted_training_sample_R = args->rmi->sorted_training_sample_R;
       int64_t * inputptr_R =  (int64_t *)(args->rmi->tmp_training_sample_R);
       int64_t * outputptr_R = (int64_t *)(sorted_training_sample_R);
@@ -849,6 +852,8 @@ printf("Inside 1 tid %d\n", tid);
       uint32_t total_sample_count_S = 0; 
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count_S += sample_count_S[i];
+
+printf("Inside 2 tid %d total_sample_count_S %ld SAMPLE_SZ_S %ld\n", tid, total_sample_count_S, SAMPLE_SZ_S);
 
       Tuple<KeyType, PayloadType> * sorted_training_sample_S = args->rmi->sorted_training_sample_S;
       int64_t * inputptr_S =  (int64_t *)(args->rmi->tmp_training_sample_S);
@@ -899,7 +904,7 @@ printf("Inside 1 tid %d\n", tid);
 
 
     BARRIER_ARRIVE(args->barrier, rv);
-
+/*
     // Stop early if the array is identical
     if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
       return;
@@ -1036,6 +1041,7 @@ printf("Inside 1 tid %d\n", tid);
       //
       args->rmi->trained = true;
     }
+    */
 }
 #endif
 
