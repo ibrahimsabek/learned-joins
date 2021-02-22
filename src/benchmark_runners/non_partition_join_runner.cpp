@@ -741,7 +741,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
 {
     int rv;
     int tid = args->tid;
-/*
+
     vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
     static const unsigned int NUM_LAYERS = args->p.arch.size();
     if(tid == 0)
@@ -750,7 +750,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
         (*training_data)[layer_idx].resize(args->p.arch[layer_idx]);
       }
     }
-
+/*
     //----------------------------------------------------------//
     //                           SAMPLE                         //
     //----------------------------------------------------------//
