@@ -1057,7 +1057,7 @@ void * npj_join_thread(void * param)
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
             typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
-            for (unsigned int model_idx = 0; model_idx < args->p.arch[1]; ++model_idx) 
+            for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
             {
                 current_model = &args->rmi->models[1][model_idx];
                 printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
