@@ -1053,7 +1053,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
     //printf("here before last barrier tid %d \n", tid);
     //BARRIER_ARRIVE(args->barrier, rv);
     //printf("here after last barrier tid %d \n", tid);
-    return;
+    //return;
 }
 #endif
 
