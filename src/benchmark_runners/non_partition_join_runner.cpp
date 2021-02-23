@@ -1066,7 +1066,7 @@ void * npj_join_thread(void * param)
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
+/*    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
@@ -1193,7 +1193,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-
+*/
     return 0;
 }
 
