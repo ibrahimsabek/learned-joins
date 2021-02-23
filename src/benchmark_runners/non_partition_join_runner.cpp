@@ -800,18 +800,19 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       tmp_training_sample_S[sample_count_S[tid]] = *i;
       ++sample_count_S[tid];
     }
+
     BARRIER_ARRIVE(args->barrier, rv);
 
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
     uint32_t total_sample_count = 0; 
 
-    Tuple<KeyType, PayloadType> * sorted_training_sample = args->rmi->sorted_training_sample;      
     if(tid == 0)
     {
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count += sample_count[i];
 
+      Tuple<KeyType, PayloadType> * sorted_training_sample = args->rmi->sorted_training_sample;      
       int64_t * inputptr =  (int64_t *)(args->rmi->tmp_training_sample);
       int64_t * outputptr = (int64_t *)(sorted_training_sample);
       avxsort_int64(&inputptr, &outputptr, total_sample_count);
@@ -822,10 +823,6 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       } 
       args->rmi->training_sample = &(sorted_training_sample);
       args->rmi->training_sample_size = total_sample_count;
-
-      //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
-      //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
-
     }
 
     if(tid == 1)
@@ -900,24 +897,20 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
     }
     #endif
 
-    printf("Here 1 before tid %d \n", tid);
-
     BARRIER_ARRIVE(args->barrier, rv);
-
-    printf("Here 1 after tid %d \n", tid);
 
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
-/*
+
     f(tid==0)
     {
         // Stop early if the array is identical
-        //if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
-        //{
-        //    return;
-        //}
-    
+        if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
+        {
+            return;
+        }
+/*    
     //printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);        
     //printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);    
     //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
@@ -1047,13 +1040,10 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       //
       // This is a design choice to help with the portability of the model.
       //
-      args->rmi->trained = true;      
+      args->rmi->trained = true;    
+*/     
     }
-*/
-    //printf("here before last barrier tid %d \n", tid);
-    //BARRIER_ARRIVE(args->barrier, rv);
-    //printf("here after last barrier tid %d \n", tid);
-    //return;
+
 }
 #endif
 
