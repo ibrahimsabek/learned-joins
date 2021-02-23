@@ -1054,6 +1054,8 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0;
 
+    BARRIER_ARRIVE(args->barrier, rv);
+
     sample_and_train_models_threaded(args);
 
     BARRIER_ARRIVE(args->barrier, rv);
