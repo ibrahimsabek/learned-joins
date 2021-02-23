@@ -356,3 +356,33 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
     PerfEvent e_start_to_sample, e_sample_to_partition, e_sort_to_mergejoin;
 #endif
 } __attribute__((aligned(CACHE_LINE_SIZE)));
+
+
+template<typename KeyType, typename PayloadType>
+void 
+init_models_training_data_and_sample_counts(vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data, 
+                    vector<unsigned int> arch, uint32_t * sample_count, uint32_t * sample_count_R, 
+                    uint32_t * sample_count_S, int num_threads)
+{
+    training_data->clear();
+    training_data->resize(arch.size());
+    for (unsigned int layer_idx = 0; layer_idx < arch.size(); ++layer_idx) {
+        (*training_data)[layer_idx].resize(arch[layer_idx]);
+    }
+
+    uint32_t * sample_count_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t)); 
+    uint32_t * sample_count_R_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t)); 
+    uint32_t * sample_count_S_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t));
+
+    sample_count = sample_count_new;
+    sample_count_R = sample_count_R_new;
+    sample_count_S = sample_count_S_new;
+}
+
+void 
+free_models_sample_counts(uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S)
+{
+    free(sample_count);
+    free(sample_count_R);
+    free(sample_count_S);
+}
