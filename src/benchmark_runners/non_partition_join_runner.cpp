@@ -895,14 +895,18 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       args->rmi->training_sample_size_S = total_sample_count_S;
     }
     #endif
-/*
-    //BARRIER_ARRIVE(args->barrier, rv);
 
-    // Stop early if the array is identical
-    if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) {
-      return;
+    if((tid == 0) || (tid == 1) || (tid == 2))
+    {
+        //BARRIER_ARRIVE(args->barrier, rv);
+
+        // Stop early if the array is identical
+        if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
+        {
+            return;
+        }
     }
-
+/*
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
@@ -1055,7 +1059,7 @@ void * npj_join_thread(void * param)
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-/*    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
+    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
@@ -1182,7 +1186,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-*/
+
     return 0;
 }
 
