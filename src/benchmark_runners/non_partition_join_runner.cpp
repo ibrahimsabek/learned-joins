@@ -808,12 +808,13 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       int64_t * outputptr = (int64_t *)(sorted_training_sample);
       avxsort_int64(&inputptr, &outputptr, total_sample_count);
       Tuple<KeyType, PayloadType>* tmp_outputptr = (Tuple<KeyType, PayloadType>*) outputptr;
-      /*for(unsigned int k = 0; k < total_sample_count; k++){
-        sorted_training_sample[k].key = tmp_outputptr[k].key;
-        sorted_training_sample[k].payload = tmp_outputptr[k].payload;
+      for(unsigned int k = 0; k < total_sample_count; k++){
+        sorted_training_sample[k] = tmp_outputptr[k];
+        //sorted_training_sample[k].key = tmp_outputptr[k].key;
+        //sorted_training_sample[k].payload = tmp_outputptr[k].payload;
       } 
-      args->rmi->training_sample = &(sorted_training_sample);*/
-      args->rmi->training_sample = &(tmp_outputptr);
+      args->rmi->training_sample = &(sorted_training_sample);
+      //args->rmi->training_sample = &(tmp_outputptr);
       args->rmi->training_sample_size = total_sample_count;
     }
 
