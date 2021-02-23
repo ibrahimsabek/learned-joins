@@ -370,13 +370,12 @@ init_models_training_data_and_sample_counts(vector<vector<vector<training_point<
         (*training_data)[layer_idx].resize(arch[layer_idx]);
     }
 
-    uint32_t * sample_count_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t)); 
-    uint32_t * sample_count_R_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t)); 
-    uint32_t * sample_count_S_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t));
-
-    sample_count = sample_count_new;
-    sample_count_R = sample_count_R_new;
-    sample_count_S = sample_count_S_new;
+    for(int i = 0; i < num_threads; i++)
+    {
+        sample_count[i] = 0;
+        sample_count_R[i] = 0;
+        sample_count_S[i] = 0;
+    }
 }
 
 void 
