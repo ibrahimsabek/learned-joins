@@ -822,6 +822,10 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       } 
       args->rmi->training_sample = &(sorted_training_sample);
       args->rmi->training_sample_size = total_sample_count;
+
+      //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
+      //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
+
     }
 
     if(tid == 1)
@@ -906,21 +910,21 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     if(tid==0)
     {
         // Stop early if the array is identical
-        if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
-        {
-            return;
-        }
+        //if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
+        //{
+        //    return;
+        //}
     
     //printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);        
     //printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);    
     //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
     //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);        
       // Populate the training data for the root model
-      for (unsigned int i = 0; i < total_sample_count; ++i) {
-        printf("i %f \n", 1. * i / total_sample_count);
+      //for (unsigned int i = 0; i < total_sample_count; ++i) {
+      //  printf("i %f \n", 1. * i / total_sample_count);
         //printf("key %ld, payload %ld, value %lf \n", ((*(args->rmi->training_sample))[i]).key, ((*(args->rmi->training_sample))[i]).payload, 1. * i / total_sample_count);
         //(*training_data)[0][0].push_back({((*(args->rmi->training_sample))[i]), 1. * i / total_sample_count});
-      }
+      //}
 /*
       // Train the root model using linear interpolation
       auto *current_training_data = &(*training_data)[0][0];
