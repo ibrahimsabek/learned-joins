@@ -816,7 +816,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       args->rmi->training_sample_size = total_sample_count;
     }
 
-    if(tid == 1)
+    /*if(tid == 1)
     {
       uint32_t total_sample_count_R = 0; 
       for(int i = 0; i < NUM_THREADS; i++)
@@ -852,7 +852,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       } 
       args->rmi->training_sample_S = &(sorted_training_sample_S);
       args->rmi->training_sample_size_S = total_sample_count_S;
-    }
+    }*/
     #else
     uint32_t total_sample_count = 0;
     if(tid == 0)
