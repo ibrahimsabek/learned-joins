@@ -7,10 +7,8 @@
 #include "configs/base_configs.h"
 #include "utils/base_utils.h"
 #include "utils/perf_event.h"
-#include "utils/learned_sort_for_sort_merge.h"
 
 using namespace std;
-using namespace learned_sort_for_sort_merge;
 
 /******* Input/Output Types **************/
 /*****************************************/
@@ -423,13 +421,13 @@ union CacheLine {
 template<typename KeyType, typename PayloadType>
 void 
 init_models_training_data_and_sample_counts(vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data, 
-                    learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p, 
-                    uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S, int num_threads)
+                    vector<unsigned int> arch, uint32_t * sample_count, uint32_t * sample_count_R, 
+                    uint32_t * sample_count_S, int num_threads)
 {
     training_data->clear();
-    training_data->resize(p.arch.size());
-    for (unsigned int layer_idx = 0; layer_idx < p.arch.size(); ++layer_idx) {
-        (*training_data)[layer_idx].resize(p.arch[layer_idx]);
+    training_data->resize(arch.size());
+    for (unsigned int layer_idx = 0; layer_idx < arch.size(); ++layer_idx) {
+        (*training_data)[layer_idx].resize(arch[layer_idx]);
     }
 
     uint32_t * sample_count_new = (uint32_t *) calloc(num_threads, sizeof(uint32_t)); 
