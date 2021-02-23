@@ -742,15 +742,6 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
     int rv;
     int tid = args->tid;
 
-    vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
-    static const unsigned int NUM_LAYERS = args->p.arch.size();
-    if(tid == 0)
-    {
-      for (unsigned int layer_idx = 0; layer_idx < NUM_LAYERS; ++layer_idx) {
-        (*training_data)[layer_idx].resize(args->p.arch[layer_idx]);
-      }
-    }
-
     //----------------------------------------------------------//
     //                           SAMPLE                         //
     //----------------------------------------------------------//
@@ -910,6 +901,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       }
          
       // Populate the training data for the root model
+      vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
       for (unsigned int i = 0; i < total_sample_count; ++i) {
         (*training_data)[0][0].push_back({((*(args->rmi->training_sample))[i]), 1. * i / total_sample_count});
       }
@@ -1372,6 +1364,9 @@ int main(int argc, char **argv)
                                               r_tmp_training_sample_in, r_sorted_training_sample_in,
                                               s_tmp_training_sample_in, s_sorted_training_sample_in);
     vector<vector<vector<training_point<KeyType, PayloadType>>>> training_data(rmi_params.arch.size());
+    for (unsigned int layer_idx = 0; layer_idx < rmi_params.arch.size(); ++layer_idx) {
+        training_data[layer_idx].resize(rmi_params.arch[layer_idx]);
+    }
 
     uint32_t * sample_count = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
     uint32_t * sample_count_R = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
