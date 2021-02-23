@@ -896,7 +896,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     }
     #endif
 
-    BARRIER_ARRIVE(args->barrier, rv);
+    //BARRIER_ARRIVE(args->barrier, rv);
 
     
     //----------------------------------------------------------//
