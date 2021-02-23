@@ -1056,19 +1056,13 @@ void * npj_join_thread(void * param)
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
-            typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
-            for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
-            {
-                current_model = &args->rmi->models[1][model_idx];
-                printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
-            }
-        }
-
-        /*if(rp < (RUN_NUMS - 1)){
-            if(args->tid == 0)
-                free_models_sample_counts(args->sample_count, args->sample_count_R, args->sample_count_S);            
-            BARRIER_ARRIVE(args->barrier, rv);
-        }*/ 
+            //typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
+            //for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
+            //{
+            //    current_model = &args->rmi->models[1][model_idx];
+            //    printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
+            //}
+        } 
     }
 
 /*  BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
