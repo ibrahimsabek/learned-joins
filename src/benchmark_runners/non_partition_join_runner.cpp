@@ -904,7 +904,6 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
         return;
     }
     
-/*
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
@@ -919,7 +918,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
         //printf("key %ld, payload %ld, value %lf \n", ((*(args->rmi->training_sample))[i]).key, ((*(args->rmi->training_sample))[i]).payload, 1. * i / total_sample_count);
         //(*training_data)[0][0].push_back({((*(args->rmi->training_sample))[i]), 1. * i / total_sample_count});
       //}
-
+/*
       // Train the root model using linear interpolation
       auto *current_training_data = &(*training_data)[0][0];
       typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
@@ -1039,9 +1038,9 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       // This is a design choice to help with the portability of the model.
       //
       args->rmi->trained = true;
-      
+*/      
     }
-*/
+
     //printf("here before last barrier tid %d \n", tid);
     //BARRIER_ARRIVE(args->barrier, rv);
     //printf("here after last barrier tid %d \n", tid);
