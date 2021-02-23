@@ -1057,11 +1057,11 @@ void * npj_join_thread(void * param)
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
         }
 
-        if(rp < (RUN_NUMS - 1)){
+        /*if(rp < (RUN_NUMS - 1)){
             if(args->tid == 0)
                 free_models_sample_counts(args->sample_count, args->sample_count_R, args->sample_count_S);            
             BARRIER_ARRIVE(args->barrier, rv);
-        } 
+        }*/ 
     }
 
 /*  BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
