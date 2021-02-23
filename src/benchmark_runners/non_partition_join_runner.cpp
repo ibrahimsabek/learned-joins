@@ -808,11 +808,15 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       int64_t * outputptr = (int64_t *)(sorted_training_sample);
       avxsort_int64(&inputptr, &outputptr, total_sample_count);
       Tuple<KeyType, PayloadType>* tmp_outputptr = (Tuple<KeyType, PayloadType>*) outputptr;
+      int deltaT = 0; struct timeval t1, t2;
+      gettimeofday(&t1, NULL);
       for(unsigned int k = 0; k < total_sample_count; k++){
         sorted_training_sample[k] = tmp_outputptr[k];
-        //sorted_training_sample[k].key = tmp_outputptr[k].key;
-        //sorted_training_sample[k].payload = tmp_outputptr[k].payload;
       } 
+      gettimeofday(&t2, NULL); 
+      deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+      printf("---- traversal time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+
       args->rmi->training_sample = &(sorted_training_sample);
       //args->rmi->training_sample = &(tmp_outputptr);
       args->rmi->training_sample_size = total_sample_count;
@@ -830,8 +834,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       avxsort_int64(&inputptr_R, &outputptr_R, total_sample_count_R);
       Tuple<KeyType, PayloadType>* tmp_outputptr_R = (Tuple<KeyType, PayloadType>*) outputptr_R;
       for(unsigned int k = 0; k < total_sample_count_R; k++){
-        sorted_training_sample_R[k].key = tmp_outputptr_R[k].key;
-        sorted_training_sample_R[k].payload = tmp_outputptr_R[k].payload;
+        sorted_training_sample_R[k] = tmp_outputptr_R[k];
       } 
       args->rmi->training_sample_R = &(sorted_training_sample_R);
       args->rmi->training_sample_size_R = total_sample_count_R;
@@ -849,8 +852,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       avxsort_int64(&inputptr_S, &outputptr_S, total_sample_count_S);
       Tuple<KeyType, PayloadType>* tmp_outputptr_S = (Tuple<KeyType, PayloadType>*) outputptr_S;
       for(unsigned int k = 0; k < total_sample_count_S; k++){
-        sorted_training_sample_S[k].key = tmp_outputptr_S[k].key;
-        sorted_training_sample_S[k].payload = tmp_outputptr_S[k].payload;
+        sorted_training_sample_S[k] = tmp_outputptr_S[k];
       } 
       args->rmi->training_sample_S = &(sorted_training_sample_S);
       args->rmi->training_sample_size_S = total_sample_count_S;
