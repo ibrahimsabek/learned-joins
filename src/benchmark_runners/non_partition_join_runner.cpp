@@ -897,8 +897,6 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
     }
     #endif
 
-    //BARRIER_ARRIVE(args->barrier, rv);
-
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
@@ -1043,13 +1041,24 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
 void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
-    int rv;   int deltaT = 0;
+    int rv;   int deltaT = 0; struct timeval t1, t2;
 
+    BARRIER_ARRIVE(args->barrier, rv);
+    if(args->tid == 0){
+        gettimeofday(&t1, NULL);
+    }
     sample_and_train_models_threaded(args);
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-/*    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
+    if(args->tid == 0){
+        gettimeofday(&t2, NULL);
+
+        deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+        printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+    }
+    
+/*  BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
