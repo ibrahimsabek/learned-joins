@@ -898,11 +898,6 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-    // Stop early if the array is identical
-    if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
-    {
-        return;
-    }
     
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
@@ -910,6 +905,12 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
 
     if(tid==0)
     {
+        // Stop early if the array is identical
+        if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
+        {
+            return;
+        }
+    
     //printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);        
     //printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);    
     //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
@@ -1053,8 +1054,6 @@ void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0;
-
-    BARRIER_ARRIVE(args->barrier, rv);
 
     sample_and_train_models_threaded(args);
 
