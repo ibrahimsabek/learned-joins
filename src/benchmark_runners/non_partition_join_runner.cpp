@@ -805,13 +805,13 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
     uint32_t total_sample_count = 0; 
-      
+
+    Tuple<KeyType, PayloadType> * sorted_training_sample = args->rmi->sorted_training_sample;      
     if(tid == 0)
     {
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count += sample_count[i];
 
-      Tuple<KeyType, PayloadType> * sorted_training_sample = args->rmi->sorted_training_sample;
       int64_t * inputptr =  (int64_t *)(args->rmi->tmp_training_sample);
       int64_t * outputptr = (int64_t *)(sorted_training_sample);
       avxsort_int64(&inputptr, &outputptr, total_sample_count);
@@ -910,8 +910,10 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
 
     if(tid==0)
     {
-    printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
-    printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);        
+    printf("key1 %ld, key2 %ld \n", ((*(sorted_training_sample))[0]).key, ((*(sorted_training_sample))[total_sample_count - 1]).key);        
+    printf("key1 %ld, key2 %ld \n", ((*(sorted_training_sample))[0]).key, ((*(sorted_training_sample))[total_sample_count - 1]).key);    
+    //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
+    //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);        
       // Populate the training data for the root model
       //for (unsigned int i = 0; i < total_sample_count; ++i) {
         //printf("i %f \n", 1. * i / total_sample_count);
