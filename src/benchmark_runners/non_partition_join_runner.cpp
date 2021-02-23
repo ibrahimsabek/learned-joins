@@ -808,17 +808,10 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       int64_t * outputptr = (int64_t *)(sorted_training_sample);
       avxsort_int64(&inputptr, &outputptr, total_sample_count);
       Tuple<KeyType, PayloadType>* tmp_outputptr = (Tuple<KeyType, PayloadType>*) outputptr;
-      int deltaT = 0; struct timeval t1, t2;
-      gettimeofday(&t1, NULL);
       for(unsigned int k = 0; k < total_sample_count; k++){
         sorted_training_sample[k] = tmp_outputptr[k];
       } 
-      gettimeofday(&t2, NULL); 
-      deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
-      printf("---- traversal time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
-
       args->rmi->training_sample = &(sorted_training_sample);
-      //args->rmi->training_sample = &(tmp_outputptr);
       args->rmi->training_sample_size = total_sample_count;
     }
 
