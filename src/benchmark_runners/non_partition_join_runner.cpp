@@ -1035,21 +1035,35 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
 
-    BARRIER_ARRIVE(args->barrier, rv);
-    if(args->tid == 0){
-        gettimeofday(&t1, NULL);
+    for (int rp = 0; rp < RUN_NUMS; ++rp) 
+    {
+        if(args->tid == 0)
+            init_models_training_data_and_sample_counts(args->training_data, args->p, 
+                    args->sample_count, args->sample_count_R, args->sample_count_S, NUM_THREADS);
+
+        BARRIER_ARRIVE(args->barrier, rv);
+        if(args->tid == 0){
+            gettimeofday(&t1, NULL);
+        }
+
+        sample_and_train_models_threaded(args);
+
+        BARRIER_ARRIVE(args->barrier, rv);
+
+        if(args->tid == 0){
+            gettimeofday(&t2, NULL);
+
+            deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+            printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+        }
+
+        if(rp < (RUN_NUMS - 1)){
+            if(args->tid == 0)
+                free_models_sample_counts(args->sample_count, args->sample_count_R, args->sample_count_S);            
+            BARRIER_ARRIVE(args->barrier, rv);
+        } 
     }
-    sample_and_train_models_threaded(args);
 
-    BARRIER_ARRIVE(args->barrier, rv);
-
-    if(args->tid == 0){
-        gettimeofday(&t2, NULL);
-
-        deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
-        printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
-    }
-    
 /*  BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
