@@ -217,6 +217,7 @@ template<typename KeyType, typename PayloadType>
 struct ETHNonPartitionJoinBuild {
     Hashtable<KeyType, PayloadType> * ht;
     BucketBuffer<KeyType, PayloadType> ** overflowbuf;
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
 #ifdef DEVELOPMENT_MODE
     unordered_map<uint64_t, uint64_t> * build_hash_bucket_visits;
     unordered_map<uint64_t, uint64_t> * probe_hash_bucket_visits;

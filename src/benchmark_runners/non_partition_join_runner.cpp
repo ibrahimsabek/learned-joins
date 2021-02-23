@@ -53,7 +53,7 @@ typedef void (*NPJBuildFun)(ETHNonPartitionJoinBuild<KeyType, PayloadType> *buil
 volatile static struct Fun {
   NPJBuildFun fun_ptr;
   char fun_name[8];
-} npj_pfun[2];
+} npj_pfun[3];
 volatile static int npj_pf_num = 0;
 
 typedef uint64_t (*NPJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output);
@@ -420,6 +420,89 @@ void npj_build_rel_r_partition_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType
             break;
         }
         ++k;   
+    }
+}
+
+void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
+{
+    
+    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
+    BucketBuffer<KeyType, PayloadType>** overflowbuf = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
+#ifdef DEVELOPMENT_MODE
+     //unordered_map<uint64_t, uint64_t>* build_visits_map = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->build_hash_bucket_visits;        
+     //vector<KeyType>* build_keys_list = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->build_keys_list;  
+     //vector<uint64_t>* build_keys_hash_list = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->build_keys_hash_list;        
+     //volatile char * keys_hash_latch = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->keys_hash_latch;      
+#endif
+
+    uint64_t i;
+#ifndef USE_MURMUR3_HASH
+    const uint64_t hashmask = ht->hash_mask;
+    const uint64_t skipbits = ht->skip_bits;
+#endif
+#ifdef PREFETCH_NPJ
+    size_t prefetch_index = PREFETCH_DISTANCE;
+#endif
+    
+    for(i=0; i < rel_r_partition->num_tuples; i++){
+        Tuple<KeyType, PayloadType> * dest;
+        Bucket<KeyType, PayloadType> * curr, * nxt;
+
+#ifdef PREFETCH_NPJ
+        if (prefetch_index < rel_r_partition->num_tuples) {
+#ifndef USE_MURMUR3_HASH
+            uint64_t idx_prefetch = HASH(rel_r_partition->tuples[prefetch_index++].key,
+                                         hashmask, skipbits);
+#else
+            uint64_t idx_prefetch_hash = murmur_hash_32(rel_r_partition->tuples[prefetch_index++].key);
+            uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
+#endif
+			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
+        }
+#endif
+
+#ifndef USE_MURMUR3_HASH
+        uint64_t idx = HASH(rel_r_partition->tuples[i].key, hashmask, skipbits);
+#else
+        uint64_t idx_hash = murmur_hash_32(rel_r_partition->tuples[i].key);
+        uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
+#endif        
+        curr = ht->buckets+idx;
+        lock(&curr->latch);
+
+#ifdef DEVELOPMENT_MODE
+        //(*build_visits_map)[idx]++;
+
+        //lock(keys_hash_latch);
+        //(*build_keys_list).push_back(rel_r_partition->tuples[i].key);
+        //(*build_keys_hash_list).push_back(idx);
+        //unlock(keys_hash_latch);
+#endif
+
+        nxt = curr->next;
+
+        if(curr->count == BUCKET_SIZE) {
+            if(!nxt || nxt->count == BUCKET_SIZE) {
+                Bucket<KeyType, PayloadType> * b;
+                get_new_bucket(&b, overflowbuf);
+                curr->next = b;
+                b->next    = nxt;
+                b->count   = 1;
+                dest       = b->tuples;
+            }
+            else {
+                dest = nxt->tuples + nxt->count;
+                nxt->count ++;
+            }
+        }
+        else 
+        {
+            dest = curr->tuples + curr->count;
+            curr->count ++;
+        }
+
+        *dest = rel_r_partition->tuples[i];
+        unlock(&curr->latch);
     }
 }
 
@@ -1053,22 +1136,24 @@ void * npj_join_thread(void * param)
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
-            typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
-            for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
-            {
-                current_model = &args->rmi->models[1][model_idx];
-                printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
-            }
+            //typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
+            //for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
+            //{
+            //    current_model = &args->rmi->models[1][model_idx];
+            //    printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
+            //}
         } 
     }
 
-/*  BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
+    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
+        strcpy(npj_pfun[2].fun_name, "Learned");
         strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[0].fun_name, "Naive");
 
+        npj_pfun[2].fun_ptr = npj_build_rel_r_partition_learned;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
@@ -1094,6 +1179,7 @@ void * npj_join_thread(void * param)
 
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
+            build_data.rmi = args->rmi;
 
         #ifdef PERF_COUNTERS
             if(args->tid == 0){
@@ -1161,7 +1247,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-
+/*
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
