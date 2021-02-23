@@ -891,7 +891,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
     //----------------------------------------------------------//
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
-
+/*
     if(tid == 0)
     {
        // Stop early if the array is identical
@@ -1026,7 +1026,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       //
       args->rmi->trained = true;         
     }
-
+*/
 }
 #endif
 
