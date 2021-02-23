@@ -1038,7 +1038,7 @@ void * npj_join_thread(void * param)
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
-            init_models_training_data_and_sample_counts(args->training_data, args->p.arch, 
+            init_models_training_data_and_sample_counts<KeyType, PayloadType>(args->training_data, args->p.arch, 
                     args->sample_count, args->sample_count_R, args->sample_count_S, NUM_THREADS);
 
         BARRIER_ARRIVE(args->barrier, rv);
