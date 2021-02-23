@@ -910,8 +910,8 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
 
     if(tid==0)
     {
-    printf("key1 %ld, key2 %ld \n", ((*(sorted_training_sample))[0]).key, ((*(sorted_training_sample))[total_sample_count - 1]).key);        
-    printf("key1 %ld, key2 %ld \n", ((*(sorted_training_sample))[0]).key, ((*(sorted_training_sample))[total_sample_count - 1]).key);    
+    printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);        
+    printf("key1 %ld, key2 %ld \n", ((sorted_training_sample)[0]).key, ((sorted_training_sample)[total_sample_count - 1]).key);    
     //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);
     //printf("key1 %ld, key2 %ld \n", ((*(args->rmi->training_sample))[0]).key, ((*(args->rmi->training_sample))[total_sample_count - 1]).key);        
       // Populate the training data for the root model
