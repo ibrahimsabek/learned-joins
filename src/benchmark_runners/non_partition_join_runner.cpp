@@ -865,7 +865,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       args->rmi->training_sample_size = total_sample_count;
     }
 
-    if(tid == 1)
+    /*if(tid == 1)
     {
       uint32_t total_sample_count_R = 0; 
       for(int i = 0; i < NUM_THREADS; i++)
@@ -885,7 +885,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       std::sort((int64_t *)(args->rmi->tmp_training_sample_S), (int64_t *)(args->rmi->tmp_training_sample_S) + total_sample_count_S - 1);
       args->rmi->training_sample_S = &(args->rmi->tmp_training_sample_S);
       args->rmi->training_sample_size_S = total_sample_count_S;
-    }
+    }*/
     #endif
 
     //----------------------------------------------------------//
@@ -1056,12 +1056,12 @@ void * npj_join_thread(void * param)
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
-            //typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
-            //for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
-            //{
-            //    current_model = &args->rmi->models[1][model_idx];
-            //    printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
-            //}
+            typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
+            for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
+            {
+                current_model = &args->rmi->models[1][model_idx];
+                printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
+            }
         } 
     }
 
