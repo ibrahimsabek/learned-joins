@@ -903,7 +903,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
     //                     TRAIN THE MODELS                     //
     //----------------------------------------------------------//
 
-    f(tid==0)
+    if(tid==0)
     {
         // Stop early if the array is identical
         if (((*(args->rmi->training_sample))[0]).key == ((*(args->rmi->training_sample))[total_sample_count - 1]).key) 
