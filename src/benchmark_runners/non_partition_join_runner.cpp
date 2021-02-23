@@ -800,7 +800,9 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
       tmp_training_sample_S[sample_count_S[tid]] = *i;
       ++sample_count_S[tid];
     }
+    printf("Here 1 before tid %d \n", tid);
     BARRIER_ARRIVE(args->barrier, rv);
+    printf("Here 1 after tid %d \n", tid);
 
     #ifdef USE_AVXSORT_AS_STD_SORT          
 
