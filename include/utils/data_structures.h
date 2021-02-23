@@ -7,6 +7,7 @@
 #include "configs/base_configs.h"
 #include "utils/base_utils.h"
 #include "utils/perf_event.h"
+#include "utils/learned_sort_for_sort_merge.h"
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
