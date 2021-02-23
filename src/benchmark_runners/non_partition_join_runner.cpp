@@ -737,7 +737,7 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
 }
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
-void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
+void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
 {
     int rv;
     int tid = args->tid;
@@ -1053,6 +1053,7 @@ void * sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Paylo
     //printf("here before last barrier tid %d \n", tid);
     //BARRIER_ARRIVE(args->barrier, rv);
     //printf("here after last barrier tid %d \n", tid);
+    return;
 }
 #endif
 
