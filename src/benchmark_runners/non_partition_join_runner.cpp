@@ -439,7 +439,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
     }
-    static const unsigned int FANOUT = ht->num_buckets;
+    static const unsigned int FANOUT = ht->num_buckets - 1;
     double pred_cdf = 0.; uint64_t i; uint64_t idx_prefetch, idx;
 
 #ifdef PREFETCH_NPJ
