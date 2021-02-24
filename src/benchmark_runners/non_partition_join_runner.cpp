@@ -60,7 +60,7 @@ typedef uint64_t (*NPJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition
 volatile static struct Fun1 {
   NPJProbeFun fun_ptr;
   char fun_name[8];
-} npj_pfun1[2];
+} npj_pfun1[3];
 
 //TOOD: to put the morse-driven implementation here !!!!!
 void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
@@ -827,6 +827,91 @@ uint64_t npj_probe_rel_s_partition_imv(Relation<KeyType, PayloadType> * rel_r_pa
     return matches;
 }
 
+uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
+{
+    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->rmi;
+
+    // Cache the model parameters
+    auto root_slope = rmi->models[0][0].slope;
+    auto root_intrcpt = rmi->models[0][0].intercept;
+    unsigned int num_models = rmi->hp.arch[1];
+    vector<double> slopes, intercepts;
+    for (unsigned int j = 0; j < num_models; ++j) {
+        slopes.push_back(rmi->models[1][j].slope);
+        intercepts.push_back(rmi->models[1][j].intercept);
+    }
+    static const unsigned int FANOUT = rmi->hp.fanout;
+    double pred_cdf = 0.; uint64_t idx_prefetch, idx;
+
+    uint64_t i, j;
+    uint64_t matches;
+
+#ifdef PREFETCH_NPJ    
+    size_t prefetch_index = PREFETCH_DISTANCE;
+#endif
+    
+    matches = 0;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {
+#ifdef PREFETCH_NPJ        
+        if (prefetch_index < rel_s_partition->num_tuples) 
+        {
+            idx_prefetch = static_cast<uint64_t>(std::max(
+                                0.,
+                            std::min(num_models - 1., root_slope * rel_s_partition->tuples[prefetch_index].key + root_intrcpt)));
+
+            // Predict the CDF
+            pred_cdf =
+                slopes[idx_prefetch] * rel_s_partition->tuples[prefetch_index].key + intercepts[idx_prefetch];
+
+            // Scale the CDF to the number of buckets
+            idx_prefetch = static_cast<uint64_t>(
+                std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));    
+
+            prefetch_index++;
+
+			__builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
+        }
+#endif
+        
+        idx = static_cast<int>(std::max(
+                                0.,
+                            std::min(num_models - 1., root_slope * rel_s_partition->tuples[i].key + root_intrcpt)));
+
+        // Predict the CDF
+        pred_cdf =
+            slopes[idx] * rel_s_partition->tuples[i].key + intercepts[idx];
+
+        // Scale the CDF to the number of buckets
+        idx = static_cast<uint64_t>(
+            std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
+
+
+        Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
+
+        do {
+        #ifdef SINGLE_TUPLE_PER_BUCKET    
+            if(rel_s_partition->tuples[i].key == b->tuples[0].key){
+                    matches ++;
+            }
+        #else
+            for(j = 0; j < b->count; j++) {
+                if(rel_s_partition->tuples[i].key == b->tuples[j].key){
+                    matches ++;
+                }
+            }
+        #endif
+
+            b = b->next;
+        } while(b);
+
+    }
+
+    return matches;
+}
+
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
 void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
 {
@@ -1165,11 +1250,13 @@ void * npj_join_thread(void * param)
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
+        strcpy(npj_pfun1[0].fun_name, "Learned");
         strcpy(npj_pfun1[1].fun_name, "IMV");
-        strcpy(npj_pfun1[0].fun_name, "Naive");
+        strcpy(npj_pfun1[2].fun_name, "Naive");
 
+        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
         npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_imv;
-        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition;
+        npj_pfun1[2].fun_ptr = npj_probe_rel_s_partition;
 
         npj_pf_num = 3;
     }
@@ -1255,7 +1342,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-/*
+
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -1283,7 +1370,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-*/
+
     return 0;
 }
 
