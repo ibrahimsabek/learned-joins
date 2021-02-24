@@ -428,56 +428,63 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
     
     Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
     BucketBuffer<KeyType, PayloadType>** overflowbuf = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
-#ifdef DEVELOPMENT_MODE
-     //unordered_map<uint64_t, uint64_t>* build_visits_map = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->build_hash_bucket_visits;        
-     //vector<KeyType>* build_keys_list = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->build_keys_list;  
-     //vector<uint64_t>* build_keys_hash_list = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->build_keys_hash_list;        
-     //volatile char * keys_hash_latch = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->keys_hash_latch;      
-#endif
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->rmi;
 
-    uint64_t i;
-#ifndef USE_MURMUR3_HASH
-    const uint64_t hashmask = ht->hash_mask;
-    const uint64_t skipbits = ht->skip_bits;
-#endif
+    // Cache the model parameters
+    auto root_slope = rmi->models[0][0].slope;
+    auto root_intrcpt = rmi->models[0][0].intercept;
+    unsigned int num_models = rmi->hp.arch[1];
+    vector<double> slopes, intercepts;
+    for (unsigned int j = 0; j < num_models; ++j) {
+        slopes.push_back(rmi->models[1][j].slope);
+        intercepts.push_back(rmi->models[1][j].intercept);
+    }
+    static const unsigned int FANOUT = rmi->hp.fanout;
+    double pred_cdf = 0.; uint64_t i; uint64_t idx_prefetch, idx;
+
 #ifdef PREFETCH_NPJ
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
-    
-    for(i=0; i < rel_r_partition->num_tuples; i++){
+
+    for(i=0; i < rel_r_partition->num_tuples; i++)
+    {
         Tuple<KeyType, PayloadType> * dest;
         Bucket<KeyType, PayloadType> * curr, * nxt;
 
 #ifdef PREFETCH_NPJ
         if (prefetch_index < rel_r_partition->num_tuples) {
-#ifndef USE_MURMUR3_HASH
-            uint64_t idx_prefetch = HASH(rel_r_partition->tuples[prefetch_index++].key,
-                                         hashmask, skipbits);
-#else
-            uint64_t idx_prefetch_hash = murmur_hash_32(rel_r_partition->tuples[prefetch_index++].key);
-            uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
-#endif
+            idx_prefetch = static_cast<uint64_t>(std::max(
+                                0.,
+                            std::min(num_models - 1., root_slope * rel_r_partition->tuples[prefetch_index].key + root_intrcpt)));
+
+            // Predict the CDF
+            pred_cdf =
+                slopes[idx_prefetch] * rel_r_partition->tuples[prefetch_index].key + intercepts[idx_prefetch];
+
+            // Scale the CDF to the number of buckets
+            idx_prefetch = static_cast<uint64_t>(
+                std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));    
+
+            prefetch_index++;
+
 			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
         }
 #endif
 
-#ifndef USE_MURMUR3_HASH
-        uint64_t idx = HASH(rel_r_partition->tuples[i].key, hashmask, skipbits);
-#else
-        uint64_t idx_hash = murmur_hash_32(rel_r_partition->tuples[i].key);
-        uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
-#endif        
+        idx = static_cast<int>(std::max(
+                                0.,
+                            std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt)));
+
+        // Predict the CDF
+        pred_cdf =
+            slopes[idx] * rel_r_partition->tuples[i].key + intercepts[idx];
+
+        // Scale the CDF to the number of buckets
+        idx = static_cast<uint64_t>(
+            std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
+
         curr = ht->buckets+idx;
         lock(&curr->latch);
-
-#ifdef DEVELOPMENT_MODE
-        //(*build_visits_map)[idx]++;
-
-        //lock(keys_hash_latch);
-        //(*build_keys_list).push_back(rel_r_partition->tuples[i].key);
-        //(*build_keys_hash_list).push_back(idx);
-        //unlock(keys_hash_latch);
-#endif
 
         nxt = curr->next;
 
@@ -502,6 +509,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         }
 
         *dest = rel_r_partition->tuples[i];
+
         unlock(&curr->latch);
     }
 }
@@ -1149,13 +1157,13 @@ void * npj_join_thread(void * param)
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
-        strcpy(npj_pfun[2].fun_name, "Learned");
+        strcpy(npj_pfun[0].fun_name, "Learned");
         strcpy(npj_pfun[1].fun_name, "IMV");
-        strcpy(npj_pfun[0].fun_name, "Naive");
+        strcpy(npj_pfun[2].fun_name, "Naive");
 
-        npj_pfun[2].fun_ptr = npj_build_rel_r_partition_learned;
+        npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
-        npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
+        npj_pfun[2].fun_ptr = npj_build_rel_r_partition;
 
         strcpy(npj_pfun1[1].fun_name, "IMV");
         strcpy(npj_pfun1[0].fun_name, "Naive");
