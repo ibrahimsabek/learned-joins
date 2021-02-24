@@ -439,7 +439,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
     }
-    static const unsigned int FANOUT = ht->num_buckets - 1;
+    static const unsigned int FANOUT = rmi->hp.fanout;
     double pred_cdf = 0.; uint64_t i; uint64_t idx_prefetch, idx;
 
 #ifdef PREFETCH_NPJ
@@ -1157,13 +1157,13 @@ void * npj_join_thread(void * param)
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
-        strcpy(npj_pfun[0].fun_name, "Learned");
+        strcpy(npj_pfun[2].fun_name, "Learned");
         strcpy(npj_pfun[1].fun_name, "IMV");
-        strcpy(npj_pfun[2].fun_name, "Naive");
+        strcpy(npj_pfun[0].fun_name, "Naive");
 
-        npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
+        npj_pfun[2].fun_ptr = npj_build_rel_r_partition_learned;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
-        npj_pfun[2].fun_ptr = npj_build_rel_r_partition;
+        npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
         strcpy(npj_pfun1[1].fun_name, "IMV");
         strcpy(npj_pfun1[0].fun_name, "Naive");
