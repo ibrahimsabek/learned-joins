@@ -142,7 +142,7 @@ allocate_hashtable(Hashtable<KeyType, PayloadType> ** ppht, uint32_t nbuckets)
 
     ht              = (Hashtable<KeyType, PayloadType>*)malloc(sizeof(Hashtable<KeyType, PayloadType>));
     ht->num_buckets = nbuckets;
-    //NEXT_POW_2((ht->num_buckets));
+    NEXT_POW_2((ht->num_buckets));
 
     /* allocate hashtable buckets cache line aligned */
     if (posix_memalign((void**)&ht->buckets, CACHE_LINE_SIZE,
