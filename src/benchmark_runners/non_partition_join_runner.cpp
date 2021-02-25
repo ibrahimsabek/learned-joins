@@ -483,7 +483,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
+if (idx > 2000000)
+        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         curr = ht->buckets+idx;
 /*        lock(&curr->latch);
