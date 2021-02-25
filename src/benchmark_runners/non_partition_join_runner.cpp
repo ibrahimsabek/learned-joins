@@ -483,15 +483,16 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
+        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         curr = ht->buckets+idx;
-//        lock(&curr->latch);
+        lock(&curr->latch);
+        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         nxt = curr->next;
 
         if(curr->count == BUCKET_SIZE) {
-/*            if(!nxt || nxt->count == BUCKET_SIZE) {
+            if(!nxt || nxt->count == BUCKET_SIZE) {
                 Bucket<KeyType, PayloadType> * b;
                 get_new_bucket(&b, overflowbuf);
                 curr->next = b;
@@ -502,17 +503,17 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             else {
                 dest = nxt->tuples + nxt->count;
                 nxt->count ++;
-            }*/
+            }
         }
         else 
         {
-        /*    dest = curr->tuples + curr->count;*/
+            dest = curr->tuples + curr->count;
             curr->count ++;
         }
 
-//        *dest = rel_r_partition->tuples[i];
+        *dest = rel_r_partition->tuples[i];
 
-//        unlock(&curr->latch);
+        unlock(&curr->latch);
        
     }
 }
