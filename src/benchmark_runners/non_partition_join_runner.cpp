@@ -484,7 +484,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
         printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
-
+/*
         curr = ht->buckets+idx;
         lock(&curr->latch);
 
@@ -513,6 +513,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         *dest = rel_r_partition->tuples[i];
 
         unlock(&curr->latch);
+*/        
     }
 }
 
@@ -1344,7 +1345,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-
+/*
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -1372,7 +1373,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-
+*/
     return 0;
 }
 
