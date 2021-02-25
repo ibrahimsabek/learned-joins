@@ -450,7 +450,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         Tuple<KeyType, PayloadType> * dest;
         Bucket<KeyType, PayloadType> * curr, * nxt;
 
-#ifdef PREFETCH_NPJ
+/*#ifdef PREFETCH_NPJ
         if (prefetch_index < rel_r_partition->num_tuples) {
             idx_prefetch = static_cast<uint64_t>(std::max(
                                 0.,
@@ -470,7 +470,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
         }
 #endif
-
+*/
         idx = static_cast<int>(std::max(
                                 0.,
                             std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt)));
@@ -483,7 +483,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
+        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         curr = ht->buckets+idx;
         lock(&curr->latch);
