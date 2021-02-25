@@ -424,8 +424,7 @@ void npj_build_rel_r_partition_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType
 }
 
 void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
-{
- printf("here \n");   
+{   
     Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
     BucketBuffer<KeyType, PayloadType>** overflowbuf = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->rmi;
@@ -465,7 +464,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             idx_prefetch = static_cast<uint64_t>(
                 std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));    
             
-            printf("FANOUT %ld idx_prefetch %ld key %ld \n", FANOUT, idx_prefetch, rel_r_partition->tuples[prefetch_index].key);
+            //printf("FANOUT %ld idx_prefetch %ld key %ld \n", FANOUT, idx_prefetch, rel_r_partition->tuples[prefetch_index].key);
             prefetch_index++;
 
 			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
@@ -484,7 +483,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        printf("FANOUT %ld idx %ld key %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key);
+        //printf("FANOUT %ld idx %ld key %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key);
 
         curr = ht->buckets+idx;
         lock(&curr->latch);
