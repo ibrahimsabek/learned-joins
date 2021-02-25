@@ -489,7 +489,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 //        lock(&curr->latch);
 
         nxt = curr->next;
-/*
+
         if(curr->count == BUCKET_SIZE) {
             if(!nxt || nxt->count == BUCKET_SIZE) {
                 Bucket<KeyType, PayloadType> * b;
@@ -513,7 +513,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         *dest = rel_r_partition->tuples[i];
 
         unlock(&curr->latch);
- */       
+       
     }
 }
 
