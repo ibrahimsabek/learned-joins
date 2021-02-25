@@ -1261,7 +1261,7 @@ void * npj_join_thread(void * param)
         npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_imv;
         npj_pfun1[2].fun_ptr = npj_probe_rel_s_partition;
 
-        npj_pf_num = 0;
+        npj_pf_num = 1;
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
