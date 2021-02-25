@@ -510,7 +510,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             curr->count ++;
         }
 
-        *dest = rel_r_partition->tuples[i];
+//        *dest = rel_r_partition->tuples[i];
 
 //        unlock(&curr->latch);
        
