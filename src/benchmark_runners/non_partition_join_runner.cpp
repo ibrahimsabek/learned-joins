@@ -1250,7 +1250,7 @@ void * npj_join_thread(void * param)
         strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[2].fun_name, "Naive");
 
-        npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
+        npj_pfun[0].fun_ptr = npj_build_rel_r_partition; //npj_build_rel_r_partition_learned;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[2].fun_ptr = npj_build_rel_r_partition;
 
