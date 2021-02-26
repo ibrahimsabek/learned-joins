@@ -596,7 +596,7 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
         } while(b);
 
         //if(i%1000 == 0)
-            printf("Naive i %ld curr_buckets_num %d FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
+            printf("Naive i %ld curr_buckets_num %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
 
     }
 
