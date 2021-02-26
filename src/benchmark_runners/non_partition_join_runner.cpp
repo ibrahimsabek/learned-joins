@@ -896,6 +896,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
         do {
+            printf("here");
         /*#ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
                     matches ++;
