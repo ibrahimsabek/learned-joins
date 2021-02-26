@@ -1335,13 +1335,13 @@ void * npj_join_thread(void * param)
             }
         
             if(!((fid == (npj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
-                printf("here 1 \n tid %d", args->tid);
+                printf("here 1 tid %d \n", args->tid);
                 if(args->tid == 0)
                     destroy_hashtable(args->ht);
-                printf("here 2 \n tid %d", args->tid);
+                printf("here 2 tid %d \n", args->tid);
 
                 free_bucket_buffer(overflowbuf);
-                printf("here 3 \n tid %d", args->tid);
+                printf("here 3 tid %d \n", args->tid);
 
                 BARRIER_ARRIVE(args->barrier, rv);
             } 
