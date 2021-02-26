@@ -517,6 +517,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         unlock(&curr->latch);
 */       
     }
+    printf("tmp_sum %ld \n", tmp_sum);
 }
 
 uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
