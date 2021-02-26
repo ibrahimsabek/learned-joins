@@ -444,7 +444,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 #ifdef PREFETCH_NPJ
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
-    uint64_t tmp_sum = 0;
+    //uint64_t tmp_sum = 0;
     for(i=0; i < rel_r_partition->num_tuples; i++)
     {
         Tuple<KeyType, PayloadType> * dest;
@@ -466,8 +466,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             
             //printf("FANOUT %ld idx_prefetch %ld key %ld nbuckets %ld \n", FANOUT, idx_prefetch, rel_r_partition->tuples[prefetch_index].key, ht->num_buckets);
             prefetch_index++;
-            tmp_sum += ht->buckets[idx_prefetch].count;
-			//__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
+            //tmp_sum += ht->buckets[idx_prefetch].count;
+			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
         }
 #endif
 
@@ -484,8 +484,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
         //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
-        tmp_sum += ht->buckets[idx].count;
-/*
+        //tmp_sum += ht->buckets[idx].count;
+
         curr = ht->buckets + idx;
         lock(&curr->latch);
         //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
@@ -515,9 +515,9 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         *dest = rel_r_partition->tuples[i];
 
         unlock(&curr->latch);
-*/       
+       
     }
-    printf("tmp_sum %ld \n", tmp_sum);
+    //printf("tmp_sum %ld \n", tmp_sum);
 }
 
 uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
