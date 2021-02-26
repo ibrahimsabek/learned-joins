@@ -444,7 +444,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 #ifdef PREFETCH_NPJ
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
-
+    uint64_t tmp_sum = 0;
     for(i=0; i < rel_r_partition->num_tuples; i++)
     {
         Tuple<KeyType, PayloadType> * dest;
@@ -466,8 +466,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             
             //printf("FANOUT %ld idx_prefetch %ld key %ld nbuckets %ld \n", FANOUT, idx_prefetch, rel_r_partition->tuples[prefetch_index].key, ht->num_buckets);
             prefetch_index++;
-
-			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
+            tmp_sum += ht->buckets[idx_prefetch].count;
+			//__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
         }
 #endif
 
@@ -484,7 +484,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
         //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
-
+        tmp_sum += ht->buckets[idx].count;
+/*
         curr = ht->buckets + idx;
         lock(&curr->latch);
         //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
@@ -514,7 +515,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         *dest = rel_r_partition->tuples[i];
 
         unlock(&curr->latch);
-       
+*/       
     }
 }
 
@@ -1246,11 +1247,11 @@ void * npj_join_thread(void * param)
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
-        strcpy(npj_pfun[0].fun_name, "Naive"); //learned
+        strcpy(npj_pfun[0].fun_name, "Learned");
         strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[2].fun_name, "Naive");
 
-        npj_pfun[0].fun_ptr = npj_build_rel_r_partition; //npj_build_rel_r_partition_learned;
+        npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[2].fun_ptr = npj_build_rel_r_partition;
 
@@ -1271,16 +1272,10 @@ void * npj_join_thread(void * param)
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
-            printf("here 1 tid %d \n", args->tid);
-
             init_bucket_buffer(&overflowbuf);
-             printf("here 2 tid %d \n", args->tid);
-
             if(args->tid == 0)
                 allocate_hashtable(&args->ht, nbuckets);
             //BARRIER_ARRIVE(args->barrier, rv);
-
-            printf("here 3 tid %d \n", args->tid);
 
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
@@ -1352,7 +1347,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-
+/*
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -1380,7 +1375,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-
+*/
     return 0;
 }
 
