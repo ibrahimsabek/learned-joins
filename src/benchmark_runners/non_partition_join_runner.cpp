@@ -894,7 +894,8 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
+        if(i%1000 == 0)
+        printf("i %ld FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
 
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
