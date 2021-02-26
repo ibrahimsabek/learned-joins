@@ -473,7 +473,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
         idx = static_cast<int>(std::max(
                                 0.,
-                            std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt)));
+                               std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt)));
 
         // Predict the CDF
         pred_cdf =
@@ -483,11 +483,11 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
+        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
-        curr = ht->buckets+idx;
+        curr = ht->buckets + idx;
         lock(&curr->latch);
-        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
+        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         nxt = curr->next;
 
@@ -1246,7 +1246,7 @@ void * npj_join_thread(void * param)
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     if (args->tid == 0) {
-        strcpy(npj_pfun[0].fun_name, "Learned");
+        strcpy(npj_pfun[0].fun_name, "Naive"); //learned
         strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[2].fun_name, "Naive");
 
@@ -1346,7 +1346,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-/*
+
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -1374,7 +1374,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-*/
+
     return 0;
 }
 
