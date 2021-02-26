@@ -541,7 +541,7 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0;
+    matches = 0; int curr_buckts_num;
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
@@ -576,7 +576,7 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
         //(*probe_keys_hash_list).push_back(idx);
         //unlock(keys_hash_latch);
 #endif
-
+        curr_buckts_num = 0;
         do {
         #ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
@@ -591,7 +591,13 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
         #endif
 
             b = b->next;/* follow overflow pointer */
+            curr_buckts_num++;
+
         } while(b);
+
+        //if(i%1000 == 0)
+            printf("Naive i %ld curr_buckets_num %d FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
+
     }
 
     return matches;
@@ -857,7 +863,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0;
+    matches = 0; int curr_buckts_num;
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
@@ -894,11 +900,9 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        //if(i%100000 == 0)
-        //    printf("i %ld FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
-
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
+        curr_buckts_num = 0;
         do {
         #ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
@@ -913,7 +917,11 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         #endif
 
             b = b->next;
+            curr_buckts_num++;
         } while(b);
+
+        //if(i%1000 == 0)
+            printf("learned i %ld curr_buckets_num %d FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
 
     }
 
