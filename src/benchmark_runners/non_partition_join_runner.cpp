@@ -6,7 +6,7 @@
 #include "immintrin.h"
 #include "smmintrin.h"
 #include <sys/time.h> /* gettimeofday */
-#include <mutex>      // std::mutex
+//#include <mutex>      // std::mutex
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
@@ -37,7 +37,7 @@
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
-std::mutex mtx;           // mutex for critical section
+//std::mutex mtx;           // mutex for critical section
 
 typedef struct StateSIMDForETHNPJ StateSIMDForETHNPJ;
 struct StateSIMDForETHNPJ {
@@ -111,8 +111,8 @@ void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *b
         /* copy the tuple to appropriate hash bucket */
         /* if full, follow nxt pointer to find correct place */
         curr = ht->buckets+idx;
-        //lock(&curr->latch);
-        mtx.lock();
+        lock(&curr->latch);
+        //mtx.lock();
 #ifdef DEVELOPMENT_MODE
         //(*build_visits_map)[idx]++;
 
@@ -147,8 +147,8 @@ void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *b
         }
 
         *dest = rel_r_partition->tuples[i];
-        //unlock(&curr->latch);
-        mtx.unlock();
+        unlock(&curr->latch);
+        //mtx.unlock();
     }
 }
 
@@ -490,8 +490,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         //tmp_sum += ht->buckets[idx].count;
 
         curr = ht->buckets + idx;
-        //lock(&curr->latch);
-        mtx.lock();
+        lock(&curr->latch);
+        //mtx.lock();
         //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         nxt = curr->next;
@@ -518,8 +518,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
         *dest = rel_r_partition->tuples[i];
 
-        //unlock(&curr->latch);
-        mtx.unlock();
+        unlock(&curr->latch);
+        //mtx.unlock();
        
     }
     //printf("tmp_sum %ld \n", tmp_sum);
