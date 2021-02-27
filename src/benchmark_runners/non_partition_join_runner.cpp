@@ -556,7 +556,7 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
             curr_buckts_num++;
         } while(b);
         if(curr_buckts_num > 2)
-            printf("learned i %ld curr_buckets_num %d FANOUT %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, ht->num_buckets);
+            printf("learned i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
     }
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
@@ -1408,7 +1408,7 @@ void * npj_join_thread(void * param)
             #else
                 args->num_results = npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
             #endif
-            
+
             //printf("tid %d here 2 \n", args->tid);
             BARRIER_ARRIVE(args->barrier, rv);
             //printf("tid %d here 3 \n", args->tid);
