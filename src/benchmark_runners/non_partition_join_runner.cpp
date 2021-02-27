@@ -492,7 +492,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         curr = ht->buckets + idx;
         lock(&curr->latch);
         //mtx.lock();
-        printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
+        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         nxt = curr->next;
 
@@ -1271,8 +1271,9 @@ void * npj_join_thread(void * param)
     }
 
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
-    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
-
+    //uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE);
+    
     if (args->tid == 0) {
         strcpy(npj_pfun[0].fun_name, "Learned");
         strcpy(npj_pfun[1].fun_name, "IMV");
@@ -1545,7 +1546,9 @@ int main(int argc, char **argv)
 #ifdef INPUT_HASH_TABLE_SIZE       
     uint32_t nbuckets = hash_table_size;
 #else
-    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE);
+    //uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+
 #endif        
     allocate_hashtable(&ht, nbuckets);
 
