@@ -1239,7 +1239,7 @@ void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
-
+/*
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
@@ -1260,16 +1260,9 @@ void * npj_join_thread(void * param)
 
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
-
-            //typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
-            //for (unsigned int model_idx = 0; model_idx < 10/*args->p.arch[1]*/; ++model_idx) 
-            //{
-            //    current_model = &args->rmi->models[1][model_idx];
-            //    printf("model %d slope %f intercept %f\n", model_idx, current_model->slope, current_model->intercept);
-            //}
         } 
     }
-
+*/
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
     
