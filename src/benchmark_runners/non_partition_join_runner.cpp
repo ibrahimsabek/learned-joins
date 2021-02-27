@@ -1381,7 +1381,7 @@ void * npj_join_thread(void * param)
         }
     }
 
-    BARRIER_ARRIVE(args->barrier, rv);
+    //BARRIER_ARRIVE(args->barrier, rv);
 
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
