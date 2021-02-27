@@ -1239,7 +1239,7 @@ void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
-/*
+
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
@@ -1262,11 +1262,12 @@ void * npj_join_thread(void * param)
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
         } 
     }
-*/
+
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
     uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
     
     if (args->tid == 0) {
+        /*
         strcpy(npj_pfun[0].fun_name, "IMV");
         strcpy(npj_pfun[1].fun_name, "Naive");
 
@@ -1280,8 +1281,8 @@ void * npj_join_thread(void * param)
         npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition;
 
         npj_pf_num = 2;
-
-        /*
+        */
+        
         strcpy(npj_pfun[0].fun_name, "Learned");
 
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
@@ -1291,7 +1292,7 @@ void * npj_join_thread(void * param)
         npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
 
         npj_pf_num = 1;
-        */
+        
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
