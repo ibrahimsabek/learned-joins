@@ -913,7 +913,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
 
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
-        curr_buckts_num = 0;
+        //curr_buckts_num = 0;
         do {
         #ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
@@ -928,11 +928,11 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         #endif
 
             b = b->next;
-            curr_buckts_num++;
+            //curr_buckts_num++;
         } while(b);
 
         //if(i%1000 == 0)
-            printf("learned i %ld curr_buckets_num %d FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
+            //printf("learned i %ld curr_buckets_num %d FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
 
     }
 
