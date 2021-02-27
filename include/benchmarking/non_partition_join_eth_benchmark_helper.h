@@ -36,7 +36,7 @@ class ETHNonPartitionJoinBenchmarkHelper : public BenchmarkHelper<KeyType, Paylo
         numS = rel_s->num_tuples;
         numRthr = numR / NUM_THREADS;
         numSthr = numS / NUM_THREADS;
-#ifdef INPUT_HASH_TABLE_SIZE       
+#if INPUT_HASH_TABLE_SIZE       
         uint32_t nbuckets = hash_table_size;
 #else
         uint32_t nbuckets = (rel_r->num_tuples / BUCKET_SIZE);

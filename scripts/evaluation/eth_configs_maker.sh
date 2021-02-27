@@ -162,7 +162,7 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
            echo -n $'#define HAVE_AVX '$HAVE_AVX; echo -n $'\n\n';
         fi
 
-        if [ "$INPUT_HASH_TABLE_SIZE" = 1 ]; then
+        if [ "$INPUT_HASH_TABLE_SIZE" != 0 ]; then
            echo -n $'#define INPUT_HASH_TABLE_SIZE '$INPUT_HASH_TABLE_SIZE; echo -n $'\n\n';
         fi
 

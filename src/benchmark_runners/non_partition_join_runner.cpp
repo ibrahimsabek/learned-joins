@@ -1264,7 +1264,12 @@ void * npj_join_thread(void * param)
     }
 
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
-    uint32_t nbuckets = (args->relR.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    
+#if INPUT_HASH_TABLE_SIZE       
+    uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
+#else
+    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+
     
     if (args->tid == 0) {
         /*
@@ -1544,8 +1549,8 @@ int main(int argc, char **argv)
     pthread_attr_init(&attr);
 
     Hashtable<KeyType, PayloadType> * ht;
-#ifdef INPUT_HASH_TABLE_SIZE       
-    uint32_t nbuckets = hash_table_size;
+#if INPUT_HASH_TABLE_SIZE       
+    uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
 #else
     uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
