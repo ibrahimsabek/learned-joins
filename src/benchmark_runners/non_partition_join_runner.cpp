@@ -872,7 +872,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
             b = b->next;
             curr_buckts_num++;
         } while(b);
-        if(curr_buckts_num > 0)
+        if(curr_buckts_num > 2)
             printf("learned i %ld curr_buckets_num %d FANOUT %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, ht->num_buckets);
     }
 
