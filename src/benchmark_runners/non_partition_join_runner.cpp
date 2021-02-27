@@ -471,7 +471,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         }
 #endif
 
-        idx = static_cast<int>(std::max(
+        idx = static_cast<uint64_t>(std::max(
                                 0.,
                                std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt)));
 
@@ -899,7 +899,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         }
 #endif
         
-        idx = static_cast<int>(std::max(
+        idx = static_cast<uint64_t>(std::max(
                                 0.,
                             std::min(num_models - 1., root_slope * rel_s_partition->tuples[i].key + root_intrcpt)));
 
