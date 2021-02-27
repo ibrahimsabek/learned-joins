@@ -1268,7 +1268,7 @@ void * npj_join_thread(void * param)
 #if INPUT_HASH_TABLE_SIZE       
     uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
 #else
-    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    uint32_t nbuckets = (args->original_relR->num_tuples / BUCKET_SIZE / NUM_THREADS);
 
     
     if (args->tid == 0) {
