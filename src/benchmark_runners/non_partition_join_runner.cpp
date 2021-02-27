@@ -547,6 +547,17 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
 #endif
     
     matches = 0; int curr_buckts_num;
+    for(i=0; i < ht->num_buckets; i++)
+    {
+        Bucket<KeyType, PayloadType> * b = ht->buckets+i;
+        curr_buckts_num = 0;
+        do {
+            b = b->next;
+            curr_buckts_num++;
+        } while(b);
+        if(curr_buckts_num > 2)
+            printf("learned i %ld curr_buckets_num %d FANOUT %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, ht->num_buckets);
+    }
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
@@ -581,7 +592,6 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
         //(*probe_keys_hash_list).push_back(idx);
         //unlock(keys_hash_latch);
 #endif
-        curr_buckts_num = 0;
         do {
         #ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
@@ -596,8 +606,6 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
         #endif
 
             b = b->next;/* follow overflow pointer */
-            curr_buckts_num++;
-
         } while(b);
 
         //if(i%1000 == 0)
@@ -1397,7 +1405,7 @@ void * npj_join_thread(void * param)
             #if NPJ_MORSE_SIZE
                 //TODO: to be done
             #else
-                npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
+                args->num_results = npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
             #endif
             }
 
