@@ -1400,7 +1400,7 @@ void * npj_join_thread(void * param)
             #endif
 
             BARRIER_ARRIVE(args->barrier, rv);
-
+            printf("tid %d after \n", args->tid);
             // probe phase finished, thread-0 checkpoints the time
             if(args->tid == 0){
                 gettimeofday(&args->end_time, NULL);
