@@ -1401,13 +1401,13 @@ void * npj_join_thread(void * param)
 
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
-            }
-
+            
             #if NPJ_MORSE_SIZE
                 //TODO: to be done
             #else
                 args->num_results = npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
             #endif
+            }
 
             //printf("tid %d here 2 \n", args->tid);
             BARRIER_ARRIVE(args->barrier, rv);
