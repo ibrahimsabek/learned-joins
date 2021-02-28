@@ -1272,8 +1272,8 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
 
 uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
 {
-    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
-    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->rmi;
+    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->rmi;
     uint64_t matches = 0;
 
     // Cache the model parameters
@@ -1292,7 +1292,7 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
     v_slopes_addr = _mm512_set1_epi64((uint64_t) (&slopes[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&intercepts[0])),
     v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_ht_addr = _mm512_set1_epi64((uint64_t)ht->buckets),
     v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_zero512 = _mm512_set1_epi64(0), v_ht_cell, 
-    v_next_off = _mm512_set1_epi64(8), v_tuple_size = _mm512_set1_epi64(16), v_next_off = _mm512_set1_epi64(8); 
+    v_next_off = _mm512_set1_epi64(8), v_tuple_size = _mm512_set1_epi64(16); 
 
     __m512d v_zero512_double = _mm512_set1_pd(0.), fanout_avx = _mm512_set1_pd((double)FANOUT), fanout_minus_one_avx = _mm512_set1_pd((double)FANOUT - 1.), 
     num_models_minus_one_avx = _mm512_set1_pd((double)num_models - 1.), root_slope_avx = _mm512_set1_pd(root_slope), 
