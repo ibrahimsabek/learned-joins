@@ -53,7 +53,7 @@ volatile static uint64_t npj_total_num = 0, npj_global_curse = 0, npj_global_upp
 typedef void (*NPJBuildFun)(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r);
 volatile static struct Fun {
   NPJBuildFun fun_ptr;
-  char fun_name[8];
+  char fun_name[16];
 } npj_pfun[4];
 volatile static int npj_pf_num = 0;
 
@@ -1731,9 +1731,9 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-/*
+
     //Probe phase
-    for (int fid = 0; fid < npj_pf_num; ++fid) 
+    for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
@@ -1764,7 +1764,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-*/
+
     return 0;
 }
 
