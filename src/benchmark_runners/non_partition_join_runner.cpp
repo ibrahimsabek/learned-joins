@@ -6,7 +6,6 @@
 #include "immintrin.h"
 #include "smmintrin.h"
 #include <sys/time.h> /* gettimeofday */
-//#include <mutex>      // std::mutex
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
@@ -38,7 +37,6 @@
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
-//std::mutex mtx;           // mutex for critical section
 
 typedef struct StateSIMDForETHNPJ StateSIMDForETHNPJ;
 struct StateSIMDForETHNPJ {
@@ -61,8 +59,8 @@ volatile static int npj_pf_num = 0;
 typedef uint64_t (*NPJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output);
 volatile static struct Fun1 {
   NPJProbeFun fun_ptr;
-  char fun_name[8];
-} npj_pfun1[3];
+  char fun_name[16];
+} npj_pfun1[4];
 
 //TOOD: to put the morse-driven implementation here !!!!!
 void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
@@ -112,7 +110,6 @@ void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *b
         /* if full, follow nxt pointer to find correct place */
         curr = ht->buckets+idx;
         lock(&curr->latch);
-        //mtx.lock();
 #ifdef DEVELOPMENT_MODE
         //(*build_visits_map)[idx]++;
 
@@ -148,7 +145,6 @@ void npj_build_rel_r_partition(ETHNonPartitionJoinBuild<KeyType, PayloadType> *b
 
         *dest = rel_r_partition->tuples[i];
         unlock(&curr->latch);
-        //mtx.unlock();
     }
 }
 
@@ -447,7 +443,6 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 #ifdef PREFETCH_NPJ
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
-    //uint64_t tmp_sum = 0;
     for(i=0; i < rel_r_partition->num_tuples; i++)
     {
         Tuple<KeyType, PayloadType> * dest;
@@ -467,9 +462,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             idx_prefetch = static_cast<uint64_t>(
                 std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));    
             
-            //printf("FANOUT %ld idx_prefetch %ld key %ld nbuckets %ld \n", FANOUT, idx_prefetch, rel_r_partition->tuples[prefetch_index].key, ht->num_buckets);
             prefetch_index++;
-            //tmp_sum += ht->buckets[idx_prefetch].count;
 			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
         }
 #endif
@@ -486,13 +479,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
-        //tmp_sum += ht->buckets[idx].count;
-
         curr = ht->buckets + idx;
         lock(&curr->latch);
-        //mtx.lock();
-        //printf("FANOUT %ld idx %ld key %ld nbuckets %ld \n", FANOUT, idx, rel_r_partition->tuples[i].key, ht->num_buckets);
 
         nxt = curr->next;
 
@@ -519,10 +507,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         *dest = rel_r_partition->tuples[i];
 
         unlock(&curr->latch);
-        //mtx.unlock();
        
     }
-    //printf("tmp_sum %ld \n", tmp_sum);
 }
 
 void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
@@ -949,9 +935,6 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
             b = b->next;/* follow overflow pointer */
         } while(b);
 
-        //if(i%1000 == 0)
-            //printf("Naive i %ld curr_buckets_num %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
-
     }
 
     return matches;
@@ -1267,7 +1250,6 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
 
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
-        //curr_buckts_num = 0;
         do {
         #ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
@@ -1282,12 +1264,316 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         #endif
 
             b = b->next;
-            //curr_buckts_num++;
         } while(b);
+    }
 
-        //if(i%1000 == 0)
-            //printf("learned i %ld curr_buckets_num %d FANOUT %ld idx %ld key %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, idx, rel_s_partition->tuples[i].key, ht->num_buckets);
+    return matches;
+}
 
+uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_output)
+{
+    Hashtable<KeyType, PayloadType>* ht = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->rmi;
+    uint64_t matches = 0;
+
+    // Cache the model parameters
+    auto root_slope = rmi->models[0][0].slope;
+    auto root_intrcpt = rmi->models[0][0].intercept;
+    unsigned int num_models = rmi->hp.arch[1];
+    vector<double> slopes, intercepts;
+    for (unsigned int j = 0; j < num_models; ++j) {
+        slopes.push_back(rmi->models[1][j].slope);
+        intercepts.push_back(rmi->models[1][j].intercept);
+    }
+    static const unsigned int FANOUT = rmi->hp.fanout;
+
+    int32_t k = 0, num, num_temp, done = 0, new_add = 0;
+    __m512i v_base_offset_upper = _mm512_set1_epi64(rel_s_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)), v_offset, v_base_offset,
+    v_slopes_addr = _mm512_set1_epi64((uint64_t) (&slopes[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&intercepts[0])),
+    v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_ht_addr = _mm512_set1_epi64((uint64_t)ht->buckets),
+    v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_zero512 = _mm512_set1_epi64(0), v_ht_cell, 
+    v_next_off = _mm512_set1_epi64(8), v_tuple_size = _mm512_set1_epi64(16), v_next_off = _mm512_set1_epi64(8); 
+
+    __m512d v_zero512_double = _mm512_set1_pd(0.), fanout_avx = _mm512_set1_pd((double)FANOUT), fanout_minus_one_avx = _mm512_set1_pd((double)FANOUT - 1.), 
+    num_models_minus_one_avx = _mm512_set1_pd((double)num_models - 1.), root_slope_avx = _mm512_set1_pd(root_slope), 
+    root_intrcpt_avx = _mm512_set1_pd(root_intrcpt), general_reg_1_double, general_reg_2_double, intercepts_avx, slopes_avx,
+    v_64bit_elem_size_double = _mm512_set1_pd(8.);
+
+    __attribute__((aligned(CACHE_LINE_SIZE))) __mmask8 mask[NPJ_VECTOR_SCALE + 1], m_valid_bucket = 0, m_match = 0; //check m_to_insert = 0, m_no_conflict
+    __attribute__((aligned(CACHE_LINE_SIZE))) uint64_t cur_offset = 0, base_off[NPJ_MAX_VECTOR_SCALE], *ht_pos, *slopes_pos, *intercepts_pos;
+    
+    Bucket<KeyType, PayloadType> * bucket;
+
+    for (int i = 0; i <= NPJ_VECTOR_SCALE; ++i) 
+    {
+        base_off[i] = i * sizeof(Tuple<KeyType, PayloadType>);
+        mask[i] = (1 << i) - 1;
+    }
+    v_base_offset = _mm512_load_epi64(base_off);
+
+    __attribute__((aligned(CACHE_LINE_SIZE)))  StateSIMDForETHNPJ state[NPJ_SIMDStateSize + 1];
+    // init # of the state
+    for (int i = 0; i <= NPJ_SIMDStateSize; ++i) {
+        state[i].stage = 1;
+        state[i].m_have_tuple = 0;
+    } 
+
+    for (uint64_t cur = 0; 1;) 
+    {
+        k = (k >= NPJ_SIMDStateSize) ? 0 : k;
+        if ((cur >= rel_s_partition->num_tuples)) {
+            if (state[k].m_have_tuple == 0 && state[k].stage != 3) 
+            {
+                ++done;
+                state[k].stage = 3;
+                ++k;
+                continue;
+            }
+            if ((done >= NPJ_SIMDStateSize)) 
+            {
+                if (state[NPJ_SIMDStateSize].m_have_tuple > 0) 
+                {
+                    k = NPJ_SIMDStateSize;
+                    state[NPJ_SIMDStateSize].stage = 4;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        switch (state[k].stage) 
+        {
+            case 1: 
+            {
+                _mm_prefetch((char *)(((void *)rel_s_partition->tuples) + cur_offset + NPJ_PDIS), _MM_HINT_T0);
+                _mm_prefetch((char *)(((void *)rel_s_partition->tuples) + cur_offset + NPJ_PDIS + CACHE_LINE_SIZE), _MM_HINT_T0);
+                _mm_prefetch((char *)(((void *)rel_s_partition->tuples) + cur_offset + NPJ_PDIS + 2 * CACHE_LINE_SIZE), _MM_HINT_T0);
+
+                v_offset = _mm512_add_epi64(_mm512_set1_epi64(cur_offset), v_base_offset);
+                // count the number of empty tuples
+                cur_offset = cur_offset + base_off[NPJ_VECTOR_SCALE];
+                state[k].m_have_tuple = _mm512_cmpgt_epi64_mask(v_base_offset_upper, v_offset);
+                cur = cur + NPJ_VECTOR_SCALE;
+
+                state[k].key = _mm512_mask_i64gather_epi64(state[k].key, state[k].m_have_tuple, v_offset, ((void *)rel_s_partition->tuples), 1);
+
+                general_reg_2_double = _mm512_mask_cvtepi64_pd(general_reg_2_double, state[k].m_have_tuple, state[k].key);
+                general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, root_slope_avx, root_intrcpt_avx);
+                general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, num_models_minus_one_avx);
+                general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
+                general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_64bit_elem_size_double);
+
+                state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
+
+                #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
+                    general_reg_1 = _mm512_mask_add_epi64(general_reg_1, state[k].m_have_tuple, state[k].ht_off, v_slopes_addr);
+                    general_reg_2 = _mm512_mask_add_epi64(general_reg_2, state[k].m_have_tuple, state[k].ht_off, v_intercepts_addr);
+                
+                    state[k].stage = 0;
+
+                    slopes_pos = (uint64_t *) &general_reg_1;
+                    intercepts_pos = (uint64_t *) &general_reg_2;     
+                    for (int i = 0; i < NPJ_VECTOR_SCALE; ++i)
+                    {   
+                        //if (state[k].m_have_tuple & (1 << i))
+                        //{
+                            _mm_prefetch((char * )(slopes_pos[i]), _MM_HINT_T0);
+                            _mm_prefetch((char * )(intercepts_pos[i]), _MM_HINT_T0);
+                        //}
+                    }
+                #else
+                    slopes_avx = _mm512_mask_i64gather_pd(slopes_avx, state[k].m_have_tuple, 
+                                        _mm512_mask_add_epi64(general_reg_1, state[k].m_have_tuple, state[k].ht_off, v_slopes_addr), 0, 1);
+                    intercepts_avx = _mm512_mask_i64gather_pd(intercepts_avx, state[k].m_have_tuple, 
+                                        _mm512_mask_add_epi64(general_reg_2, state[k].m_have_tuple, state[k].ht_off, v_intercepts_addr), 0, 1);
+
+                    general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, slopes_avx, intercepts_avx);
+                    general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
+                    general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
+                    general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
+                    general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+
+                    state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
+
+                    state[k].ht_off = _mm512_mask_mullo_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_bucket_size);
+                    state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_ht_addr);
+                
+                    state[k].stage = 2;
+                    ht_pos = (uint64_t *) &state[k].ht_off;
+                    for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) 
+                    {
+                        _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                    }
+                #endif
+            }
+            break;
+        #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
+            case 0:
+            {
+                general_reg_2_double = _mm512_mask_cvtepi64_pd(general_reg_2_double, state[k].m_have_tuple, state[k].key);
+
+                slopes_avx = _mm512_mask_i64gather_pd(slopes_avx, state[k].m_have_tuple, 
+                                    _mm512_mask_add_epi64(general_reg_1, state[k].m_have_tuple, state[k].ht_off, v_slopes_addr), 0, 1);
+                intercepts_avx = _mm512_mask_i64gather_pd(intercepts_avx, state[k].m_have_tuple, 
+                                    _mm512_mask_add_epi64(general_reg_2, state[k].m_have_tuple, state[k].ht_off, v_intercepts_addr), 0, 1);
+
+                general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, slopes_avx, intercepts_avx);
+                general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
+                general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
+                general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
+                general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+
+                state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
+
+                state[k].ht_off = _mm512_mask_mullo_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_bucket_size);
+                state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_ht_addr);
+            
+                state[k].stage = 2;
+                ht_pos = (uint64_t *) &state[k].ht_off;
+                for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) 
+                {
+                    _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                }
+            }
+            break;
+        #endif
+
+            case 2: 
+            {
+                v_ht_cell = _mm512_mask_i64gather_epi64(v_all_ones, state[k].m_have_tuple, state[k].ht_off, 0, 1);
+                m_valid_bucket = _mm512_cmpneq_epi64_mask(v_ht_cell, v_zero512);
+                state[k].m_have_tuple = _mm512_kand(m_valid_bucket, state[k].m_have_tuple);
+                state[k].stage = 4;
+                num = _mm_popcnt_u32(state[k].m_have_tuple);
+
+                if (num == NPJ_VECTOR_SCALE) 
+                {
+                    ht_pos = (uint64_t *) &state[k].ht_off;
+                    for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                        _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                    }
+
+                } else if(num ==0) 
+                {
+                    state[k].stage = 1;
+                    --k;
+                    break;
+                } 
+                else
+                {
+                    if (done < NPJ_SIMDStateSize) {
+                        num_temp = _mm_popcnt_u32(state[NPJ_SIMDStateSize].m_have_tuple);
+                        if (num + num_temp < NPJ_VECTOR_SCALE) {
+                            // compress v
+                            state[k].ht_off = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].ht_off);
+                            state[k].key = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].key);
+                            // expand v -> temp
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].ht_off, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].key, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].key);
+                            state[NPJ_SIMDStateSize].m_have_tuple = mask[num + num_temp];
+                            state[k].m_have_tuple = 0;
+                            state[k].stage = 1;
+                            --k;
+                            break;
+                        } else {
+                            // expand temp -> v
+                            state[k].ht_off = _mm512_mask_expand_epi64(state[k].ht_off, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].ht_off);
+                            state[k].key = _mm512_mask_expand_epi64(state[k].key, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].key);
+
+                            // compress temp
+                            state[NPJ_SIMDStateSize].m_have_tuple = _mm512_kand(state[NPJ_SIMDStateSize].m_have_tuple, _mm512_knot(mask[NPJ_VECTOR_SCALE - num]));
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].key);
+                            state[k].m_have_tuple = mask[NPJ_VECTOR_SCALE];
+                            state[NPJ_SIMDStateSize].m_have_tuple = (state[NPJ_SIMDStateSize].m_have_tuple >> (NPJ_VECTOR_SCALE - num));
+                            state[k].stage = 4;
+
+                            ht_pos = (uint64_t *) &state[k].ht_off;
+                            for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                                _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+
+            case 4: 
+            {
+                v_ht_cell = _mm512_mask_i64gather_epi64(v_all_ones, state[k].m_have_tuple, _mm512_add_epi64(state[k].ht_off, v_tuple_size), 0, 1); 
+
+                //TODO: handle the case of multiple tuples in the same bucket
+                m_match = _mm512_cmpeq_epi64_mask(state[k].key, v_ht_cell);
+                m_match = _mm512_kand(m_match, state[k].m_have_tuple);
+                new_add = _mm_popcnt_u32(m_match);
+                matches += new_add;
+
+                // update next
+                state[k].ht_off = _mm512_mask_i64gather_epi64(v_zero512, state[k].m_have_tuple, _mm512_add_epi64(state[k].ht_off, v_next_off), 0, 1);
+                state[k].m_have_tuple = _mm512_kand(_mm512_cmpneq_epi64_mask(state[k].ht_off, v_zero512), state[k].m_have_tuple);
+
+                num = _mm_popcnt_u32(state[k].m_have_tuple);
+
+                if (num == NPJ_VECTOR_SCALE) {
+
+                    ht_pos = (uint64_t *) &state[k].ht_off;
+                    for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                        _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                    }
+
+                } else if(num ==0) {
+                    state[k].stage = 1;
+                    --k;
+                    break;
+                } 
+                else
+                {
+                    if (done < NPJ_SIMDStateSize) 
+                    {
+                        num_temp = _mm_popcnt_u32(state[NPJ_SIMDStateSize].m_have_tuple);
+                        if (num + num_temp < NPJ_VECTOR_SCALE) 
+                        {
+                            // compress v
+                            state[k].ht_off = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].ht_off);
+                            state[k].key = _mm512_maskz_compress_epi64(state[k].m_have_tuple, state[k].key);
+                            // expand v -> temp
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].ht_off, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_mask_expand_epi64(state[NPJ_SIMDStateSize].key, _mm512_knot(state[NPJ_SIMDStateSize].m_have_tuple), state[k].key);
+                            state[NPJ_SIMDStateSize].m_have_tuple = mask[num + num_temp];
+                            state[k].m_have_tuple = 0;
+                            state[k].stage = 1;
+                            --k;
+                            break;
+                        } 
+                        else 
+                        {
+                            // expand temp -> v
+                            state[k].ht_off = _mm512_mask_expand_epi64(state[k].ht_off, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].ht_off);
+                            state[k].key = _mm512_mask_expand_epi64(state[k].key, _mm512_knot(state[k].m_have_tuple), state[NPJ_SIMDStateSize].key);
+
+                            // compress temp
+                            state[NPJ_SIMDStateSize].m_have_tuple = _mm512_kand(state[NPJ_SIMDStateSize].m_have_tuple, _mm512_knot(mask[NPJ_VECTOR_SCALE - num]));
+                            state[NPJ_SIMDStateSize].ht_off = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].ht_off);
+                            state[NPJ_SIMDStateSize].key = _mm512_maskz_compress_epi64(state[NPJ_SIMDStateSize].m_have_tuple, state[NPJ_SIMDStateSize].key);
+                            state[k].m_have_tuple = mask[NPJ_VECTOR_SCALE];
+                            state[NPJ_SIMDStateSize].m_have_tuple = (state[NPJ_SIMDStateSize].m_have_tuple >> (NPJ_VECTOR_SCALE - num));
+                            state[k].stage = 4;
+
+                            ht_pos = (uint64_t *) &state[k].ht_off;
+                            for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) {
+                                _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                            }
+                
+                        }
+                    }
+                }
+            }
+            break;
+
+        }
+
+        ++k;
     }
 
     return matches;
@@ -1644,8 +1930,10 @@ void * npj_join_thread(void * param)
         npj_pfun[1].fun_ptr = npj_build_rel_r_partition_learned_imv;
 
         strcpy(npj_pfun1[0].fun_name, "Learned");
+        strcpy(npj_pfun1[1].fun_name, "Learned IMV");
         
         npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
+        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned_imv;
 
         npj_pf_num = 2;
 #endif        
@@ -1734,13 +2022,11 @@ void * npj_join_thread(void * param)
     BARRIER_ARRIVE(args->barrier, rv);
 
     //Probe phase
-    for (int fid = 0; fid < 1/*npj_pf_num*/; ++fid) 
+    for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
-            //printf("tid %d here 0 \n", args->tid);
             BARRIER_ARRIVE(args->barrier, rv);
-            //printf("tid %d here 1 \n", args->tid);
 
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
@@ -1753,9 +2039,7 @@ void * npj_join_thread(void * param)
 
             }
 
-            //printf("tid %d here 2 \n", args->tid);
             BARRIER_ARRIVE(args->barrier, rv);
-            //printf("tid %d here 3 \n", args->tid);
             // probe phase finished, thread-0 checkpoints the time
             if(args->tid == 0){
                 gettimeofday(&args->end_time, NULL);
