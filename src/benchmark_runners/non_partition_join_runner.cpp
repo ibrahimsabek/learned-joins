@@ -595,7 +595,7 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
                 if (state[NPJ_SIMDStateSize].m_have_tuple > 0) 
                 {
                     k = NPJ_SIMDStateSize;
-                    state[NPJ_SIMDStateSize].stage = 0;
+                    state[NPJ_SIMDStateSize].stage = 4;
                 } else {
                     break;
                 }
