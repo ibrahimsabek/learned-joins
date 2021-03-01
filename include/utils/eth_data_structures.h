@@ -193,8 +193,6 @@ struct ETHNonPartitionJoinThread {
     vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data;
     uint32_t tmp_training_sample_R_offset, tmp_training_sample_S_offset, tmp_training_sample_offset;
     uint32_t * sample_count, * sample_count_R, * sample_count_S;
-    vector<double>* slopes;
-    vector<double>* intercepts;
     /**** end stuff for learning RMI models ****/
 
     /* stats about the thread */
@@ -220,6 +218,8 @@ struct ETHNonPartitionJoinBuild {
     Hashtable<KeyType, PayloadType> * ht;
     BucketBuffer<KeyType, PayloadType> ** overflowbuf;
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    vector<double>* slopes;
+    vector<double>* intercepts;
 #ifdef DEVELOPMENT_MODE
     unordered_map<uint64_t, uint64_t> * build_hash_bucket_visits;
     unordered_map<uint64_t, uint64_t> * probe_hash_bucket_visits;

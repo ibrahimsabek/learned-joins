@@ -437,8 +437,8 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
     }*/
-    vector<double>* slopes = args-slopes;
-    vector<double>* intercepts = args-intercepts;
+    vector<double>* slopes = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->slopes;
+    vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
     double pred_cdf = 0.; uint64_t i; uint64_t idx_prefetch, idx;
 
@@ -1192,8 +1192,8 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
     }*/
-    vector<double>* slopes = args-slopes;
-    vector<double>* intercepts = args-intercepts;
+    vector<double>* slopes = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->slopes;
+    vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
     double pred_cdf = 0.; uint64_t idx_prefetch, idx;
 
@@ -1879,6 +1879,8 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
 #ifdef RUN_LEARNED_TECHNIQUES        
+    vector<double>* slopes; 
+    vector<double>* intercepts;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
@@ -1901,14 +1903,14 @@ void * npj_join_thread(void * param)
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
             if(rp == RUN_NUMS - 1)
-            {
-                vector<double> slopes, intercepts;
-                for (unsigned int j = 0; j < args->rmi->hp.arch[1]; ++j) {
-                    slopes.push_back(args->rmi->models[1][j].slope);
-                    intercepts.push_back(args->rmi->models[1][j].intercept);
+            {   
+                slopes = new vector<double>; 
+                intercepts new vector<double>;
+                for (unsigned int j = 0; j < args->rmi->hp.arch[1]; ++j) 
+                {
+                    slopes->push_back(args->rmi->models[1][j].slope);
+                    intercepts->push_back(args->rmi->models[1][j].intercept);
                 }
-                args->slopes = &slopes;
-                args->intercepts = &intercepts;
             } 
         }        
     }
@@ -1968,7 +1970,10 @@ void * npj_join_thread(void * param)
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
             build_data.rmi = args->rmi;
-
+        #ifdef RUN_LEARNED_TECHNIQUES   
+            build_data.slopes = slopes;
+            build_data.intercepts = intercepts;
+        #endif
         #ifdef PERF_COUNTERS
             if(args->tid == 0){
                 //TODO: performance counters to be implemented
