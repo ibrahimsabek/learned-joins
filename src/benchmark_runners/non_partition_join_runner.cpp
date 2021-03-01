@@ -1985,7 +1985,7 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinBuild<KeyType, PayloadType> build_data; 
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
-        for (int rp = 0; rp < RUN_NUMS; ++rp) 
+        for (int rp = 0; rp < 1/*RUN_NUMS*/; ++rp) 
         {
             init_bucket_buffer(&overflowbuf);
             if(args->tid == 0)
