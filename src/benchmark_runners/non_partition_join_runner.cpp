@@ -513,6 +513,24 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
         *dest = rel_r_partition->tuples[i];
 
+        if(rel_r_partition->tuples[i].key < 10){
+            int curr_buckts_num;
+            for(i=0; i < ht->num_buckets; i++)
+            {
+                Bucket<KeyType, PayloadType> * b = ht->buckets+i;
+                if((i < 5) && b && (b->count > 0))
+                    printf("learned build i %ld key %ld \n", i, b->tuples[0].key);
+                curr_buckts_num = 0;
+                do {
+                    b = b->next;
+                    if((i < 5) && b && (b->count > 0))
+                        printf("learned build i %ld key %ld \n", i, b->tuples[0].key);
+                    curr_buckts_num++;
+                } while(b);
+                if((curr_buckts_num > 2) && (i < 100))
+                    printf("learned build i %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", i, curr_buckts_num, ht->num_buckets, FANOUT);
+            }
+        }
         unlock(&curr->latch);
        
     }
