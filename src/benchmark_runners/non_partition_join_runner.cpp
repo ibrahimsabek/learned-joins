@@ -534,6 +534,25 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         unlock(&curr->latch);
        
     }
+        int tid = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->tid;
+        if(tid == 0){
+            int curr_buckts_num;
+            for(int j=0; j < 5; j++)
+            {
+                Bucket<KeyType, PayloadType> * b = ht->buckets+j;
+                if((j < 5) && b && (b->count > 0))
+                    printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
+                curr_buckts_num = 0;
+                do {
+                    b = b->next;
+                    if((j < 5) && b && (b->count > 0))
+                        printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
+                    curr_buckts_num++;
+                } while(b);
+                if((curr_buckts_num > 2) && (j < 100))
+                    printf("learned build j %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", j, curr_buckts_num, ht->num_buckets, FANOUT);
+            }
+        }
 }
 
 void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
@@ -1995,6 +2014,7 @@ void * npj_join_thread(void * param)
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
             build_data.rmi = args->rmi;
+            build_data.tid = args->tid
         #ifdef RUN_LEARNED_TECHNIQUES   
             build_data.slopes = args->slopes;
             build_data.intercepts = args->intercepts;

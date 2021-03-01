@@ -222,6 +222,7 @@ struct ETHNonPartitionJoinBuild {
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
     vector<double>* slopes;
     vector<double>* intercepts;
+    int tid;
 #ifdef DEVELOPMENT_MODE
     unordered_map<uint64_t, uint64_t> * build_hash_bucket_visits;
     unordered_map<uint64_t, uint64_t> * probe_hash_bucket_visits;
