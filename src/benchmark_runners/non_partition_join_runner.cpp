@@ -867,22 +867,22 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0; int curr_buckts_num;
+    matches = 0; /*int curr_buckts_num;
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
         if((i < 5) && (b->count > 0))
-            printf("learned i %ld key %ld \n", i, b->tuples[0].key);
+            printf("naive i %ld key %ld \n", i, b->tuples[0].key);
         curr_buckts_num = 0;
         do {
             b = b->next;
             if((i < 5) && (b->count > 0))
-                printf("learned i %ld key %ld \n", i, b->tuples[0].key);
+                printf("naive i %ld key %ld \n", i, b->tuples[0].key);
             curr_buckts_num++;
         } while(b);
         if((curr_buckts_num > 2) && i < 100)
-            printf("learned i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
-    }
+            printf("naive i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
+    }*/
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
@@ -1195,18 +1195,22 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0; //int curr_buckts_num;
-    /*for(i=0; i < ht->num_buckets; i++)
+    matches = 0; int curr_buckts_num;
+    for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
+        if((i < 5) && (b->count > 0))
+            printf("learned i %ld key %ld \n", i, b->tuples[0].key);
         curr_buckts_num = 0;
         do {
             b = b->next;
+            if((i < 5) && (b->count > 0))
+                printf("learned i %ld key %ld \n", i, b->tuples[0].key);
             curr_buckts_num++;
         } while(b);
-        if(curr_buckts_num > 2)
-            printf("learned i %ld curr_buckets_num %d FANOUT %ld nbuckets %ld \n", i, curr_buckts_num, FANOUT, ht->num_buckets);
-    }*/
+        if((curr_buckts_num > 2) && i < 100)
+            printf("learned i %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", i, curr_buckts_num, ht->num_buckets, FANOUT);
+    }
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
