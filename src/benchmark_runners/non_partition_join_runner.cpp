@@ -432,11 +432,6 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
     auto root_slope = rmi->models[0][0].slope;
     auto root_intrcpt = rmi->models[0][0].intercept;
     unsigned int num_models = rmi->hp.arch[1];
-    /*vector<double> slopes, intercepts;
-    for (unsigned int j = 0; j < num_models; ++j) {
-        slopes.push_back(rmi->models[1][j].slope);
-        intercepts.push_back(rmi->models[1][j].intercept);
-    }*/
     vector<double>* slopes = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->slopes;
     vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
@@ -524,18 +519,20 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
     auto root_slope = rmi->models[0][0].slope;
     auto root_intrcpt = rmi->models[0][0].intercept;
     unsigned int num_models = rmi->hp.arch[1];
-    vector<double> slopes, intercepts;
+    /*vector<double> slopes, intercepts;
     for (unsigned int j = 0; j < num_models; ++j) {
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
-    }
+    }*/
+    vector<double>* slopes = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->slopes;
+    vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
     
     int32_t k = 0, done = 0, num, num_temp;
     __attribute__((aligned(CACHE_LINE_SIZE)))  __mmask8 mask[NPJ_VECTOR_SCALE + 1], m_to_insert = 0, m_no_conflict;
 
     __m512i v_offset = _mm512_set1_epi64(0), v_base_offset_upper = _mm512_set1_epi64(rel_r_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)),
-    v_base_offset, v_slopes_addr = _mm512_set1_epi64((uint64_t) (&slopes[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&intercepts[0])),
+    v_base_offset, v_slopes_addr = _mm512_set1_epi64((uint64_t) (&(*slopes)[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&(*intercepts)[0])),
     v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)),
     v_ht_cell, v_zero512 = _mm512_set1_epi64(0), v_addr, v_conflict, v_key_off = _mm512_set1_epi64(16), v_new_bucket, v_next,
     v_count_off = _mm512_set1_epi64(4), v_ht_addr = _mm512_set1_epi64((uint64_t) ht->buckets), v_next_off = _mm512_set1_epi64(8);
@@ -1187,11 +1184,6 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     auto root_slope = rmi->models[0][0].slope;
     auto root_intrcpt = rmi->models[0][0].intercept;
     unsigned int num_models = rmi->hp.arch[1];
-    /*vector<double> slopes, intercepts;
-    for (unsigned int j = 0; j < num_models; ++j) {
-        slopes.push_back(rmi->models[1][j].slope);
-        intercepts.push_back(rmi->models[1][j].intercept);
-    }*/
     vector<double>* slopes = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->slopes;
     vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
@@ -1284,16 +1276,18 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
     auto root_slope = rmi->models[0][0].slope;
     auto root_intrcpt = rmi->models[0][0].intercept;
     unsigned int num_models = rmi->hp.arch[1];
-    vector<double> slopes, intercepts;
+    /*vector<double> slopes, intercepts;
     for (unsigned int j = 0; j < num_models; ++j) {
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
-    }
+    }*/
+    vector<double>* slopes = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->slopes;
+    vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_output)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
 
     int32_t k = 0, num, num_temp, done = 0, new_add = 0;
     __m512i v_base_offset_upper = _mm512_set1_epi64(rel_s_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)), v_offset, v_base_offset,
-    v_slopes_addr = _mm512_set1_epi64((uint64_t) (&slopes[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&intercepts[0])),
+    v_slopes_addr = _mm512_set1_epi64((uint64_t) (&(*slopes)[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&(*intercepts)[0])),
     v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_ht_addr = _mm512_set1_epi64((uint64_t)ht->buckets),
     v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_zero512 = _mm512_set1_epi64(0), v_ht_cell, 
     v_next_off = _mm512_set1_epi64(8), v_tuple_size = _mm512_set1_epi64(16); 
