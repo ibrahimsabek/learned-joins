@@ -447,7 +447,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
 #ifdef PREFETCH_NPJ
         if (prefetch_index < rel_r_partition->num_tuples) {
-            idx_prefetch = static_cast<uint64_t>(std::max(
+            idx_prefetch = static_cast<unsigned int>(std::max(
                                 0.,
                             std::min(num_models - 1., root_slope * rel_r_partition->tuples[prefetch_index].key + root_intrcpt)));
 
@@ -456,7 +456,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
                 (*slopes)[idx_prefetch] * rel_r_partition->tuples[prefetch_index].key + (*intercepts)[idx_prefetch];
 
             // Scale the CDF to the number of buckets
-            idx_prefetch = static_cast<uint64_t>(
+            idx_prefetch = static_cast<unsigned int>(
                 std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));    
             
             prefetch_index++;
@@ -464,7 +464,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         }
 #endif
 
-        idx = static_cast<uint64_t>(std::max(
+        idx = static_cast<unsigned int>(std::max(
                                 0.,
                                std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt)));
 
@@ -473,7 +473,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
             (*slopes)[idx] * rel_r_partition->tuples[i].key + (*intercepts)[idx];
 
         // Scale the CDF to the number of buckets
-        idx = static_cast<uint64_t>(
+        idx = static_cast<unsigned int>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
         curr = ht->buckets + idx;
@@ -867,7 +867,7 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0; int curr_buckts_num;
+    matches = 0; /*int curr_buckts_num;
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
@@ -882,7 +882,7 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
         } while(b);
         if((curr_buckts_num > 2) && (i < 100))
             printf("naive i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
-    }
+    }*/
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
@@ -1217,7 +1217,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
 #ifdef PREFETCH_NPJ        
         if (prefetch_index < rel_s_partition->num_tuples) 
         {
-            idx_prefetch = static_cast<uint64_t>(std::max(
+            idx_prefetch = static_cast<unsigned int>(std::max(
                                 0.,
                             std::min(num_models - 1., root_slope * rel_s_partition->tuples[prefetch_index].key + root_intrcpt)));
 
@@ -1226,7 +1226,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
                 (*slopes)[idx_prefetch] * rel_s_partition->tuples[prefetch_index].key + (*intercepts)[idx_prefetch];
 
             // Scale the CDF to the number of buckets
-            idx_prefetch = static_cast<uint64_t>(
+            idx_prefetch = static_cast<unsigned int>(
                 std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));    
 
             prefetch_index++;
@@ -1235,7 +1235,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         }
 #endif
         
-        idx = static_cast<uint64_t>(std::max(
+        idx = static_cast<unsigned int>(std::max(
                                 0.,
                             std::min(num_models - 1., root_slope * rel_s_partition->tuples[i].key + root_intrcpt)));
 
@@ -1244,8 +1244,18 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
             (*slopes)[idx] * rel_s_partition->tuples[i].key + (*intercepts)[idx];
 
         // Scale the CDF to the number of buckets
-        idx = static_cast<uint64_t>(
+        idx = static_cast<unsigned int>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
+
+        /*if(rel_s_partition->tuples[i].key < 10)
+        {
+            printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_s_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx] %f (*intercepts)[idx] %f pred_cdf %f pred_cdf * FANOUT %f idx %ld \n", 
+                    rel_s_partition->tuples[i].key, root_slope, root_intrcpt, root_slope * rel_s_partition->tuples[i].key + root_intrcpt, 
+                    static_cast<uint64_t>(std::max(
+                                0.,
+                            std::min(num_models - 1., root_slope * rel_s_partition->tuples[i].key + root_intrcpt))),
+                    (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
+        }*/    
 
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
@@ -1938,7 +1948,7 @@ void * npj_join_thread(void * param)
         npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
         npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned_imv;
 
-        npj_pf_num = 2;
+        npj_pf_num = 1;
 #endif        
     }
     BARRIER_ARRIVE(args->barrier, rv);
