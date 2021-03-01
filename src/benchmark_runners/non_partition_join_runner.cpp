@@ -2277,7 +2277,7 @@ int main(int argc, char **argv)
                                  tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
                                  r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
                                  &training_data, sample_count, sample_count_R, sample_count_S,
-                                 slopes, interecepts,
+                                 slopes, intercepts,
                                  &barrier, joinresult, args_ptr);
 
     npj_global_curse = 0;
