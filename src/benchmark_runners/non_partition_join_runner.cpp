@@ -476,6 +476,16 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
+        if(rel_r_partition->tuples[i].key < 10)
+        {
+            printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_r_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx] %f (*intercepts)[idx] %f pred_cdf %f pred_cdf * FANOUT %f idx %ld \n", 
+                    rel_r_partition->tuples[i].key, root_slope, root_intrcpt, root_slope * rel_r_partition->tuples[i].key + root_intrcpt, 
+                    static_cast<uint64_t>(std::max(
+                                0.,
+                            std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt))),
+                    (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
+        }    
+
         curr = ht->buckets + idx;
         lock(&curr->latch);
 
@@ -1247,7 +1257,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        if(rel_s_partition->tuples[i].key < 100)
+        /*if(rel_s_partition->tuples[i].key < 100)
         {
             printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_s_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx] %f (*intercepts)[idx] %f pred_cdf %f pred_cdf * FANOUT %f idx %ld \n", 
                     rel_s_partition->tuples[i].key, root_slope, root_intrcpt, root_slope * rel_s_partition->tuples[i].key + root_intrcpt, 
@@ -1255,7 +1265,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
                                 0.,
                             std::min(num_models - 1., root_slope * rel_s_partition->tuples[i].key + root_intrcpt))),
                     (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
-        }    
+        }*/    
 
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
