@@ -476,7 +476,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-        if(rel_r_partition->tuples[i].key < 10)
+        /*if(rel_r_partition->tuples[i].key < 10)
         {
             printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_r_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx] %f (*intercepts)[idx] %f pred_cdf %f pred_cdf * FANOUT %f idx %ld \n", 
                     rel_r_partition->tuples[i].key, root_slope, root_intrcpt, root_slope * rel_r_partition->tuples[i].key + root_intrcpt, 
@@ -484,7 +484,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
                                 0.,
                             std::min(num_models - 1., root_slope * rel_r_partition->tuples[i].key + root_intrcpt))),
                     (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
-        }    
+        }*/    
 
         curr = ht->buckets + idx;
         lock(&curr->latch);
@@ -513,7 +513,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
         *dest = rel_r_partition->tuples[i];
 
-        if(rel_r_partition->tuples[i].key < 10){
+        /*if(rel_r_partition->tuples[i].key < 10){
             int curr_buckts_num;
             for(int j=0; j < 5; j++)
             {
@@ -530,7 +530,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
                 if((curr_buckts_num > 2) && (j < 100))
                     printf("learned build j %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", j, curr_buckts_num, ht->num_buckets, FANOUT);
             }
-        }
+        }*/
         unlock(&curr->latch);
        
     }
