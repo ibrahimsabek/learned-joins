@@ -1957,6 +1957,7 @@ void * npj_join_thread(void * param)
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
+/*    
     ETHNonPartitionJoinBuild<KeyType, PayloadType> build_data; 
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -2069,7 +2070,7 @@ void * npj_join_thread(void * param)
             }
         }
     }
-
+*/
     return 0;
 }
 
