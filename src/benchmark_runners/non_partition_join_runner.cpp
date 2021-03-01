@@ -2014,7 +2014,7 @@ void * npj_join_thread(void * param)
             build_data.ht = args->ht;
             build_data.overflowbuf = &overflowbuf;
             build_data.rmi = args->rmi;
-            build_data.tid = args->tid
+            build_data.tid = args->tid;
         #ifdef RUN_LEARNED_TECHNIQUES   
             build_data.slopes = args->slopes;
             build_data.intercepts = args->intercepts;
