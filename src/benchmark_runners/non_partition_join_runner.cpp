@@ -1905,7 +1905,7 @@ void * npj_join_thread(void * param)
             if(rp == RUN_NUMS - 1)
             {   
                 slopes = new vector<double>; 
-                intercepts new vector<double>;
+                intercepts = new vector<double>;
                 for (unsigned int j = 0; j < args->rmi->hp.arch[1]; ++j) 
                 {
                     slopes->push_back(args->rmi->models[1][j].slope);
