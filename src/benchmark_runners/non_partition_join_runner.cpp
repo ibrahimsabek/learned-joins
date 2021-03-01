@@ -523,10 +523,6 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
     vector<double>* intercepts = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
     
-    int deltaT = 0; struct timeval t1, t2;
-
-    gettimeofday(&t1, NULL);
-
     int32_t k = 0, done = 0, num, num_temp;
     __attribute__((aligned(CACHE_LINE_SIZE)))  __mmask8 mask[NPJ_VECTOR_SCALE + 1], m_to_insert = 0, m_no_conflict;
 
@@ -545,11 +541,6 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
 
     __attribute__((aligned(CACHE_LINE_SIZE)))   uint64_t cur_offset = 0, base_off[NPJ_MAX_VECTOR_SCALE], *ht_pos, *slopes_pos, *intercepts_pos;
     __attribute__((aligned(CACHE_LINE_SIZE)))   StateSIMDForETHNPJ state[NPJ_SIMDStateSize + 1];
-
-    gettimeofday(&t2, NULL);
-
-    deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
-    printf("---- Initialization overhead of imv time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
     uint64_t *new_bucket = (uint64_t*) &v_new_bucket;
     Bucket<KeyType, PayloadType> * bucket;
