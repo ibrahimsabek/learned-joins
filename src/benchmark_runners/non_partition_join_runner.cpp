@@ -515,7 +515,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
         if(rel_r_partition->tuples[i].key < 10){
             int curr_buckts_num;
-            for(i=0; i < ht->num_buckets; i++)
+            for(i=0; i < 100; i++)
             {
                 Bucket<KeyType, PayloadType> * b = ht->buckets+i;
                 if((i < 5) && b && (b->count > 0))
