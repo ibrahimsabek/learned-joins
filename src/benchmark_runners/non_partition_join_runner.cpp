@@ -1879,8 +1879,6 @@ void * npj_join_thread(void * param)
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
 #ifdef RUN_LEARNED_TECHNIQUES        
-    vector<double>* slopes; 
-    vector<double>* intercepts;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
@@ -1904,12 +1902,10 @@ void * npj_join_thread(void * param)
 
             if(rp == RUN_NUMS - 1)
             {   
-                slopes = new vector<double>; 
-                intercepts = new vector<double>;
                 for (unsigned int j = 0; j < args->rmi->hp.arch[1]; ++j) 
                 {
-                    slopes->push_back(args->rmi->models[1][j].slope);
-                    intercepts->push_back(args->rmi->models[1][j].intercept);
+                    args->slopes->push_back(args->rmi->models[1][j].slope);
+                    args->intercepts->push_back(args->rmi->models[1][j].intercept);
                 }
             } 
         }        
@@ -1957,7 +1953,7 @@ void * npj_join_thread(void * param)
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
-/*    
+    
     ETHNonPartitionJoinBuild<KeyType, PayloadType> build_data; 
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -1972,8 +1968,8 @@ void * npj_join_thread(void * param)
             build_data.overflowbuf = &overflowbuf;
             build_data.rmi = args->rmi;
         #ifdef RUN_LEARNED_TECHNIQUES   
-            build_data.slopes = slopes;
-            build_data.intercepts = intercepts;
+            build_data.slopes = args->slopes;
+            build_data.intercepts = args->intercepts;
         #endif
         #ifdef PERF_COUNTERS
             if(args->tid == 0){
@@ -2041,7 +2037,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-
+/*
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -2088,6 +2084,7 @@ void initialize_npj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                                  Tuple<KeyType, PayloadType> * s_sorted_training_sample_in,
                                  vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data,
                                  uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S,
+                                 vector<double>* slopes, vector<double>* intercepts,
                                  pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
                                  ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args){
@@ -2151,6 +2148,8 @@ void initialize_npj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).sample_count = sample_count;
         (*(args + i)).sample_count_R = sample_count_R;
         (*(args + i)).sample_count_S = sample_count_S;
+        (*(args + i)).slopes = slopes;
+        (*(args + i)).intercepts = intercepts;
         /**** end stuff for learning RMI models ****/
 
         (*(args + i)).barrier = barrier_ptr;
@@ -2266,6 +2265,8 @@ int main(int argc, char **argv)
     uint32_t * sample_count_R = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
     uint32_t * sample_count_S = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t));
 
+    vector<double>* slopes = new vector<double>;                 
+    vector<double>* intercepts = new vector<double>;
     //////////////////////////////////////////////////////////////////////////////
     // End stuff for sampling and building RMI models for both relations R and S
     //////////////////////////////////////////////////////////////////////////////
@@ -2276,6 +2277,7 @@ int main(int argc, char **argv)
                                  tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
                                  r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
                                  &training_data, sample_count, sample_count_R, sample_count_S,
+                                 slopes, interecepts,
                                  &barrier, joinresult, args_ptr);
 
     npj_global_curse = 0;
