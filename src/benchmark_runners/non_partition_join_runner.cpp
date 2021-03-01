@@ -871,16 +871,16 @@ uint64_t npj_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partit
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
-        if((i < 5) && (b->count > 0))
+        if((i < 5) && b && (b->count > 0))
             printf("naive i %ld key %ld \n", i, b->tuples[0].key);
         curr_buckts_num = 0;
         do {
             b = b->next;
-            if((i < 5) && (b->count > 0))
+            if((i < 5) && b && (b->count > 0))
                 printf("naive i %ld key %ld \n", i, b->tuples[0].key);
             curr_buckts_num++;
         } while(b);
-        if((curr_buckts_num > 2) && i < 100)
+        if((curr_buckts_num > 2) && (i < 100))
             printf("naive i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
     }*/
 
@@ -1199,16 +1199,16 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
-        if((i < 5) && (b->count > 0))
+        if((i < 5) && b && (b->count > 0))
             printf("learned i %ld key %ld \n", i, b->tuples[0].key);
         curr_buckts_num = 0;
         do {
             b = b->next;
-            if((i < 5) && (b->count > 0))
+            if((i < 5) && b && (b->count > 0))
                 printf("learned i %ld key %ld \n", i, b->tuples[0].key);
             curr_buckts_num++;
         } while(b);
-        if((curr_buckts_num > 2) && i < 100)
+        if((curr_buckts_num > 2) && (i < 100))
             printf("learned i %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", i, curr_buckts_num, ht->num_buckets, FANOUT);
     }
 
