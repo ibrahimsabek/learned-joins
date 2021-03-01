@@ -432,11 +432,13 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
     auto root_slope = rmi->models[0][0].slope;
     auto root_intrcpt = rmi->models[0][0].intercept;
     unsigned int num_models = rmi->hp.arch[1];
-    vector<double> slopes, intercepts;
+    /*vector<double> slopes, intercepts;
     for (unsigned int j = 0; j < num_models; ++j) {
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
-    }
+    }*/
+    vector<double>* slopes = args-slopes;
+    vector<double>* intercepts = args-intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
     double pred_cdf = 0.; uint64_t i; uint64_t idx_prefetch, idx;
 
@@ -456,7 +458,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
             // Predict the CDF
             pred_cdf =
-                slopes[idx_prefetch] * rel_r_partition->tuples[prefetch_index].key + intercepts[idx_prefetch];
+                (*slopes)[idx_prefetch] * rel_r_partition->tuples[prefetch_index].key + (*intercepts)[idx_prefetch];
 
             // Scale the CDF to the number of buckets
             idx_prefetch = static_cast<uint64_t>(
@@ -473,7 +475,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
 
         // Predict the CDF
         pred_cdf =
-            slopes[idx] * rel_r_partition->tuples[i].key + intercepts[idx];
+            (*slopes)[idx] * rel_r_partition->tuples[i].key + (*intercepts)[idx];
 
         // Scale the CDF to the number of buckets
         idx = static_cast<uint64_t>(
@@ -1185,11 +1187,13 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     auto root_slope = rmi->models[0][0].slope;
     auto root_intrcpt = rmi->models[0][0].intercept;
     unsigned int num_models = rmi->hp.arch[1];
-    vector<double> slopes, intercepts;
+    /*vector<double> slopes, intercepts;
     for (unsigned int j = 0; j < num_models; ++j) {
         slopes.push_back(rmi->models[1][j].slope);
         intercepts.push_back(rmi->models[1][j].intercept);
-    }
+    }*/
+    vector<double>* slopes = args-slopes;
+    vector<double>* intercepts = args-intercepts;
     static const unsigned int FANOUT = rmi->hp.fanout;
     double pred_cdf = 0.; uint64_t idx_prefetch, idx;
 
@@ -1224,7 +1228,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
 
             // Predict the CDF
             pred_cdf =
-                slopes[idx_prefetch] * rel_s_partition->tuples[prefetch_index].key + intercepts[idx_prefetch];
+                (*slopes)[idx_prefetch] * rel_s_partition->tuples[prefetch_index].key + (*intercepts)[idx_prefetch];
 
             // Scale the CDF to the number of buckets
             idx_prefetch = static_cast<uint64_t>(
@@ -1242,7 +1246,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
 
         // Predict the CDF
         pred_cdf =
-            slopes[idx] * rel_s_partition->tuples[i].key + intercepts[idx];
+            (*slopes)[idx] * rel_s_partition->tuples[i].key + (*intercepts)[idx];
 
         // Scale the CDF to the number of buckets
         idx = static_cast<uint64_t>(
@@ -1895,7 +1899,18 @@ void * npj_join_thread(void * param)
 
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
-        } 
+
+            if(rp == RUN_NUMS - 1)
+            {
+                vector<double> slopes, intercepts;
+                for (unsigned int j = 0; j < args->rmi->hp.arch[1]; ++j) {
+                    slopes.push_back(args->rmi->models[1][j].slope);
+                    intercepts.push_back(args->rmi->models[1][j].intercept);
+                }
+                args->slopes = &slopes;
+                args->intercepts = &intercepts;
+            } 
+        }        
     }
 #endif
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
