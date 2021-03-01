@@ -1650,8 +1650,8 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       tmp_training_sample[sample_count[tid]] = *i;
       ++sample_count[tid];
 
-      tmp_training_sample_R[sample_count_R[tid]] = *i;
-      ++sample_count_R[tid];
+      //tmp_training_sample_R[sample_count_R[tid]] = *i;
+      //++sample_count_R[tid];
     }
     
     uint32_t * sample_count_S = args->sample_count_S;
@@ -1663,8 +1663,8 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       tmp_training_sample[sample_count[tid]] = *i;
       ++sample_count[tid];
 
-      tmp_training_sample_S[sample_count_S[tid]] = *i;
-      ++sample_count_S[tid];
+      //tmp_training_sample_S[sample_count_S[tid]] = *i;
+      //++sample_count_S[tid];
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
