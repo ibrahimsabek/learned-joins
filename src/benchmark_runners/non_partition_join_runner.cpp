@@ -1223,7 +1223,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0; int curr_buckts_num;
+    matches = 0; /*int curr_buckts_num;
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
@@ -1238,7 +1238,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         } while(b);
         if((curr_buckts_num > 2) && (i < 100))
             printf("learned probe i %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", i, curr_buckts_num, ht->num_buckets, FANOUT);
-    }
+    }*/
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
@@ -2067,26 +2067,7 @@ void * npj_join_thread(void * param)
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
-
-        if((args->tid == 2) || args->tid == 1 || args->tid == 0){
-            int curr_buckts_num;
-            for(int j=0; j < 5; j++)
-            {
-                Bucket<KeyType, PayloadType> * b = args->ht->buckets+j;
-                //if((j < 5) && b && (b->count > 0))
-                //    printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
-                curr_buckts_num = 0;
-                do {
-                    b = b->next;
-                //    if((j < 5) && b && (b->count > 0))
-                //        printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
-                    curr_buckts_num++;
-                } while(b);
-                if((curr_buckts_num > 2) && (j < 100))
-                    printf("learned build tid %d j %ld curr_buckets_num %d nbuckets %ld  \n", args->tid, j, curr_buckts_num, args->ht->num_buckets);
-            }
-        }
-
+    
     //Probe phase
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
@@ -2096,15 +2077,14 @@ void * npj_join_thread(void * param)
 
             if(args->tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
-            
+            }
+
             #if NPJ_MORSE_SIZE
                 //TODO: to be done
             #else
                 args->num_results = npj_pfun1[fid].fun_ptr(NULL, &args->relS, &build_data);
             #endif
-
-            }
-
+            
             BARRIER_ARRIVE(args->barrier, rv);
             // probe phase finished, thread-0 checkpoints the time
             if(args->tid == 0){
