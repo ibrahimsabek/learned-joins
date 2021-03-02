@@ -48,7 +48,8 @@ struct StateSIMDForETHNPJ {
 
 volatile static char npj_g_lock = 0, npj_g_lock_morse = 0;
 volatile static uint64_t npj_total_num = 0, npj_global_curse = 0, npj_global_upper, npj_global_morse_size;
-    
+Hashtable<KeyType, PayloadType> * ht;
+
 typedef void (*NPJBuildFun)(ETHNonPartitionJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r);
 volatile static struct Fun {
   NPJBuildFun fun_ptr;
@@ -1988,10 +1989,12 @@ void * npj_join_thread(void * param)
         {
             init_bucket_buffer(&overflowbuf);
             if(args->tid == 0)
-                allocate_hashtable(&args->ht, nbuckets);
-            //BARRIER_ARRIVE(args->barrier, rv);
-
-            build_data.ht = args->ht;
+                allocate_hashtable(&ht, nbuckets);
+                //allocate_hashtable(&args->ht, nbuckets);
+            BARRIER_ARRIVE(args->barrier, rv);
+            
+            args->ht = ht;
+            build_data.ht = ht;
             build_data.overflowbuf = &overflowbuf;
             build_data.rmi = args->rmi;
         #ifdef RUN_LEARNED_TECHNIQUES   
@@ -2254,7 +2257,6 @@ int main(int argc, char **argv)
 
     pthread_attr_init(&attr);
 
-    Hashtable<KeyType, PayloadType> * ht;
 #if INPUT_HASH_TABLE_SIZE       
     uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
 #else
