@@ -1227,12 +1227,12 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
-        if((i == 0) && b && (b->count > 0))
+        if((i == 1) && b && (b->count > 0))
             printf("learned probe i %ld key %ld \n", i, b->tuples[0].key);
         curr_buckts_num = 0;
         do {
             b = b->next;
-            if((i == 0) && b && (b->count > 0))
+            if((i == 1) && b && (b->count > 0))
                 printf("learned probe i %ld key %ld \n", i, b->tuples[0].key);
             curr_buckts_num++;
         } while(b);
@@ -1275,7 +1275,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., round(pred_cdf * FANOUT))));
 
-        if(i < 10)
+        /*if(i < 10)
         {
             printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_s_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx] %f (*intercepts)[idx] %f pred_cdf %f pred_cdf * FANOUT %f idx %ld \n", 
                     rel_s_partition->tuples[i].key, root_slope, root_intrcpt, round(root_slope * rel_s_partition->tuples[i].key + root_intrcpt), 
@@ -1283,7 +1283,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
                                 0.,
                             std::min(num_models - 1., round(root_slope * rel_s_partition->tuples[i].key + root_intrcpt)))),
                     (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
-        }    
+        }*/    
 
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
