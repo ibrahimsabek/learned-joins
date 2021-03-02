@@ -2065,7 +2065,7 @@ void * npj_join_thread(void * param)
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-        if(args->tid == 0){
+        if(args->tid == 1){
             int curr_buckts_num;
             for(int j=0; j < 5; j++)
             {
