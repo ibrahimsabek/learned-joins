@@ -2065,22 +2065,22 @@ void * npj_join_thread(void * param)
 
     BARRIER_ARRIVE(args->barrier, rv);
 
-        if(args->tid == 2){
+        if((args->tid == 2) || args->tid == 1 || args->tid == 0){
             int curr_buckts_num;
             for(int j=0; j < 5; j++)
             {
                 Bucket<KeyType, PayloadType> * b = args->ht->buckets+j;
-                if((j < 5) && b && (b->count > 0))
-                    printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
+                //if((j < 5) && b && (b->count > 0))
+                //    printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
                 curr_buckts_num = 0;
                 do {
                     b = b->next;
-                    if((j < 5) && b && (b->count > 0))
-                        printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
+                //    if((j < 5) && b && (b->count > 0))
+                //        printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
                     curr_buckts_num++;
                 } while(b);
                 if((curr_buckts_num > 2) && (j < 100))
-                    printf("learned build j %ld curr_buckets_num %d nbuckets %ld  \n", j, curr_buckts_num, args->ht->num_buckets);
+                    printf("learned build tid %d j %ld curr_buckets_num %d nbuckets %ld  \n", args->tid, j, curr_buckts_num, args->ht->num_buckets);
             }
         }
 
