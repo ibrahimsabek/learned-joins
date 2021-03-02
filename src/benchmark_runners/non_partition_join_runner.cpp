@@ -1976,7 +1976,7 @@ void * npj_join_thread(void * param)
         npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
         npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned_imv;
 
-        npj_pf_num = 2;
+        npj_pf_num = 1;
 #endif        
     }
     BARRIER_ARRIVE(args->barrier, rv);
