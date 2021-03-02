@@ -2080,7 +2080,7 @@ void * npj_join_thread(void * param)
                     curr_buckts_num++;
                 } while(b);
                 if((curr_buckts_num > 2) && (j < 100))
-                    printf("learned build j %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", j, curr_buckts_num, ht->num_buckets, FANOUT);
+                    printf("learned build j %ld curr_buckets_num %d nbuckets %ld  \n", j, curr_buckts_num, args->ht->num_buckets);
             }
         }
 
