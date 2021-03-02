@@ -535,7 +535,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
        
     }
         int tid = ((ETHNonPartitionJoinBuild<KeyType, PayloadType> *)build_input)->tid;
-        if(tid == 1){
+        if(tid == 0){
             int curr_buckts_num;
             for(int j=0; j < 5; j++)
             {
