@@ -477,7 +477,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
         idx = static_cast<uint64_t>(
             std::max(0., std::min(FANOUT - 1., round(pred_cdf * FANOUT))));
 */
-        if( (rel_r_partition->tuples[i].key == 368)|| (rel_r_partition->tuples[i].key == 192) || (rel_r_partition->tuples[i].key == 175)||(rel_r_partition->tuples[i].key >299 && rel_r_partition->tuples[i].key < 400))
+        /*if( (rel_r_partition->tuples[i].key == 368)|| (rel_r_partition->tuples[i].key == 192) || (rel_r_partition->tuples[i].key == 175)||(rel_r_partition->tuples[i].key >299 && rel_r_partition->tuples[i].key < 400))
         {
             printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_r_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx]%.7lf (*intercepts)[idx] %.7lf pred_cdf %f pred_cdf * FANOUT %.7lf idx %ld \n", 
                     rel_r_partition->tuples[i].key, root_slope, root_intrcpt, round(root_slope * rel_r_partition->tuples[i].key + root_intrcpt), 
@@ -485,7 +485,7 @@ void npj_build_rel_r_partition_learned(ETHNonPartitionJoinBuild<KeyType, Payload
                                 0.,
                             std::min(num_models - 1., round(root_slope * rel_r_partition->tuples[i].key + root_intrcpt)))),
                     (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
-        }    
+        }*/    
 
         curr = ht->buckets + idx;
         lock(&curr->latch);
@@ -1223,7 +1223,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
     size_t prefetch_index = PREFETCH_DISTANCE;
 #endif
     
-    matches = 0; int curr_buckts_num;
+    matches = 0; /*int curr_buckts_num;
     for(i=0; i < ht->num_buckets; i++)
     {
         Bucket<KeyType, PayloadType> * b = ht->buckets+i;
@@ -1238,7 +1238,7 @@ uint64_t npj_probe_rel_s_partition_learned(Relation<KeyType, PayloadType> * rel_
         } while(b);
         if((curr_buckts_num > 2) && (i < 100))
             printf("learned probe i %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", i, curr_buckts_num, ht->num_buckets, FANOUT);
-    }
+    }*/
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
