@@ -694,6 +694,7 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
 #endif
             }
             break;
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
         #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
             case 0:
             {
@@ -724,6 +725,7 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
             }
             break;
         #endif
+#endif
             case 2: 
             {
                 v_ht_cell = _mm512_mask_i64gather_epi64(v_all_ones, state[k].m_have_tuple, state[k].ht_off, 0, 1);
@@ -1472,6 +1474,7 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
 #endif
             }
             break;
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
         #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
             case 0:
             {
@@ -1502,7 +1505,7 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
             }
             break;
         #endif
-
+#endif
             case 2: 
             {
                 v_ht_cell = _mm512_mask_i64gather_epi64(v_all_ones, state[k].m_have_tuple, state[k].ht_off, 0, 1);
