@@ -634,7 +634,8 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
                 general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, root_slope_avx, root_intrcpt_avx);
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, num_models_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
-                general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                //general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                general_reg_1_double = _mm512_mask_svml_round_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
 #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_64bit_elem_size_double);
 #endif
@@ -667,7 +668,8 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
                     general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
                     general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                     general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
-                    general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                    //general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                    general_reg_1_double = _mm512_mask_svml_round_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
 
                     state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
 
@@ -709,7 +711,8 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
-                general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                //general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                general_reg_1_double = _mm512_mask_svml_round_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
 
                 state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
 
@@ -1414,7 +1417,9 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
                 general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, root_slope_avx, root_intrcpt_avx);
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, num_models_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
-                general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                //general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                general_reg_1_double = _mm512_mask_svml_round_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+
 #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY                
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_64bit_elem_size_double);
 #endif
@@ -1447,7 +1452,8 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
                     general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
                     general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                     general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
-                    general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                    //general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                    general_reg_1_double = _mm512_mask_svml_round_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
 
                     state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
 
@@ -1489,7 +1495,8 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
-                general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                //general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+                general_reg_1_double = _mm512_mask_svml_round_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
 
                 state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
 
