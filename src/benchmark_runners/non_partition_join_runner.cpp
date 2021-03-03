@@ -632,10 +632,12 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, num_models_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
                 general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_64bit_elem_size_double);
-
+#endif
                 state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
 
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
                 #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
                     general_reg_1 = _mm512_mask_add_epi64(general_reg_1, state[k].m_have_tuple, state[k].ht_off, v_slopes_addr);
                     general_reg_2 = _mm512_mask_add_epi64(general_reg_2, state[k].m_have_tuple, state[k].ht_off, v_intercepts_addr);
@@ -676,6 +678,17 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
                         _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
                     }
                 #endif
+#else
+                state[k].ht_off = _mm512_mask_mullo_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_bucket_size);
+                state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_ht_addr);
+            
+                state[k].stage = 2;
+                ht_pos = (uint64_t *) &state[k].ht_off;
+                for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) 
+                {
+                    _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                }
+#endif
             }
             break;
         #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
@@ -1394,10 +1407,12 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, num_models_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
                 general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY                
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_64bit_elem_size_double);
-
+#endif
                 state[k].ht_off = _mm512_mask_cvtpd_epi64(state[k].ht_off, state[k].m_have_tuple, general_reg_1_double);
 
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
                 #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
                     general_reg_1 = _mm512_mask_add_epi64(general_reg_1, state[k].m_have_tuple, state[k].ht_off, v_slopes_addr);
                     general_reg_2 = _mm512_mask_add_epi64(general_reg_2, state[k].m_have_tuple, state[k].ht_off, v_intercepts_addr);
@@ -1438,6 +1453,17 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
                         _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
                     }
                 #endif
+#else
+                state[k].ht_off = _mm512_mask_mullo_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_bucket_size);
+                state[k].ht_off = _mm512_mask_add_epi64(state[k].ht_off, state[k].m_have_tuple, state[k].ht_off, v_ht_addr);
+            
+                state[k].stage = 2;
+                ht_pos = (uint64_t *) &state[k].ht_off;
+                for (int i = 0; i < NPJ_VECTOR_SCALE; ++i) 
+                {
+                    _mm_prefetch((char * )(ht_pos[i]), _MM_HINT_T0);
+                }
+#endif
             }
             break;
         #ifdef PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
@@ -1964,17 +1990,17 @@ void * npj_join_thread(void * param)
 
         npj_pf_num = 2;
 #else
-        strcpy(npj_pfun[0].fun_name, "Learned");
-        strcpy(npj_pfun[1].fun_name, "Learned IMV");
+        strcpy(npj_pfun[1].fun_name, "Learned");
+        strcpy(npj_pfun[0].fun_name, "Learned IMV");
 
-        npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
-        npj_pfun[1].fun_ptr = npj_build_rel_r_partition_learned_imv;
+        npj_pfun[1].fun_ptr = npj_build_rel_r_partition_learned;
+        npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned_imv;
 
-        strcpy(npj_pfun1[0].fun_name, "Learned");
-        strcpy(npj_pfun1[1].fun_name, "Learned IMV");
+        strcpy(npj_pfun1[1].fun_name, "Learned");
+        strcpy(npj_pfun1[0].fun_name, "Learned IMV");
         
-        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
-        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned_imv;
+        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned;
+        npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned_imv;
 
         npj_pf_num = 1;
 #endif        
