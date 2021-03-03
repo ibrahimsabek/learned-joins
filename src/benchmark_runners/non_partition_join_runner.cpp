@@ -666,6 +666,7 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
 
                     general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, slopes_avx, intercepts_avx);
                     general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
+                    general_reg_1_double = _mm512_mask_add_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, half_avx);
                     general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                     general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
                     general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
@@ -708,6 +709,7 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
 
                 general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, slopes_avx, intercepts_avx);
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
+                general_reg_1_double = _mm512_mask_add_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, half_avx);
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
                 general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
@@ -1448,6 +1450,7 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
 
                     general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, slopes_avx, intercepts_avx);
                     general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
+                    general_reg_1_double = _mm512_mask_add_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, half_avx);
                     general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                     general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
                     general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
@@ -1490,6 +1493,7 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
 
                 general_reg_1_double = _mm512_mask_fmadd_pd(general_reg_2_double, state[k].m_have_tuple, slopes_avx, intercepts_avx);
                 general_reg_1_double = _mm512_mask_mul_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_avx);
+                general_reg_1_double = _mm512_mask_add_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, half_avx);
                 general_reg_1_double = _mm512_mask_min_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, fanout_minus_one_avx);
                 general_reg_1_double = _mm512_mask_max_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double, v_zero512_double);
                 general_reg_1_double = _mm512_mask_floor_pd(general_reg_1_double, state[k].m_have_tuple, general_reg_1_double);
