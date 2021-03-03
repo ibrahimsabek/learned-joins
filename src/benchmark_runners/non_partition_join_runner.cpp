@@ -555,10 +555,13 @@ void npj_build_rel_r_partition_learned_imv(ETHNonPartitionJoinBuild<KeyType, Pay
     __attribute__((aligned(CACHE_LINE_SIZE)))  __mmask8 mask[NPJ_VECTOR_SCALE + 1], m_to_insert = 0, m_no_conflict;
 
     __m512i v_offset = _mm512_set1_epi64(0), v_base_offset_upper = _mm512_set1_epi64(rel_r_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)),
-    v_base_offset, v_slopes_addr = _mm512_set1_epi64((uint64_t) (&(*slopes)[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&(*intercepts)[0])),
-    v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)),
+    v_base_offset, v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)),
     v_ht_cell, v_zero512 = _mm512_set1_epi64(0), v_addr, v_conflict, v_key_off = _mm512_set1_epi64(16), v_new_bucket, v_next,
     v_count_off = _mm512_set1_epi64(4), v_ht_addr = _mm512_set1_epi64((uint64_t) ht->buckets), v_next_off = _mm512_set1_epi64(8);
+
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
+    __m512i v_slopes_addr = _mm512_set1_epi64((uint64_t) (&(*slopes)[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&(*intercepts)[0]));
+#endif
 
     __m512d v_zero512_double = _mm512_set1_pd(0.), fanout_avx = _mm512_set1_pd((double)FANOUT), fanout_minus_one_avx = _mm512_set1_pd((double)FANOUT - 1.), 
     num_models_minus_one_avx = _mm512_set1_pd((double)num_models - 1.), root_slope_avx = _mm512_set1_pd(root_slope), 
@@ -1336,10 +1339,13 @@ uint64_t npj_probe_rel_s_partition_learned_imv(Relation<KeyType, PayloadType> * 
 
     int32_t k = 0, num, num_temp, done = 0, new_add = 0;
     __m512i v_base_offset_upper = _mm512_set1_epi64(rel_s_partition->num_tuples * sizeof(Tuple<KeyType, PayloadType>)), v_offset, v_base_offset,
-    v_slopes_addr = _mm512_set1_epi64((uint64_t) (&(*slopes)[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&(*intercepts)[0])),
     v_bucket_size = _mm512_set1_epi64(sizeof(Bucket<KeyType, PayloadType>)), v_ht_addr = _mm512_set1_epi64((uint64_t)ht->buckets),
     v_all_ones = _mm512_set1_epi64(-1), general_reg_1, general_reg_2, v_zero512 = _mm512_set1_epi64(0), v_ht_cell, 
     v_next_off = _mm512_set1_epi64(8), v_tuple_size = _mm512_set1_epi64(16); 
+
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
+    __m512i v_slopes_addr = _mm512_set1_epi64((uint64_t) (&(*slopes)[0])), v_intercepts_addr = _mm512_set1_epi64((uint64_t) (&(*intercepts)[0]));
+#endif
 
     __m512d v_zero512_double = _mm512_set1_pd(0.), fanout_avx = _mm512_set1_pd((double)FANOUT), fanout_minus_one_avx = _mm512_set1_pd((double)FANOUT - 1.), 
     num_models_minus_one_avx = _mm512_set1_pd((double)num_models - 1.), root_slope_avx = _mm512_set1_pd(root_slope), 
@@ -1954,6 +1960,7 @@ void * npj_join_thread(void * param)
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
             {   
                 for (unsigned int j = 0; j < args->rmi->hp.arch[1]; ++j) 
@@ -1962,6 +1969,7 @@ void * npj_join_thread(void * param)
                     args->intercepts->push_back(args->rmi->models[1][j].intercept);
                 }
             } 
+#endif            
         }        
     }
 #endif
