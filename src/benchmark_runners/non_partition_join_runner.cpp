@@ -1820,7 +1820,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       // Extrapolate for the number of models in the next layer
       current_model->slope *= args->p.arch[1] - 1;
       current_model->intercept *= args->p.arch[1] - 1;
-
+#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
       // Populate the training data for the next layer
       for (const auto &d : *current_training_data) {
         // Predict the model index in next layer
@@ -1910,7 +1910,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
           }
         }
       }
-
+#endif
       // NOTE:
       // The last stage (layer) of this model contains weights that predict the CDF
       // of the keys (i.e. Range is [0-1])
