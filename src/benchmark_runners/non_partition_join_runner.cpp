@@ -1925,6 +1925,8 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
 
             current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
             current_model->intercept = min.y - current_model->slope * min.x.key;
+            if(model_idx == 5)
+            printf("min.y %lf max.y %lf min.x.key %ld max.x.key %ld current_model->slope %lf current_model->intercept %lf\n", min.y, max.y, min.x.key, max.x.key, current_model->slope, current_model->intercept);
           }
         }
       }
