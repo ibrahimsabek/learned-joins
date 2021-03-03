@@ -1845,8 +1845,9 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
         // Normalize the rank between 0 and the number of models in the next layer
         rank =
             std::max(static_cast<unsigned int>(0), std::min(args->p.arch[1] - 1, rank));
-        printf("training: key %ld rank %ld \n", d.x.key, rank);
-        //if( (rel_r_partition->tuples[i].key == 368)|| (rel_r_partition->tuples[i].key == 192) || (rel_r_partition->tuples[i].key == 175)||(rel_r_partition->tuples[i].key >299 && rel_r_partition->tuples[i].key < 400))
+        
+        if(d.x.key >299 && d.x.key < 400)
+            printf("training: key %ld rank %ld \n", d.x.key, rank);
         // Place the data in the predicted training bucket
         (*training_data)[1][rank].push_back(d);
       }
