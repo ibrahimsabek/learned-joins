@@ -557,10 +557,10 @@ void sample_and_train_models_threaded(ETHRadixJoinThread<KeyType, PayloadType, T
     //const unsigned int SAMPLE_SZ = SAMPLE_SZ_R + SAMPLE_SZ_S;        
     
     // Start sampling
-    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR.tuples;
-    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR.tuples + (args->relR.num_tuples - 1);
-    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS.tuples;
-    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS.tuples + (args->relS.num_tuples - 1);
+    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR;
+    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR + (args->numR - 1);
+    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS;
+    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS + (args->numS - 1);
 
     uint32_t * sample_count = args->sample_count; 
     Tuple<KeyType, PayloadType> * tmp_training_sample = args->rmi->tmp_training_sample + args->tmp_training_sample_offset;
@@ -1583,7 +1583,7 @@ int main(int argc, char **argv)
     // wait for threads to finish
     for(i = 0; i < NUM_THREADS; i++){
         pthread_join(tid[i], NULL);
-        result += args[i].num_results;
+        result += args[i].results;
     }        
 
     //printf("join results: %ld \n", result);
