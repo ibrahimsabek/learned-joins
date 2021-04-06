@@ -140,18 +140,18 @@ ELSE(LINUX)
 ENDIF(LINUX)
 
 
-#add_library(imv_operator
-#    src/imv-operator/cpu_mapping.cpp
-#    src/imv-operator/generator.cpp
-#    src/imv-operator/genzipf.cpp
-#    src/imv-operator/npj.cpp
-#    src/imv-operator/no_partitioning_join.cpp
-#    src/imv-operator/build.cpp
-#  )
-#target_include_directories(imv_operator PUBLIC
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#    $<INSTALL_INTERFACE:include>
-#    PRIVATE src)
+add_library(imv_operator
+    src/imv-operator/cpu_mapping.cpp
+    src/imv-operator/generator.cpp
+    src/imv-operator/genzipf.cpp
+    src/imv-operator/npj.cpp
+    src/imv-operator/no_partitioning_join.cpp
+    src/imv-operator/build.cpp
+  )
+target_include_directories(imv_operator PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    PRIVATE src)
 
 # Enable tests
 enable_testing()
@@ -164,13 +164,13 @@ if(HARDWARE_BENCHMARKS)
   target_link_libraries(latency pthread)
 endif()
 
-# add_executable(operator src/imv-operator/main.cpp)
-#  target_include_directories(operator PUBLIC
-#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#    $<INSTALL_INTERFACE:include>
-#    PRIVATE src)
+ add_executable(operator src/imv-operator/main.cpp)
+ target_include_directories(operator PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    PRIVATE src)
 
-#  target_link_libraries(operator imv_operator)
+  target_link_libraries(operator imv_operator)
 
   add_executable(non_partition_join_runner src/benchmark_runners/non_partition_join_runner.cpp)
   target_include_directories(non_partition_join_runner PUBLIC
