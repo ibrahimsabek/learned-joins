@@ -1265,7 +1265,7 @@ void * pj_join_thread(void * param)
     //DEBUGMSG((my_tid == 0), "Number of join tasks = %d\n", join_queue->count);
 
     //Join phase
-    int numR_from_build = 0;
+    uint32_t numR_from_build = 0;
 
     for (int fid = 0; fid < pj_build_pf_num; ++fid) 
     {
