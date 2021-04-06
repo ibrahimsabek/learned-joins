@@ -38,12 +38,10 @@
 using namespace std;
 using namespace learned_sort_for_sort_merge;
 
-volatile static int small_padding_tupples, padding_tuples, relation_padding, l1_cache_tuples;
-small_padding_tupples = 0;
-//small_padding_tupples = SMALL_PADDING_TUPLES_MULTIPLIER * CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
-padding_tuples = small_padding_tupples * (FANOUT_PASS1 + 1);
-relation_padding = padding_tuples * FANOUT_PASS1 * sizeof(Tuple<KeyType, PayloadType>);
-l1_cache_tuples = L1_CACHE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
+volatile static int small_padding_tupples = 0; 
+volatile static int padding_tuples =  small_padding_tupples * (FANOUT_PASS1 + 1);
+volatile static int relation_padding = padding_tuples * FANOUT_PASS1 * sizeof(Tuple<KeyType, PayloadType>); 
+volatile static int l1_cache_tuples = L1_CACHE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
 
 typedef void (*PJPartitionFun)(PartitionType * const part);
 volatile static struct PartitionFun {
@@ -585,12 +583,12 @@ void * pj_join_thread(void * param)
 #ifdef RUN_LEARNED_TECHNIQUES        
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
-        if(args->tid == 0)
+        if(args->my_tid == 0)
             init_models_training_data_and_sample_counts<KeyType, PayloadType>(args->training_data, args->p.arch, 
                     args->sample_count, args->sample_count_R, args->sample_count_S, NUM_THREADS);
 
         BARRIER_ARRIVE(args->barrier, rv);
-        if(args->tid == 0){
+        if(args->my_tid == 0){
             gettimeofday(&t1, NULL);
         }
 
@@ -598,7 +596,7 @@ void * pj_join_thread(void * param)
 
         BARRIER_ARRIVE(args->barrier, rv);
 
-        if(args->tid == 0){
+        if(args->my_tid == 0){
             gettimeofday(&t2, NULL);
 
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
@@ -674,7 +672,7 @@ void * pj_join_thread(void * param)
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
-            if(args->tid == 0){
+            if(args->my_tid == 0){
                 gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
                 //args->e_start_to_partition.startCounters();
@@ -936,7 +934,7 @@ void * pj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
 
 
-            if(args->tid == 0){
+            if(args->my_tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
 
             #ifndef DEVELOPMENT_MODE
@@ -981,7 +979,7 @@ void * pj_join_thread(void * param)
         {
             BARRIER_ARRIVE(args->barrier, rv);
 
-            if(args->tid == 0){
+            if(args->my_tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
             }
 
@@ -1004,7 +1002,7 @@ void * pj_join_thread(void * param)
 
             BARRIER_ARRIVE(args->barrier, rv);
             // probe phase finished, thread-0 checkpoints the time
-            if(args->tid == 0){
+            if(args->my_tid == 0){
                 gettimeofday(&args->end_time, NULL);
 
                 deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
@@ -1129,10 +1127,10 @@ void initialize_pj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
 }
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
-void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args)
+void sample_and_train_models_threaded(ETHRadixJoinThread<KeyType, PayloadType, TaskType> * args)
 {
     int rv;
-    int tid = args->tid;
+    int tid = args->my_tid;
 
     //----------------------------------------------------------//
     //                           SAMPLE                         //
