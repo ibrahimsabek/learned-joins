@@ -27,13 +27,13 @@ OPTION(HASH_SIZE_32 OFF)
 OPTION(KNL OFF)
 
 
-#-mtune=native -g -march=skylake-avx512
+#-mtune=native -g 
 # Compiler flags for the different targets
 if(KNL)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -mtune=native -std=c++17 -g -fPIC -w -Wextra -Wno-psabi  -lnuma -fno-omit-frame-pointer -Wno-unknown-pragmas -mavx512f -mavx512pf -mavx512er -mavx512cd -mavx2 -mbmi2 -mavx -fpermissive")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -w -Wextra -lnuma -fno-omit-frame-pointer -march=native -fdiagnostics-color -mavx512f -mavx512pf -mavx512er -mavx512cd -mavx2 -mbmi2 -mavx -fpermissive")
 else()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -g -mtune=native -std=c++17 -fPIC -w -Wextra -Wno-psabi -lnuma -fno-omit-frame-pointer -Wno-unknown-pragmas -mavx512f -mavx512cd -mavx512bw -mavx512dq -mavx2 -mbmi2 -mavx -fpermissive -lpthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=skylake-avx512 -g -mtune=native -std=c++17 -fPIC -w -Wextra -Wno-psabi -lnuma -fno-omit-frame-pointer -Wno-unknown-pragmas -mavx512f -mavx512cd -mavx512bw -mavx512dq -mavx2 -mbmi2 -mavx -fpermissive -lpthread")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -w -Wextra -lnuma -fno-omit-frame-pointer -march=native -fdiagnostics-color -mavx512f -mavx512cd -mavx512bw -mavx512dq -mavx2 -mbmi2 -mavx -fpermissive -lpthread")
 endif(KNL)
 
