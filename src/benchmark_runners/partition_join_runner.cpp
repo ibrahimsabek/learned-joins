@@ -1583,7 +1583,7 @@ int main(int argc, char **argv)
     // wait for threads to finish
     for(i = 0; i < NUM_THREADS; i++){
         pthread_join(tid[i], NULL);
-        result += args[i].results;
+        result += args[i].result;
     }        
 
     //printf("join results: %ld \n", result);
