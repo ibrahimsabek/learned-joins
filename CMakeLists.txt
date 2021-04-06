@@ -178,8 +178,8 @@ endif()
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-  add_executable(partition_join_runner src/benchmark_runners/partition_join_runner.cpp)
-  target_include_directories(partition_join_runner PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
+#  add_executable(partition_join_runner src/benchmark_runners/partition_join_runner.cpp)
+#  target_include_directories(partition_join_runner PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
