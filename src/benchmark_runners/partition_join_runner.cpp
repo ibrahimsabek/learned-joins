@@ -57,7 +57,7 @@ volatile static struct BuildFun {
 } pj_build_pfun[4];
 volatile static int pj_build_pf_num = 0;
 
-typedef void (*PJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition, uint32_t numR_from_build, Relation<KeyType, PayloadType> * rel_s_partition, ETHBucketChainingBuild *build_output);
+typedef uint64_t (*PJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition, uint32_t numR_from_build, Relation<KeyType, PayloadType> * rel_s_partition, ETHBucketChainingBuild *build_output);
 volatile static struct ProbeFun {
   PJProbeFun fun_ptr;
   char fun_name[16];
