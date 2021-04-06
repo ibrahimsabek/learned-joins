@@ -58,8 +58,6 @@ uint32_t murmur_hash_32(uint32_t value) {
 
 void avx_murmur_hash_32(uint64_t * items, uint64_t * results) 
 {
-//TODO: to be checked
-/*
   const __m512i c1 = _mm512_set1_epi64(0x85ebca6b);
   const __m512i c2 = _mm512_set1_epi64(0xc2b2ae35);
 
@@ -77,7 +75,6 @@ void avx_murmur_hash_32(uint64_t * items, uint64_t * results)
   __m512i x3 = _mm512_xor_epi64(m2, s3);
 
   _mm512_store_epi64((uint64_t *) results, x3); 
-*/
 }
 
 // Fast alternative to modulo from Daniel Lemire  (based on the stanford implementation for cuckoo hashing)
