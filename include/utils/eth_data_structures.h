@@ -24,6 +24,25 @@ struct ETHRadixJoinThread : JoinThreadBase<KeyType, PayloadType, TaskType> {
 #endif
     /* stats about the thread */
     int32_t        parts_processed;
+
+    /**** start stuff for learning RMI models ****/
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
+    Relation<KeyType, PayloadType> *     original_relR;
+    Relation<KeyType, PayloadType> *     original_relS;
+    Tuple<KeyType, PayloadType> * tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_sorted_training_sample_in;
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data;
+    uint32_t tmp_training_sample_R_offset, tmp_training_sample_S_offset, tmp_training_sample_offset;
+    uint32_t * sample_count, * sample_count_R, * sample_count_S;
+    vector<double>* slopes; 
+    vector<double>* intercepts;
+    /**** end stuff for learning RMI models ****/
+
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
 
