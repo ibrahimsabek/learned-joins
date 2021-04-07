@@ -1010,7 +1010,7 @@ printf("before partitioning %d\n", my_tid);
             part.total_tuples = args->totalR;
             part.relidx       = 0;
         
-            //pj_partition_pfun[fid].fun_ptr(&part);
+            pj_partition_pfun[fid].fun_ptr(&part);
 printf("after partitioning R %d\n", my_tid);
 
             /* 2. partitioning for relation S */
