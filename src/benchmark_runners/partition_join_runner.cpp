@@ -93,10 +93,10 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
     int64_t i, j;
     int rv;
 
-    /* compute local histogram for the assigned region of rel */
-    /* compute histogram */
+    // compute local histogram for the assigned region of rel
+    // compute histogram 
 printf("inside partition segment pass 1 before %d\n", my_tid);
-    int32_t * my_hist = hist[my_tid];
+/*    int32_t * my_hist = hist[my_tid];
 printf("inside partition segment pass 1 %d\n", my_tid);
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
@@ -139,16 +139,15 @@ printf("inside partition segment pass 1 %d\n", my_tid);
     }
 #endif
 printf("inside partition segment pass 2 %d\n", my_tid);
-    /* compute local prefix sum on hist */
+    // compute local prefix sum on hist 
     for(i = 0; i < fanOut; i++){
         sum += my_hist[i];
         my_hist[i] = sum;
     }
 
-    /* wait at a barrier until each thread complete histograms */
     BARRIER_ARRIVE(part->thrargs->barrier, rv);
 
-    /* determine the start and end of each cluster */
+    // determine the start and end of each cluster 
     for(i = 0; i < my_tid; i++) {
         for(j = 0; j < fanOut; j++)
             output[j] += hist[i][j];
@@ -159,15 +158,13 @@ printf("inside partition segment pass 2 %d\n", my_tid);
     }
 printf("inside partition segment pass 3 %d\n", my_tid);
 
-        /* uint32_t pre; /\* nr of tuples to cache-alignment *\/ */
     Tuple<KeyType, PayloadType> * restrict tmp = part->tmp;
-    /* software write-combining buffer */
     CacheLine<KeyType, PayloadType> buffer[fanOut] __attribute__((aligned(CACHE_LINE_SIZE)));
 
     for(i = 0; i < fanOut; i++ ) {
         uint64_t off = output[i] + i * padding;
-        /* pre        = (off + TUPLESPERCACHELINE) & ~(TUPLESPERCACHELINE-1); */
-        /* pre       -= off; */
+        // pre        = (off + TUPLESPERCACHELINE) & ~(TUPLESPERCACHELINE-1); 
+        // pre       -= off;
         output[i]  = off;
         buffer[i].data.slot = off;
     }
@@ -175,7 +172,6 @@ printf("inside partition segment pass 3 %d\n", my_tid);
 
 printf("inside partition segment pass 4 %d\n", my_tid);
 
-    /* Copy tuples to their corresponding clusters */
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++ )
     {
@@ -191,7 +187,7 @@ printf("inside partition segment pass 4 %d\n", my_tid);
         tup[slotMod]      = rel[i];
 
         if(slotMod == ((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>))-1)){
-            /* write out 64-Bytes with non-temporal store */
+            // write out 64-Bytes with non-temporal store
             store_nontemp_64B<KeyType, PayloadType>((tmp+slot-((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>))-1)), (buffer+idx));
         }
         
@@ -216,7 +212,7 @@ printf("inside partition segment pass 4 %d\n", my_tid);
             tup[slotMod]      = rel[j * 8 + k];
 
             if(slotMod == ((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>))-1)){
-                /* write out 64-Bytes with non-temporal store */
+                // write out 64-Bytes with non-temporal store 
                 store_nontemp_64B<KeyType, PayloadType>((tmp+slot-((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>))-1)), (buffer+idx));
             }
 
@@ -235,17 +231,17 @@ printf("inside partition segment pass 4 %d\n", my_tid);
         tup[slotMod]      = rel[l];
 
         if(slotMod == ((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>))-1)){
-            /* write out 64-Bytes with non-temporal store */
+            // write out 64-Bytes with non-temporal store
             store_nontemp_64B<KeyType, PayloadType>((tmp+slot-((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>))-1)), (buffer+idx));
         }
         
         buffer[idx].data.slot = slot+1;
     }
 #endif
-    /* _mm_sfence (); */
+    // _mm_sfence (); 
 printf("inside partition segment pass 5 %d\n", my_tid);
 
-    /* write out the remainders in the buffer */
+    // write out the remainders in the buffer
     for(i = 0; i < fanOut; i++ ) {
         uint64_t slot  = buffer[i].data.slot;
         uint32_t sz    = (slot) & ((CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>)) - 1);
@@ -256,7 +252,7 @@ printf("inside partition segment pass 5 %d\n", my_tid);
         }
     }
 printf("inside partition segment pass 6 %d\n", my_tid);
-
+*/
 }
 
 uint32_t pj_build_rel_r_partition(ETHBucketChainingBuild *build_output, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
