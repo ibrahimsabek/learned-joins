@@ -98,7 +98,7 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
 printf("inside partition segment pass 1 before %d\n", my_tid);
     int32_t * my_hist = hist[my_tid];
 printf("inside partition segment pass 1 %d\n", my_tid);
-/*#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
+//#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
     {
         printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
@@ -113,7 +113,7 @@ printf("inside partition segment pass 1 %d\n", my_tid);
 
         my_hist[idx] ++;
     }
-#else
+/*#else
     int64_t num_tuples_batches = num_tuples / 8;
     uint32_t num_tuples_reminders = num_tuples % 8;
     i = 0;
