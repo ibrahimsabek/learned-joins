@@ -1103,7 +1103,6 @@ void * pj_join_thread(void * param)
         #warning Only 2-pass partitioning is implemented, set NUM_PASSES to 2!
         #endif
 
-        /**
         #if SKEW_HANDLING
             // Partitioning pass-2 for skewed relations
             part.R         = R;
@@ -1227,7 +1226,7 @@ void * pj_join_thread(void * param)
             }
 
         #endif
-        */
+        
             free(outputR);
             free(outputS);
 
