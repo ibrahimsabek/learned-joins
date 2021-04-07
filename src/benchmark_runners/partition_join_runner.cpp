@@ -1010,7 +1010,7 @@ printf("before partitioning %d\n", my_tid);
             part.total_tuples = args->totalR;
             part.relidx       = 0;
         
-            pj_partition_pfun[fid].fun_ptr(&part);
+            //pj_partition_pfun[fid].fun_ptr(&part);
 printf("after partitioning R %d\n", my_tid);
 
             /* 2. partitioning for relation S */
@@ -1022,20 +1022,20 @@ printf("after partitioning R %d\n", my_tid);
             part.total_tuples = args->totalS;
             part.relidx       = 1;
             
-            pj_partition_pfun[fid].fun_ptr(&part);
+            //pj_partition_pfun[fid].fun_ptr(&part);
 printf("after partitioning S %d\n", my_tid);
 
-            BARRIER_ARRIVE(args->barrier, rv);
-            /********** end of 1st partitioning phase ******************/
+/*            BARRIER_ARRIVE(args->barrier, rv);
+            // end of 1st partitioning phase 
 
             #if SKEW_HANDLING
-                /* experimental skew threshold */
-                /* const int thresh1 = MAX((1<<D), (1<<R)) * THRESHOLD1(args->nthreads); */
-                /* const int thresh1 = MAX(args->totalR, arg->totalS)/MAX((1<<D),(1<<R)); */
+                // experimental skew threshold
+                // const int thresh1 = MAX((1<<D), (1<<R)) * THRESHOLD1(args->nthreads);
+                // const int thresh1 = MAX(args->totalR, arg->totalS)/MAX((1<<D),(1<<R));
                 const int thresh1 = SKEWNESS_THRESHOLD_MULTIPLIER * l1_cache_tuples * args->nthreads;
             #endif
 
-            /* 3. first thread creates partitioning tasks for 2nd pass */
+            // 3. first thread creates partitioning tasks for 2nd pass
             if(my_tid == 0) {
                 for(i = 0; i < fanOut; i++) {
                     int32_t ntupR = outputR[i+1] - outputR[i] - padding_tuples;
@@ -1060,7 +1060,7 @@ printf("after partitioning S %d\n", my_tid);
                     else
         #endif
                     if(ntupR > 0 && ntupS > 0) {
-                        /* Determine the NUMA node of each partition: */
+                        // Determine the NUMA node of each partition:
 
                         #ifdef DEVELOPMENT_MODE
                         int pq_idx = get_numa_node_of_address_develop(NULL);
@@ -1085,27 +1085,24 @@ printf("after partitioning S %d\n", my_tid);
                     }
                 }
 
-                /* debug partitioning task queue */
+                // debug partitioning task queue
                 //DEBUGMSG(1, "Pass-2: # partitioning tasks = %d\n", part_queue->count);
 
-                /* DEBUG NUMA MAPPINGS */
-                /* printf("Correct NUMA-mappings = %d, Wrong = %d\n", */
-                /*        correct_numa_mapping, wrong_numa_mapping); */
-                /* printf("Counts -- 0=%d, 1=%d, 2=%d, 3=%d\n",  */
-                /*        counts[0], counts[1], counts[2], counts[3]); */
+                // DEBUG NUMA MAPPINGS
+                // printf("Correct NUMA-mappings = %d, Wrong = %d\n",
+                //        correct_numa_mapping, wrong_numa_mapping); 
+                // printf("Counts -- 0=%d, 1=%d, 2=%d, 3=%d\n",  
+                //        counts[0], counts[1], counts[2], counts[3]);
             }
 
-            /* wait at a barrier until first thread adds all partitioning tasks */
             BARRIER_ARRIVE(args->barrier, rv);
             
-            /************ 2nd pass of multi-pass partitioning ********************/
-            /* 4. now each thread further partitions and add to join task queue **/
+            // 2nd pass of multi-pass partitioning
+            // 4. now each thread further partitions and add to join task queue
 
         #if NUM_PASSES==1
-            /* If the partitioning is single pass we directly add tasks from pass-1 */
             TaskQueue<KeyType, PayloadType, TaskType> * swap = join_queue;
             join_queue = part_queue;
-            /* part_queue is used as a temporary queue for handling skewed parts */
             part_queue = swap;
             
         #elif NUM_PASSES==2
@@ -1117,10 +1114,10 @@ printf("after partitioning S %d\n", my_tid);
         #else
         #warning Only 2-pass partitioning is implemented, set NUM_PASSES to 2!
         #endif
-
-        
+*/
+        /**
         #if SKEW_HANDLING
-            /* Partitioning pass-2 for skewed relations */
+            // Partitioning pass-2 for skewed relations
             part.R         = R;
             part.D         = D;
             part.thrargs   = args;
@@ -1153,10 +1150,9 @@ printf("after partitioning S %d\n", my_tid);
                 args->histR[my_tid] = (int32_t*) calloc(fanOut2, sizeof(int32_t));
                 args->histS[my_tid] = (int32_t*) calloc(fanOut2, sizeof(int32_t));
 
-                /* wait until each thread allocates memory */
                 BARRIER_ARRIVE(args->barrier, rv);
 
-                /* 1. partitioning for relation R */
+                // 1. partitioning for relation R
                 part.rel          = (*args->skewtask)->relR.tuples + my_tid * numperthr;
                 part.tmp          = (*args->skewtask)->tmpR.tuples;
                 part.hist         = args->histR;
@@ -1165,11 +1161,11 @@ printf("after partitioning S %d\n", my_tid);
                                     ((*args->skewtask)->relR.num_tuples - my_tid * numperthr) 
                                     : numperthr;
                 part.total_tuples = (*args->skewtask)->relR.num_tuples;
-                part.relidx       = 2; /* meaning this is pass-2, no syncstats */
+                part.relidx       = 2; // meaning this is pass-2, no syncstats 
                 pj_partition_pfun[fid].fun_ptr(&part);
 
                 numperthr = (*args->skewtask)->relS.num_tuples / args->nthreads;
-                /* 2. partitioning for relation S */
+                // 2. partitioning for relation S
                 part.rel          = (*args->skewtask)->relS.tuples + my_tid * numperthr;
                 part.tmp          = (*args->skewtask)->tmpS.tuples;
                 part.hist         = args->histS;
@@ -1178,13 +1174,12 @@ printf("after partitioning S %d\n", my_tid);
                                     ((*args->skewtask)->relS.num_tuples - my_tid * numperthr)
                                     : numperthr;
                 part.total_tuples = (*args->skewtask)->relS.num_tuples;
-                part.relidx       = 2; /* meaning this is pass-2, no syncstats */
+                part.relidx       = 2; // meaning this is pass-2, no syncstats
                 pj_partition_pfun[fid].fun_ptr(&part);
 
-                /* wait at a barrier until each thread copies out */
                 BARRIER_ARRIVE(args->barrier, rv);
 
-                /* first thread adds join tasks */
+                // first thread adds join tasks
                 if(my_tid == 0) {
                     const int THR1 = l1_cache_tuples * args->nthreads;
 
@@ -1195,7 +1190,7 @@ printf("after partitioning S %d\n", my_tid);
 
                             //DEBUGMSG(1, "Large join task = R: %d, S: %d\n", ntupR, ntupS);
 
-                            /* use part_queue temporarily */
+                            // use part_queue temporarily
                             for(int k=0; k < args->nthreads; k++) {
                                 int ns = (k == args->nthreads-1)
                                         ? (ntupS - k*(ntupS/args->nthreads))
@@ -1237,20 +1232,18 @@ printf("after partitioning S %d\n", my_tid);
                 }
             }
 
-            /* add large join tasks in part_queue to the front of the join queue */
+            // add large join tasks in part_queue to the front of the join queue 
             if(my_tid == 0) {
                 while((task = task_queue_get_atomic<KeyType, PayloadType, TaskType>(part_queue)))
                     task_queue_add<KeyType, PayloadType, TaskType>(join_queue, task);
             }
 
         #endif
-
+        */
             free(outputR);
             free(outputS);
 
-            /* wait at a barrier until all threads add all join tasks */
             BARRIER_ARRIVE(args->barrier, rv);
-
 
             if(args->my_tid == 0){
                 gettimeofday(&args->partition_end_time, NULL);
