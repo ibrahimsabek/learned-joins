@@ -1246,14 +1246,14 @@ void * pj_join_thread(void * param)
         
             if(!((fid == (pj_partition_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
 
-                free(outputR);
-                free(outputS);
+                //free(outputR);
+                //free(outputS);
 
                 outputR = (int64_t *) calloc((fanOut+1), sizeof(int64_t));
                 outputS = (int64_t *) calloc((fanOut+1), sizeof(int64_t));
 
-                free(args->histR[my_tid]);
-                free(args->histS[my_tid]);
+                //free(args->histR[my_tid]);
+                //free(args->histS[my_tid]);
 
                 args->histR[my_tid] = (int32_t *) calloc(fanOut, sizeof(int32_t));
                 args->histS[my_tid] = (int32_t *) calloc(fanOut, sizeof(int32_t));
