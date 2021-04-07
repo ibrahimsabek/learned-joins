@@ -96,7 +96,7 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
     /* compute local histogram for the assigned region of rel */
     /* compute histogram */
     int32_t * my_hist = hist[my_tid];
-
+printf("inside partition segment pass 1 %d\n", my_tid);
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
     {
@@ -133,7 +133,7 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
         my_hist[idx] ++;
     }
 #endif
-
+printf("inside partition segment pass 2 %d\n", my_tid);
     /* compute local prefix sum on hist */
     for(i = 0; i < fanOut; i++){
         sum += my_hist[i];
@@ -152,6 +152,7 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
         for(j = 1; j < fanOut; j++)
             output[j] += hist[i][j-1];
     }
+printf("inside partition segment pass 3 %d\n", my_tid);
 
         /* uint32_t pre; /\* nr of tuples to cache-alignment *\/ */
     Tuple<KeyType, PayloadType> * restrict tmp = part->tmp;
@@ -166,6 +167,8 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
         buffer[i].data.slot = off;
     }
     output[fanOut] = part->total_tuples + fanOut * padding;
+
+printf("inside partition segment pass 4 %d\n", my_tid);
 
     /* Copy tuples to their corresponding clusters */
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
@@ -235,6 +238,7 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
     }
 #endif
     /* _mm_sfence (); */
+printf("inside partition segment pass 5 %d\n", my_tid);
 
     /* write out the remainders in the buffer */
     for(i = 0; i < fanOut; i++ ) {
@@ -246,6 +250,8 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
             slot ++;
         }
     }
+printf("inside partition segment pass 6 %d\n", my_tid);
+
 }
 
 uint32_t pj_build_rel_r_partition(ETHBucketChainingBuild *build_output, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
