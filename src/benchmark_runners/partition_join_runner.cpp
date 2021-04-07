@@ -103,11 +103,12 @@ printf("inside partition segment pass 1 %d\n", my_tid);
         printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
     #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
         uint32_t idx = HASH_BIT_MODULO(rel[i].key, MASK, R);
+        printf("inside partition segment pass 1 %d key %d idx %ld \n", my_tid, rel[i].key, idx);
     #else
         uint32_t idx_hash = murmur_hash_32(rel[i].key);
         uint32_t idx = HASH_BIT_MODULO(idx_hash, MASK, R);
-    #endif
         printf("inside partition segment pass 1 %d key %d idx_hash %ld idx %ld \n", my_tid, rel[i].key, idx_hash, idx);
+    #endif
 
         my_hist[idx] ++;
     }
