@@ -97,22 +97,23 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
     // compute histogram 
 printf("inside partition segment pass 1 before %d\n", my_tid);
     int32_t * my_hist = hist[my_tid];
-printf("inside partition segment pass 1 %d\n", my_tid);
 //#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
     {
-        printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
+        //printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
     #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
         uint32_t idx = HASH_BIT_MODULO(rel[i].key, MASK, R);
-        printf("inside partition segment pass 1 %d key %d idx %ld \n", my_tid, rel[i].key, idx);
+        //printf("inside partition segment pass 1 %d key %d idx %ld \n", my_tid, rel[i].key, idx);
     #else
         uint32_t idx_hash = murmur_hash_32(rel[i].key);
         uint32_t idx = HASH_BIT_MODULO(idx_hash, MASK, R);
-        printf("inside partition segment pass 1 %d key %d idx_hash %ld idx %ld \n", my_tid, rel[i].key, idx_hash, idx);
+        //printf("inside partition segment pass 1 %d key %d idx_hash %ld idx %ld \n", my_tid, rel[i].key, idx_hash, idx);
     #endif
 
         my_hist[idx] ++;
     }
+    printf("inside partition segment pass 1 %d\n", my_tid);
+
 /*#else
     int64_t num_tuples_batches = num_tuples / 8;
     uint32_t num_tuples_reminders = num_tuples % 8;
