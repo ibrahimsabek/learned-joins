@@ -157,7 +157,6 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
         for(j = 1; j < fanOut; j++)
             output[j] += hist[i][j-1];
     }
-//printf("inside partition segment pass 3 %d\n", my_tid);
 
     Tuple<KeyType, PayloadType> * restrict tmp = part->tmp;
     CacheLine<KeyType, PayloadType> buffer[fanOut] __attribute__((aligned(CACHE_LINE_SIZE)));
@@ -171,9 +170,7 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
     }
     output[fanOut] = part->total_tuples + fanOut * padding;
 
-printf("inside partition segment pass 4 %d\n", my_tid);
-/*
-#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
+//#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++ )
     {
     #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
@@ -194,7 +191,7 @@ printf("inside partition segment pass 4 %d\n", my_tid);
         
         buffer[idx].data.slot = slot+1;
     }
-#else
+/*#else
     num_tuples_batches = num_tuples / 8;
     num_tuples_reminders = num_tuples % 8;
     i = 0;
