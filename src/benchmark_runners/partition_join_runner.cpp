@@ -43,7 +43,7 @@ volatile static int padding_tuples =  small_padding_tupples * (FANOUT_PASS1 + 1)
 volatile static int relation_padding = padding_tuples * FANOUT_PASS1 * sizeof(Tuple<KeyType, PayloadType>); 
 volatile static int l1_cache_tuples = L1_CACHE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
 
-typedef void (*PJPartitionFun)(PartitionType * const part);
+typedef void (*PJPartitionFun)(PartitionType * part);
 volatile static struct PartitionFun {
   PJPartitionFun fun_ptr;
   char fun_name[16];
@@ -64,7 +64,7 @@ volatile static struct ProbeFun {
 } pj_probe_pfun[4];
 volatile static int pj_probe_pf_num = 0;
 
-void pj_partition_rel_segment_pass1(PartitionType * const part) {
+void pj_partition_rel_segment_pass1(PartitionType * part) {
 
     const Tuple<KeyType, PayloadType> * restrict rel    = part->rel;
     int32_t **               hist   = part->hist;
@@ -381,113 +381,113 @@ void radix_cluster(Relation<KeyType, PayloadType> * restrict outRel,
                    Relation<KeyType, PayloadType> * restrict inRel,
                    int32_t * restrict hist, int R, int D)
 {
-int64_t i;
-uint32_t M = ((1 << D) - 1) << R;
-uint32_t offset;
-uint32_t fanOut = 1 << D;
+    int64_t i;
+    uint32_t M = ((1 << D) - 1) << R;
+    uint32_t offset;
+    uint32_t fanOut = 1 << D;
 
-/* the following are fixed size when D is same for all the passes,
-    and can be re-used from call to call. Allocating in this function 
-    just in case D differs from call to call. */
-uint32_t dst[fanOut];
+    /* the following are fixed size when D is same for all the passes,
+        and can be re-used from call to call. Allocating in this function 
+        just in case D differs from call to call. */
+    uint32_t dst[fanOut];
 
-/* count tuples per cluster */
-#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
-for( i=0; i < inRel->num_tuples; i++ )
-{
-#ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
-    uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
-#else
-    uint32_t idx_hash = murmur_hash_32(inRel->tuples[i].key);
-    uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
-#endif
-    hist[idx]++;
-}
-#else
-
-int64_t num_tuples_batches = inRel->num_tuples / 8;
-uint32_t num_tuples_reminders = inRel->num_tuples % 8;
-i = 0;
-
-for(int64_t j = 0; j < num_tuples_batches; j++)
-{
-    uint64_t idx_hash[8];
-    avx_murmur_hash_32((uint64_t*)(&(inRel->tuples[j * 8])), idx_hash);
-    for(uint32_t k = 0; k < 8; k++)
+    /* count tuples per cluster */
+    #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
+    for( i=0; i < inRel->num_tuples; i++ )
     {
-        uint32_t idx = HASH_BIT_MODULO(idx_hash[k], M, R);
+    #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
+        uint32_t idx = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
+    #else
+        uint32_t idx_hash = murmur_hash_32(inRel->tuples[i].key);
+        uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
+    #endif
+        hist[idx]++;
+    }
+    #else
+
+    int64_t num_tuples_batches = inRel->num_tuples / 8;
+    uint32_t num_tuples_reminders = inRel->num_tuples % 8;
+    i = 0;
+
+    for(int64_t j = 0; j < num_tuples_batches; j++)
+    {
+        uint64_t idx_hash[8];
+        avx_murmur_hash_32((uint64_t*)(&(inRel->tuples[j * 8])), idx_hash);
+        for(uint32_t k = 0; k < 8; k++)
+        {
+            uint32_t idx = HASH_BIT_MODULO(idx_hash[k], M, R);
+
+            hist[idx] ++;
+        }   
+    }
+
+    for(uint32_t l = num_tuples_batches * 8; l < num_tuples_reminders; l++)
+    {
+        uint32_t idx_hash = murmur_hash_32(inRel->tuples[l].key);
+        uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
 
         hist[idx] ++;
-    }   
-}
+    }
 
-for(uint32_t l = num_tuples_batches * 8; l < num_tuples_reminders; l++)
-{
-    uint32_t idx_hash = murmur_hash_32(inRel->tuples[l].key);
-    uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
+    #endif
+    offset = 0;
+    int small_padding_tupples = 0;
+    //int small_padding_tupples = SMALL_PADDING_TUPLES_MULTIPLIER * CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
+    /* determine the start and end of each cluster depending on the counts. */
+    for ( i=0; i < fanOut; i++ ) {
+        /* dst[i]      = outRel->tuples + offset; */
+        /* determine the beginning of each partitioning by adding some
+            padding to avoid L1 conflict misses during scatter. */
+        dst[i] = offset + i * small_padding_tupples;
+        offset += hist[i];
+    }
 
-    hist[idx] ++;
-}
-
-#endif
-offset = 0;
-int small_padding_tupples = 0;
-//int small_padding_tupples = SMALL_PADDING_TUPLES_MULTIPLIER * CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
-/* determine the start and end of each cluster depending on the counts. */
-for ( i=0; i < fanOut; i++ ) {
-    /* dst[i]      = outRel->tuples + offset; */
-    /* determine the beginning of each partitioning by adding some
-        padding to avoid L1 conflict misses during scatter. */
-    dst[i] = offset + i * small_padding_tupples;
-    offset += hist[i];
-}
-
-/* copy tuples to their corresponding clusters at appropriate offsets */
-#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN   
-for( i=0; i < inRel->num_tuples; i++ )
-{
-#ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
-    uint32_t idx   = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
-#else
-    uint32_t idx_hash = murmur_hash_32(inRel->tuples[i].key);
-    uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
-#endif
-    outRel->tuples[ dst[idx] ] = inRel->tuples[i];
-    ++dst[idx];
-}
-#else
-num_tuples_batches = inRel->num_tuples / 8;
-num_tuples_reminders = inRel->num_tuples % 8;
-i = 0;
-
-for(int64_t j = 0; j < num_tuples_batches; j++)
-{
-    uint64_t idx_hash[8];
-    avx_murmur_hash_32((uint64_t*)(&(inRel->tuples[j * 8])), idx_hash);
-    for(uint32_t k = 0; k < 8; k++)
+    /* copy tuples to their corresponding clusters at appropriate offsets */
+    #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN   
+    for( i=0; i < inRel->num_tuples; i++ )
     {
-        uint32_t idx = HASH_BIT_MODULO(idx_hash[k], M, R);
-
-        outRel->tuples[ dst[idx] ] = inRel->tuples[j * 8 + k];
+    #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
+        uint32_t idx   = HASH_BIT_MODULO(inRel->tuples[i].key, M, R);
+    #else
+        uint32_t idx_hash = murmur_hash_32(inRel->tuples[i].key);
+        uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
+    #endif
+        outRel->tuples[ dst[idx] ] = inRel->tuples[i];
         ++dst[idx];
-    }   
-}
+    }
+    #else
+    num_tuples_batches = inRel->num_tuples / 8;
+    num_tuples_reminders = inRel->num_tuples % 8;
+    i = 0;
 
-for(uint32_t l = num_tuples_batches * 8; l < num_tuples_reminders; l++)
-{
-    uint32_t idx_hash = murmur_hash_32(inRel->tuples[l].key);
-    uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
+    for(int64_t j = 0; j < num_tuples_batches; j++)
+    {
+        uint64_t idx_hash[8];
+        avx_murmur_hash_32((uint64_t*)(&(inRel->tuples[j * 8])), idx_hash);
+        for(uint32_t k = 0; k < 8; k++)
+        {
+            uint32_t idx = HASH_BIT_MODULO(idx_hash[k], M, R);
 
-    outRel->tuples[ dst[idx] ] = inRel->tuples[l];
-    ++dst[idx];
-}
-#endif
+            outRel->tuples[ dst[idx] ] = inRel->tuples[j * 8 + k];
+            ++dst[idx];
+        }   
+    }
+
+    for(uint32_t l = num_tuples_batches * 8; l < num_tuples_reminders; l++)
+    {
+        uint32_t idx_hash = murmur_hash_32(inRel->tuples[l].key);
+        uint32_t idx = HASH_BIT_MODULO(idx_hash, M, R);
+
+        outRel->tuples[ dst[idx] ] = inRel->tuples[l];
+        ++dst[idx];
+    }
+    #endif
 }
 
 void serial_radix_partition(TaskType * const task, 
                             TaskQueue<KeyType, PayloadType, TaskType> * join_queue, 
                             const int R, const int D) 
-  {
+{
     int i;
     uint32_t offsetR = 0, offsetS = 0;
     const int fanOut = 1 << D;  /*(NUM_RADIX_BITS / NUM_PASSES);*/
@@ -533,7 +533,7 @@ void serial_radix_partition(TaskType * const task,
     }
     free(outputR);
     free(outputS);
-  }
+}
 
 #ifdef BUILD_RMI_FROM_TWO_DATASETS
 void sample_and_train_models_threaded(ETHRadixJoinThread<KeyType, PayloadType, TaskType> * args)
