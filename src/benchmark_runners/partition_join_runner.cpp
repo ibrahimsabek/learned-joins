@@ -170,7 +170,7 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
     }
     output[fanOut] = part->total_tuples + fanOut * padding;
 
-//#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
+#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++ )
     {
     #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
@@ -191,8 +191,9 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
         
         buffer[idx].data.slot = slot+1;
     }
-/*#else
-    num_tuples_batches = num_tuples / 8;
+#else
+    printf("USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN needs to be double checked for correctness \n");
+/*    num_tuples_batches = num_tuples / 8;
     num_tuples_reminders = num_tuples % 8;
     i = 0;
 
@@ -235,10 +236,9 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
         
         buffer[idx].data.slot = slot+1;
     }
+*/  
 #endif
     // _mm_sfence (); 
-printf("inside partition segment pass 5 %d\n", my_tid);
-
     // write out the remainders in the buffer
     for(i = 0; i < fanOut; i++ ) {
         uint64_t slot  = buffer[i].data.slot;
@@ -249,7 +249,6 @@ printf("inside partition segment pass 5 %d\n", my_tid);
             slot ++;
         }
     }
-   */ 
 printf("inside partition segment pass 6 %d\n", my_tid);
 }
 
