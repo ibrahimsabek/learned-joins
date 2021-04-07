@@ -36,6 +36,8 @@
 using namespace std;
 using namespace learned_sort_for_sort_merge;
 
+ETHSortMergeMultiwayJoinSteps<KeyType, PayloadType, 
+                                ETHSortMergeMultiwayJoinThread<KeyType, PayloadType>> join_steps;
 joinconfig_t joincfg;
 int CACHELINEPADDING;
 int RELATION_PADDING;
@@ -109,9 +111,6 @@ void * non_learned_sort_join_thread(void * param)
     int32_t my_tid = args->my_tid;
     int rv;
     int deltaT = 0; struct timeval t1, t2;
-
-    ETHSortMergeMultiwayJoinSteps<KeyType, PayloadType, 
-                                  ETHSortMergeMultiwayJoinThread<KeyType, PayloadType>> join_steps;
     
     /*************************************************************************
     *
