@@ -95,7 +95,6 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
 
     // compute local histogram for the assigned region of rel
     // compute histogram 
-printf("inside partition segment pass 1 before %d\n", my_tid);
     int32_t * my_hist = hist[my_tid];
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
@@ -249,7 +248,6 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
             slot ++;
         }
     }
-printf("inside partition segment pass 6 %d\n", my_tid);
 }
 
 uint32_t pj_build_rel_r_partition(ETHBucketChainingBuild *build_output, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
@@ -946,6 +944,7 @@ void * pj_join_thread(void * param)
 
         pj_probe_pf_num = 1;
 #else
+        printf("Learned versions are not supported yet! \n");
         //TODO: to be done
         /*strcpy(npj_pfun[0].fun_name, "Learned");
         strcpy(npj_pfun[1].fun_name, "Learned IMV");
@@ -1015,7 +1014,7 @@ printf("after partitioning R %d\n", my_tid);
             part.total_tuples = args->totalS;
             part.relidx       = 1;
             
-            //pj_partition_pfun[fid].fun_ptr(&part);
+            pj_partition_pfun[fid].fun_ptr(&part);
 printf("after partitioning S %d\n", my_tid);
 
 /*            BARRIER_ARRIVE(args->barrier, rv);
