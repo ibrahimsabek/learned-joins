@@ -147,9 +147,7 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
     }
 
     BARRIER_ARRIVE(part->thrargs->barrier, rv);
-    printf("inside partition segment pass 2 %d\n", my_tid);
 
-/*
     // determine the start and end of each cluster 
     for(i = 0; i < my_tid; i++) {
         for(j = 0; j < fanOut; j++)
@@ -159,7 +157,7 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
         for(j = 1; j < fanOut; j++)
             output[j] += hist[i][j-1];
     }
-printf("inside partition segment pass 3 %d\n", my_tid);
+//printf("inside partition segment pass 3 %d\n", my_tid);
 
     Tuple<KeyType, PayloadType> * restrict tmp = part->tmp;
     CacheLine<KeyType, PayloadType> buffer[fanOut] __attribute__((aligned(CACHE_LINE_SIZE)));
@@ -174,7 +172,7 @@ printf("inside partition segment pass 3 %d\n", my_tid);
     output[fanOut] = part->total_tuples + fanOut * padding;
 
 printf("inside partition segment pass 4 %d\n", my_tid);
-
+/*
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++ )
     {
