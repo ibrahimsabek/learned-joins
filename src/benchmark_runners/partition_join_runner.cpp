@@ -249,8 +249,8 @@ printf("inside partition segment pass 5 %d\n", my_tid);
             slot ++;
         }
     }
+   */ 
 printf("inside partition segment pass 6 %d\n", my_tid);
-*/
 }
 
 uint32_t pj_build_rel_r_partition(ETHBucketChainingBuild *build_output, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
