@@ -100,6 +100,7 @@ printf("inside partition segment pass 1 %d\n", my_tid);
 #ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
     {
+        printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
     #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
         uint32_t idx = HASH_BIT_MODULO(rel[i].key, MASK, R);
     #else
