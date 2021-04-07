@@ -978,8 +978,6 @@ void * pj_join_thread(void * param)
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
-printf("before partitioning %d\n", my_tid);
-
             if(args->my_tid == 0){
                 gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
@@ -1017,7 +1015,7 @@ printf("before partitioning %d\n", my_tid);
 
             BARRIER_ARRIVE(args->barrier, rv);
             // end of 1st partitioning phase 
-/*
+
             #if SKEW_HANDLING
                 // experimental skew threshold
                 // const int thresh1 = MAX((1<<D), (1<<R)) * THRESHOLD1(args->nthreads);
@@ -1104,7 +1102,7 @@ printf("before partitioning %d\n", my_tid);
         #else
         #warning Only 2-pass partitioning is implemented, set NUM_PASSES to 2!
         #endif
-*/
+
         /**
         #if SKEW_HANDLING
             // Partitioning pass-2 for skewed relations
