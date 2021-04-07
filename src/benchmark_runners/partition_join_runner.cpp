@@ -31,7 +31,7 @@
 #define NUM_THREADS NUM_THREADS_FOR_EVALUATION
 #endif
 
-#define RUN_NUMS 2 //10 
+#define RUN_NUMS 1 //2 //10 
 
 #define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
 
@@ -1267,8 +1267,6 @@ void * pj_join_thread(void * param)
     BARRIER_ARRIVE(args->barrier, rv);
     
     //DEBUGMSG((my_tid == 0), "Number of join tasks = %d\n", join_queue->count);
-/*
-printf("before joining %d\n", my_tid);
 
     //Join phase
     uint32_t numR_from_build = 0;
@@ -1291,9 +1289,9 @@ printf("before joining %d\n", my_tid);
                 printf("thread %d start build \n", my_tid);       
                 numR_from_build = pj_build_pfun[fid].fun_ptr(&build_output, &task->relR, NULL);    
 
-                printf("thread %d start probe \n", my_tid); 
-                results += pj_probe_pfun[fid].fun_ptr(&task->relR, numR_from_build, &task->relS, &build_output);     
-                printf("thread %d end probe curr_results %ld parts_processed %d\n", my_tid, results, args->parts_processed); 
+                //printf("thread %d start probe \n", my_tid); 
+                //results += pj_probe_pfun[fid].fun_ptr(&task->relR, numR_from_build, &task->relS, &build_output);     
+                //printf("thread %d end probe curr_results %ld parts_processed %d\n", my_tid, results, args->parts_processed); 
                 args->parts_processed ++;
             }
 
@@ -1310,7 +1308,7 @@ printf("before joining %d\n", my_tid);
             }
         }
     }
-*/
+
     return 0;
 }
 
