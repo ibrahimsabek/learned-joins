@@ -970,12 +970,13 @@ void * pj_join_thread(void * param)
 
 
     ETHPartition<KeyType, PayloadType, TaskType, ETHRadixJoinThread<KeyType, PayloadType, TaskType>> part;
-printf("before partitioning %d\n", my_tid);
 
     for (int fid = 0; fid < pj_partition_pf_num; ++fid) 
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
+printf("before partitioning %d\n", my_tid);
+
             if(args->my_tid == 0){
                 gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
@@ -1275,7 +1276,7 @@ printf("after partitioning S %d\n", my_tid);
     BARRIER_ARRIVE(args->barrier, rv);
     
     //DEBUGMSG((my_tid == 0), "Number of join tasks = %d\n", join_queue->count);
-
+/*
 printf("before joining %d\n", my_tid);
 
     //Join phase
@@ -1292,9 +1293,9 @@ printf("before joining %d\n", my_tid);
             }
 
             while((task = task_queue_get_atomic<KeyType, PayloadType, TaskType>(join_queue))){
-                /* do the actual join. join method differs for different algorithms,
-                i.e. bucket chaining, histogram-based, histogram-based with simd &
-                prefetching  */
+                // do the actual join. join method differs for different algorithms,
+                // i.e. bucket chaining, histogram-based, histogram-based with simd &
+                // prefetching
                 ETHBucketChainingBuild build_output; 
                 printf("thread %d start build \n", my_tid);       
                 numR_from_build = pj_build_pfun[fid].fun_ptr(&build_output, &task->relR, NULL);    
@@ -1318,7 +1319,7 @@ printf("before joining %d\n", my_tid);
             }
         }
     }
-
+*/
     return 0;
 }
 
