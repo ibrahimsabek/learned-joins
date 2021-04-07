@@ -1003,7 +1003,6 @@ printf("before partitioning %d\n", my_tid);
             part.relidx       = 0;
         
             pj_partition_pfun[fid].fun_ptr(&part);
-printf("after partitioning R %d\n", my_tid);
 
             /* 2. partitioning for relation S */
             part.rel          = args->relS;
@@ -1015,11 +1014,10 @@ printf("after partitioning R %d\n", my_tid);
             part.relidx       = 1;
             
             pj_partition_pfun[fid].fun_ptr(&part);
-printf("after partitioning S %d\n", my_tid);
 
-/*            BARRIER_ARRIVE(args->barrier, rv);
+            BARRIER_ARRIVE(args->barrier, rv);
             // end of 1st partitioning phase 
-
+/*
             #if SKEW_HANDLING
                 // experimental skew threshold
                 // const int thresh1 = MAX((1<<D), (1<<R)) * THRESHOLD1(args->nthreads);
