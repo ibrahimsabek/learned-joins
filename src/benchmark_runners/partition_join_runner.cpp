@@ -990,6 +990,7 @@ printf("before partitioning %d\n", my_tid);
             part.relidx       = 0;
         
             pj_partition_pfun[fid].fun_ptr(&part);
+printf("after partitioning R %d\n", my_tid);
 
             /* 2. partitioning for relation S */
             part.rel          = args->relS;
@@ -1001,6 +1002,7 @@ printf("before partitioning %d\n", my_tid);
             part.relidx       = 1;
             
             pj_partition_pfun[fid].fun_ptr(&part);
+printf("after partitioning S %d\n", my_tid);
 
             BARRIER_ARRIVE(args->barrier, rv);
             /********** end of 1st partitioning phase ******************/
