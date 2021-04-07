@@ -1577,7 +1577,6 @@ int main(int argc, char **argv)
                         #endif    
                                  &barrier, joinresult, args_ptr);
 
-printf("after initialization \n");
     for(i = 0; i < NUM_THREADS; i++)
     {
         #ifdef DEVELOPMENT_MODE
