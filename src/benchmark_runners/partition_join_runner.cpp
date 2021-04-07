@@ -961,6 +961,7 @@ void * pj_join_thread(void * param)
 
 
     ETHPartition<KeyType, PayloadType, TaskType, ETHRadixJoinThread<KeyType, PayloadType, TaskType>> part;
+printf("before partitioning %d\n", my_tid);
 
     for (int fid = 0; fid < pj_partition_pf_num; ++fid) 
     {
@@ -1264,6 +1265,8 @@ void * pj_join_thread(void * param)
     
     //DEBUGMSG((my_tid == 0), "Number of join tasks = %d\n", join_queue->count);
 
+printf("before joining %d\n", my_tid);
+
     //Join phase
     uint32_t numR_from_build = 0;
 
@@ -1561,7 +1564,7 @@ int main(int argc, char **argv)
                         #endif    
                                  &barrier, joinresult, args_ptr);
 
-
+printf("after initialization \n");
     for(i = 0; i < NUM_THREADS; i++)
     {
         #ifdef DEVELOPMENT_MODE
