@@ -1305,6 +1305,7 @@ void * pj_join_thread(void * param)
         }
     }
 
+    return 0;
 }
 
 
