@@ -97,7 +97,7 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
     // compute histogram 
 printf("inside partition segment pass 1 before %d\n", my_tid);
     int32_t * my_hist = hist[my_tid];
-//#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
+#ifndef USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN
     for(i = 0; i < num_tuples; i++) 
     {
         //printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
@@ -112,9 +112,8 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
 
         my_hist[idx] ++;
     }
-    printf("inside partition segment pass 1 %d\n", my_tid);
 
-/*#else
+#else
     int64_t num_tuples_batches = num_tuples / 8;
     uint32_t num_tuples_reminders = num_tuples % 8;
     i = 0;
@@ -140,7 +139,7 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
     }
 #endif
 printf("inside partition segment pass 2 %d\n", my_tid);
-    // compute local prefix sum on hist 
+/*    // compute local prefix sum on hist 
     for(i = 0; i < fanOut; i++){
         sum += my_hist[i];
         my_hist[i] = sum;
