@@ -114,6 +114,8 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
     }
 
 #else
+    printf("USE_VECTORIZED_MURMUR3_HASH_FOR_RADIX_JOIN needs to be double checked for correctness \n");
+    /*
     int64_t num_tuples_batches = num_tuples / 8;
     uint32_t num_tuples_reminders = num_tuples % 8;
     i = 0;
@@ -136,17 +138,18 @@ printf("inside partition segment pass 1 before %d\n", my_tid);
         uint32_t idx = HASH_BIT_MODULO(idx_hash, MASK, R);
 
         my_hist[idx] ++;
-    }
+    }*/
 #endif
-printf("inside partition segment pass 2 %d\n", my_tid);
-/*    // compute local prefix sum on hist 
+    // compute local prefix sum on hist 
     for(i = 0; i < fanOut; i++){
         sum += my_hist[i];
         my_hist[i] = sum;
     }
 
     BARRIER_ARRIVE(part->thrargs->barrier, rv);
+    printf("inside partition segment pass 2 %d\n", my_tid);
 
+/*
     // determine the start and end of each cluster 
     for(i = 0; i < my_tid; i++) {
         for(j = 0; j < fanOut; j++)
