@@ -1580,7 +1580,7 @@ int main(int argc, char **argv)
         result += args[i].result;
     }        
 
-    //printf("join results: %ld \n", result);
+    printf("join results: %ld \n", result);
 
     return 0;
 }
