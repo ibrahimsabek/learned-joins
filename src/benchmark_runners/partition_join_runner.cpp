@@ -107,6 +107,8 @@ printf("inside partition segment pass 1 %d\n", my_tid);
         uint32_t idx_hash = murmur_hash_32(rel[i].key);
         uint32_t idx = HASH_BIT_MODULO(idx_hash, MASK, R);
     #endif
+        printf("inside partition segment pass 1 %d key %d idx_hash %ld idx %ld \n", my_tid, rel[i].key, idx_hash, idx);
+
         my_hist[idx] ++;
     }
 #else
