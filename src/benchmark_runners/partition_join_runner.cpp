@@ -38,10 +38,19 @@
 using namespace std;
 using namespace learned_sort_for_sort_merge;
 
-volatile static int small_padding_tupples = 0; 
-volatile static int padding_tuples =  small_padding_tupples * (FANOUT_PASS1 + 1);
-volatile static int relation_padding = padding_tuples * FANOUT_PASS1 * sizeof(Tuple<KeyType, PayloadType>); 
-volatile static int l1_cache_tuples = L1_CACHE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
+    int32_t ** histR;
+    int32_t ** histS;
+    Tuple<KeyType, PayloadType> * tmpRelR;
+    Tuple<KeyType, PayloadType> * tmpRelS;
+    TaskQueue<KeyType, PayloadType, TaskType> ** part_queue_ptr;
+    TaskQueue<KeyType, PayloadType, TaskType> ** join_queue_ptr;
+#if SKEW_HANDLING
+    TaskQueue<KeyType, PayloadType, TaskType> * skew_queue;
+#endif
+    int small_padding_tupples = 0; 
+    int padding_tuples =  small_padding_tupples * (FANOUT_PASS1 + 1);
+    int relation_padding = padding_tuples * FANOUT_PASS1 * sizeof(Tuple<KeyType, PayloadType>); 
+    int l1_cache_tuples = L1_CACHE_SIZE/sizeof(Tuple<KeyType, PayloadType>);
 
 typedef void (*PJPartitionFun)(PartitionType * part);
 volatile static struct PartitionFun {
@@ -1469,16 +1478,6 @@ int main(int argc, char **argv)
     ETHRadixJoinThread<KeyType, PayloadType, TaskType> args[NUM_THREADS];
     ETHRadixJoinThread<KeyType, PayloadType, TaskType> * args_ptr = args;
     
-    int32_t ** histR;
-    int32_t ** histS;
-    Tuple<KeyType, PayloadType> * tmpRelR;
-    Tuple<KeyType, PayloadType> * tmpRelS;
-    TaskQueue<KeyType, PayloadType, TaskType> ** part_queue_ptr;
-    TaskQueue<KeyType, PayloadType, TaskType> ** join_queue_ptr;
-#if SKEW_HANDLING
-    TaskQueue<KeyType, PayloadType, TaskType> * skew_queue;
-#endif
-
 
     #ifdef DEVELOPMENT_MODE
     int numnuma = get_num_numa_regions_develop();
