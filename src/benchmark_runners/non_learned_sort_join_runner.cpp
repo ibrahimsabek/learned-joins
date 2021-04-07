@@ -14,7 +14,8 @@
 #include "utils/eth_data_structures.h"
 #include "utils/data_generation.h"
 #include "utils/io.h"
-
+#include "utils/eth_generic_task_queue.h"
+#include "utils/cpu_mapping.h"
 #include "utils/base_utils.h"
 #include "utils/math.h"
 #include "utils/barrier.h"
@@ -396,7 +397,7 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    CACHELINEPADDING = ((part_fanout_in) * CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>));
+    CACHELINEPADDING = ((ETH_SORT_MERGE_PARTITION_FANOUT_PER_THREAD) * CACHE_LINE_SIZE/sizeof(Tuple<KeyType, PayloadType>));
     RELATION_PADDING = ((NUM_THREADS) * CACHELINEPADDING * sizeof(Tuple<KeyType, PayloadType>));
     
 
