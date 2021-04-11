@@ -1998,33 +1998,33 @@ void * npj_join_thread(void * param)
     if (args->tid == 0) {
 
 #ifndef RUN_LEARNED_TECHNIQUES        
-        strcpy(npj_pfun[1].fun_name, "IMV");
+        //strcpy(npj_pfun[1].fun_name, "IMV");
         strcpy(npj_pfun[0].fun_name, "Naive");
 
-        npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
+        //npj_pfun[1].fun_ptr = npj_build_rel_r_partition_imv;
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition;
 
-        strcpy(npj_pfun1[1].fun_name, "IMV");
+        //strcpy(npj_pfun1[1].fun_name, "IMV");
         strcpy(npj_pfun1[0].fun_name, "Naive");
 
-        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_imv;
+        //npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_imv;
         npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition;
 
-        npj_pf_num = 2;
+        npj_pf_num = 1;
 #else
         strcpy(npj_pfun[0].fun_name, "Learned");
-        strcpy(npj_pfun[1].fun_name, "Learned IMV");
+        //strcpy(npj_pfun[1].fun_name, "Learned IMV");
 
         npj_pfun[0].fun_ptr = npj_build_rel_r_partition_learned;
-        npj_pfun[1].fun_ptr = npj_build_rel_r_partition_learned_imv;
+        //npj_pfun[1].fun_ptr = npj_build_rel_r_partition_learned_imv;
 
         strcpy(npj_pfun1[0].fun_name, "Learned");
-        strcpy(npj_pfun1[1].fun_name, "Learned IMV");
+        //strcpy(npj_pfun1[1].fun_name, "Learned IMV");
         
         npj_pfun1[0].fun_ptr = npj_probe_rel_s_partition_learned;
-        npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned_imv;
+        //npj_pfun1[1].fun_ptr = npj_probe_rel_s_partition_learned_imv;
 
-        npj_pf_num = 2;
+        npj_pf_num = 1;
 #endif        
     }
     BARRIER_ARRIVE(args->barrier, rv);
