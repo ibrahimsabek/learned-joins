@@ -687,7 +687,7 @@ readmerge_scalar_decomposed(MergeNode<KeyType, PayloadType> * node,
                             uint32_t fifosize)
 {
     /* scalar optimized without modulo */
-
+printf("here 9 \n");
     uint32_t nodecount = node->count;
     uint32_t nodehead  = node->head;
     uint32_t nodetail  = node->tail;
@@ -713,6 +713,7 @@ readmerge_scalar_decomposed(MergeNode<KeyType, PayloadType> * node,
     outnslots = oend - oi;
 
     Out += oi;
+printf("here 10 \n");
 
     /* fill first chunk of the node buffer */
     while( outnslots > 0 && ri < lenA && li < lenB ) {
@@ -736,6 +737,7 @@ readmerge_scalar_decomposed(MergeNode<KeyType, PayloadType> * node,
 
     nodecount += (oi - nodetail);
     nodetail = ((oi == fifosize) ? 0 : oi);
+printf("here 11 \n");
 
     if(outnslots == 0 && oend2 != 0) {
         outnslots = oend2 - oi2;
@@ -765,6 +767,7 @@ readmerge_scalar_decomposed(MergeNode<KeyType, PayloadType> * node,
         nodecount += oi2;
         nodetail = ((oi2 == fifosize) ? 0 : oi2);
     }
+printf("here 12 \n");
 
     if(nodecount < fifosize) {
         outnslots = fifosize - nodecount;
@@ -826,6 +829,7 @@ readmerge_scalar_decomposed(MergeNode<KeyType, PayloadType> * node,
     }
     *inA = A;
     *inB = B;
+printf("here 13 \n");
 
     node->tail  = nodetail;
     node->count = nodecount;
