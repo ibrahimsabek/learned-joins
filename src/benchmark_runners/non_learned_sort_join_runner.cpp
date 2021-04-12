@@ -233,7 +233,6 @@ void * non_learned_sort_join_thread(void * param)
     pthread_mutex_unlock(&(args->numa_taskqueues_locks[numaregionid]));
 #endif
 
-printf("thread %d here 1 \n", my_tid);
     BARRIER_ARRIVE(args->barrier, rv);
 
     /*************************************************************************
@@ -253,7 +252,6 @@ printf("thread %d here 1 \n", my_tid);
         if(my_tid == 0){ 
             gettimeofday(&args->sort_end_time, NULL);
         }
-printf("thread %d here 2 \n", my_tid);
 
         join_steps.multiwaymerge_phase(numaregionid, partsR, partsS, args,
             &mergedRelR, &mergedRelS);
