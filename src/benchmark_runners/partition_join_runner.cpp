@@ -74,6 +74,7 @@ volatile static struct ProbeFun {
 volatile static int pj_probe_pf_num = 0;
 
 void pj_partition_rel_segment_pass1(PartitionType * part) {
+    printf("here \n");
     const Tuple<KeyType, PayloadType> * restrict rel    = part->rel;
     int32_t **               hist   = part->hist;
     int64_t *       restrict output = part->output;
