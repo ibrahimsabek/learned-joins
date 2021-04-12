@@ -483,6 +483,8 @@ int main(int argc, char **argv)
     }
     #endif
 
+printf("here 1 \n");
+
     initialize_non_learned_sort_join_thread_args(&rel_r, &rel_s, &barrier, joinresult, args_ptr);
 
     for(i = 0; i < NUM_THREADS; i++){
