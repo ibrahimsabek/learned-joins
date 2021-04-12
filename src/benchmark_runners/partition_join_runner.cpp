@@ -101,11 +101,11 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
         //printf("inside partition segment pass 1 %d key %d\n", my_tid, rel[i].key);
     #ifndef USE_MURMUR3_HASH_FOR_RADIX_JOIN
         uint32_t idx = HASH_BIT_MODULO(rel[i].key, MASK, R);
-        printf("inside partition segment pass 1 %d key %d idx %ld \n", my_tid, rel[i].key, idx);
+        //printf("inside partition segment pass 1 %d key %d idx %ld \n", my_tid, rel[i].key, idx);
     #else
         uint32_t idx_hash = murmur_hash_32(rel[i].key);
         uint32_t idx = HASH_BIT_MODULO(idx_hash, MASK, R);
-        printf("inside partition segment pass 1 %d key %d idx_hash %ld idx %ld \n", my_tid, rel[i].key, idx_hash, idx);
+        //printf("inside partition segment pass 1 %d key %d idx_hash %ld idx %ld \n", my_tid, rel[i].key, idx_hash, idx);
     #endif
 
         my_hist[idx] ++;
@@ -1433,7 +1433,6 @@ int main(int argc, char **argv)
     uint64_t curr_num_tuples_r = RELATION_R_NUM_TUPLES;
     uint64_t curr_num_tuples_s = RELATION_S_NUM_TUPLES; 
 
-printf("here 0 \n");
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
     string curr_rel_r_path = RELATION_R_PATH;
@@ -1456,7 +1455,6 @@ printf("here 0 \n");
     #endif
 #endif
 
-printf("here 1 \n");
     int i, rv;
     pthread_barrier_t barrier;
     Result * joinresult;
@@ -1488,7 +1486,6 @@ printf("here 1 \n");
     }
 
     pthread_attr_init(&attr);
-printf("here 2 \n");
 
     //////////////////////////////////////////////////////////////////////////////
     // start stuff for sampling and building RMI models for both relations R and S
@@ -1543,8 +1540,6 @@ printf("here 2 \n");
     // End stuff for sampling and building RMI models for both relations R and S
     //////////////////////////////////////////////////////////////////////////////
 
-printf("here 3 \n");
-
     initialize_pj_join_thread_args(&rel_r, &rel_s, &rmi, rmi_params,
                                  SAMPLE_SZ_R, SAMPLE_SZ_S,
                                  tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
@@ -1557,8 +1552,6 @@ printf("here 3 \n");
                                  skew_queue,
                         #endif    
                                  &barrier, joinresult, args_ptr);
-
-printf("here 4 \n");
 
     for(i = 0; i < NUM_THREADS; i++)
     {
