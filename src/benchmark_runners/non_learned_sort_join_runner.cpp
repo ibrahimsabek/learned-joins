@@ -514,6 +514,7 @@ int main(int argc, char **argv)
     joinresult->totalresults = result;
     joinresult->nthreads     = NUM_THREADS;
 
+    printf("join results: %ld \n", result);
 
     return 0;
 }
