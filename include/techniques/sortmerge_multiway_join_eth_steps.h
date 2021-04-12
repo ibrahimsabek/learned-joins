@@ -211,6 +211,7 @@ class ETHSortMergeMultiwayJoinSteps : public SortMergeJoinSteps<KeyType, Payload
 
         Relation<KeyType, PayloadType> * Rparts[PARTFANOUT];
         Relation<KeyType, PayloadType> * Sparts[PARTFANOUT];
+printf("thread %d here 4 \n", my_tid);
 
         /* compute the size of merged relations to be stored locally */
         uint32_t f = 0;
@@ -230,6 +231,8 @@ class ETHSortMergeMultiwayJoinSteps : public SortMergeJoinSteps<KeyType, Payload
             }
         }
 
+printf("thread %d here 5 \n", my_tid);
+
         /* allocate memory at local node for temporary merge results */
         tmpoutR = (Tuple<KeyType, PayloadType> *) alloc_aligned_threadlocal(mergeRtotal*sizeof(Tuple<KeyType, PayloadType>));
         tmpoutS = (Tuple<KeyType, PayloadType> *) alloc_aligned_threadlocal(mergeStotal*sizeof(Tuple<KeyType, PayloadType>));
@@ -239,6 +242,8 @@ class ETHSortMergeMultiwayJoinSteps : public SortMergeJoinSteps<KeyType, Payload
         mergedRelR->num_tuples = mergeRtotal;
         mergedRelS->tuples = tmpoutS;
         mergedRelS->num_tuples = mergeStotal;
+
+printf("thread %d here 6 \n", my_tid);
 
         /* determine the L3 cache-size per thread */
         /* int nnuma = get_num_numa_regions(); */
@@ -255,6 +260,7 @@ class ETHSortMergeMultiwayJoinSteps : public SortMergeJoinSteps<KeyType, Payload
         Tuple<KeyType, PayloadType> * mergebuf = args->sharedmergebuffer[numaregionid]
                                                      + (numatidx * bufsz_thr);
 
+printf("thread %d here 7 \n", my_tid);
 
 #ifdef SKEW_HANDLING
         /* We decompose the merge tasks into number of merge tasks and
@@ -319,6 +325,9 @@ class ETHSortMergeMultiwayJoinSteps : public SortMergeJoinSteps<KeyType, Payload
             //         my_tid, mwtask->totaltuples);
             taskqueue_addfront(mergetaskqueue, mwtask);
         }
+
+        printf("thread %d here 8 \n", my_tid);
+
         /*** Wait until all threads complete skew handling logic. ***/
         BARRIER_ARRIVE(args->barrier, rv);
 
@@ -331,6 +340,7 @@ class ETHSortMergeMultiwayJoinSteps : public SortMergeJoinSteps<KeyType, Payload
             avx_multiway_merge<KeyType, PayloadType>(tmpoutR, Rparts, PARTFANOUT, 
                                mergebuf, bufsz_thr);
         }
+printf("thread %d here 9 \n", my_tid);
 
 #ifdef SKEW_HANDLING
         /** 6) Grab merge tasks from the task queue and merge as usual or
