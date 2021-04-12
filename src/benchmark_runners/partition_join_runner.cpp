@@ -1433,6 +1433,7 @@ int main(int argc, char **argv)
     uint64_t curr_num_tuples_r = RELATION_R_NUM_TUPLES;
     uint64_t curr_num_tuples_s = RELATION_S_NUM_TUPLES; 
 
+printf("here 0 \n");
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
     string curr_rel_r_path = RELATION_R_PATH;
