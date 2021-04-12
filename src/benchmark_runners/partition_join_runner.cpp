@@ -165,6 +165,8 @@ void pj_partition_rel_segment_pass1(PartitionType * part) {
         // pre        = (off + TUPLESPERCACHELINE) & ~(TUPLESPERCACHELINE-1); 
         // pre       -= off;
         output[i]  = off;
+        if(my_tid == 0)
+            printf("thread %d output[i] %ld\n", my_tid, output[i]);
         buffer[i].data.slot = off;
     }
     output[fanOut] = part->total_tuples + fanOut * padding;
