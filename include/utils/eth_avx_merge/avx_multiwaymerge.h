@@ -147,6 +147,7 @@ avx_multiway_merge(Tuple<KeyType, PayloadType> * output,
     /* align ring-buffer size to be multiple of 64-Bytes */
     /* fifosize = ALIGNDOWN(fifosize); */
     /* totalfifosize = fifosize * nfifos; */
+printf("here 4 \n" );
 
     MergeNode<KeyType, PayloadType> * nodes      = (MergeNode<KeyType, PayloadType> *)(fifobuffer + totalfifosize);
     uint8_t *     done       = (uint8_t *)(nodes + nfifos);
@@ -164,6 +165,7 @@ avx_multiway_merge(Tuple<KeyType, PayloadType> * output,
 
     uint32_t finished = 0;
     const uint32_t readthreshold = fifosize/2;
+printf("here 5 \n" );
 
     while(!finished) {
         finished = 1;
@@ -210,6 +212,7 @@ avx_multiway_merge(Tuple<KeyType, PayloadType> * output,
                 finished &= done[m];
             }
         }
+printf("here 6 \n" );
 
         /* now iterate inner nodes and do merge for ready nodes */
         for(; m >= 0; m--) {
@@ -257,6 +260,7 @@ avx_multiway_merge(Tuple<KeyType, PayloadType> * output,
                 finished &= done[m];
             }
         }
+printf("here 7 \n" );
 
         totalmerged +=
         /* finally iterate for the root node and store data */
@@ -264,6 +268,7 @@ avx_multiway_merge(Tuple<KeyType, PayloadType> * output,
                               done[0], done[1] /* full-merge? */
                               );
     }
+
 
     /* free(fifobuffer); */
     return totalmerged;
