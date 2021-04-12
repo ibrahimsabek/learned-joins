@@ -74,7 +74,6 @@ volatile static struct ProbeFun {
 volatile static int pj_probe_pf_num = 0;
 
 void pj_partition_rel_segment_pass1(PartitionType * part) {
-    printf("here \n");
     const Tuple<KeyType, PayloadType> * restrict rel    = part->rel;
     int32_t **               hist   = part->hist;
     int64_t *       restrict output = part->output;
@@ -1456,6 +1455,7 @@ int main(int argc, char **argv)
     #endif
 #endif
 
+printf("here 1 \n");
     int i, rv;
     pthread_barrier_t barrier;
     Result * joinresult;
@@ -1487,6 +1487,7 @@ int main(int argc, char **argv)
     }
 
     pthread_attr_init(&attr);
+printf("here 2 \n");
 
     //////////////////////////////////////////////////////////////////////////////
     // start stuff for sampling and building RMI models for both relations R and S
@@ -1541,6 +1542,7 @@ int main(int argc, char **argv)
     // End stuff for sampling and building RMI models for both relations R and S
     //////////////////////////////////////////////////////////////////////////////
 
+printf("here 3 \n");
 
     initialize_pj_join_thread_args(&rel_r, &rel_s, &rmi, rmi_params,
                                  SAMPLE_SZ_R, SAMPLE_SZ_S,
@@ -1554,6 +1556,8 @@ int main(int argc, char **argv)
                                  skew_queue,
                         #endif    
                                  &barrier, joinresult, args_ptr);
+
+printf("here 4 \n");
 
     for(i = 0; i < NUM_THREADS; i++)
     {
