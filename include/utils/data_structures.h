@@ -375,7 +375,7 @@ struct JoinThreadBase {
 
     struct timeval start_time, partition_end_time, end_time;
 #ifndef DEVELOPMENT_MODE
-    PerfEvent e_start_to_partition, e_partition_to_end;
+    //PerfEvent e_start_to_partition, e_partition_to_end;
 #endif     
     int64_t totalR;
     int64_t totalS;

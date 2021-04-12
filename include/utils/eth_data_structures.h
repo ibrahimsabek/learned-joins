@@ -219,7 +219,7 @@ struct ETHNonPartitionJoinThread {
     /* stats about the thread */
     struct timeval start_time, partition_end_time, end_time;
 #ifndef DEVELOPMENT_MODE
-    PerfEvent e_start_to_partition, e_partition_to_end;
+    //PerfEvent e_start_to_partition, e_partition_to_end;
 #endif
 #ifdef DEVELOPMENT_MODE
     unordered_map<uint64_t, uint64_t> * build_hash_bucket_visits;
@@ -318,7 +318,7 @@ struct ETHSortMergeMultiwayJoinThread {
 
     struct timeval start_time, partition_end_time, sort_end_time, tmp_sort_end_time, multiwaymerge_end_time, mergejoin_end_time, tmp_mergejoin_end_time;
 #ifndef DEVELOPMENT_MODE
-    PerfEvent e_start_to_partition, e_partition_to_sort, e_sort_to_multiwaymerge, e_multiwaymerge_to_mergejoin;
+    //PerfEvent e_start_to_partition, e_partition_to_sort, e_sort_to_multiwaymerge, e_multiwaymerge_to_mergejoin;
 #endif     
 
 }__attribute__((aligned(CACHE_LINE_SIZE)));
@@ -377,7 +377,7 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
 
     struct timeval sample_end_time;
 #ifndef DEVELOPMENT_MODE
-    PerfEvent e_start_to_sample, e_sample_to_partition, e_sort_to_mergejoin;
+    //PerfEvent e_start_to_sample, e_sample_to_partition, e_sort_to_mergejoin;
 #endif
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
