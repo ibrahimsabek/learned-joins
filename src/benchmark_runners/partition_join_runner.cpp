@@ -1305,7 +1305,6 @@ void * pj_join_thread(void * param)
 
                 deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 printf("---- %5s Join costs time (ms) = %10.4lf\n", pj_probe_pfun[fid].fun_name, deltaT * 1.0 / 1000);
-                printf("Join results %ld\n", args->result);
             }
         }
     }
