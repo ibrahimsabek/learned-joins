@@ -256,8 +256,6 @@ void * non_learned_sort_join_thread(void * param)
         join_steps.multiwaymerge_phase(numaregionid, partsR, partsS, args,
             &mergedRelR, &mergedRelS);
 
-printf("thread %d here 3 \n", my_tid);
-
         BARRIER_ARRIVE(args->barrier, rv);
 
         // partition phase finished, thread-0 checkpoints the time
