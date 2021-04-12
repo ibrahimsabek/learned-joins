@@ -58,7 +58,7 @@ int* ptrs_to_is_numa_taskqueues_created;
 #endif
 
 
-void initialize_non_learned_sort_join_thread_args(Relation<KeyType, PayloadType> * rel_r, 
+void initialize_non_learned_non_imv_sort_join_thread_args(Relation<KeyType, PayloadType> * rel_r, 
                         Relation<KeyType, PayloadType> * rel_s, 
                         pthread_barrier_t* barrier_ptr,
                         Result * joinresult,
@@ -108,7 +108,7 @@ void initialize_non_learned_sort_join_thread_args(Relation<KeyType, PayloadType>
 }
 
 
-void * non_learned_sort_join_thread(void * param)
+void * non_learned_non_imv_sort_join_thread(void * param)
 {
     ETHSortMergeMultiwayJoinThread<KeyType, PayloadType> * args   = (ETHSortMergeMultiwayJoinThread<KeyType, PayloadType> *) param;
     int32_t my_tid = args->my_tid;
@@ -484,7 +484,7 @@ int main(int argc, char **argv)
     #endif
 
 
-    initialize_non_learned_sort_join_thread_args(&rel_r, &rel_s, &barrier, joinresult, args_ptr);
+    initialize_non_learned_non_imv_sort_join_thread_args(&rel_r, &rel_s, &barrier, joinresult, args_ptr);
 
     for(i = 0; i < NUM_THREADS; i++){
         #ifdef DEVELOPMENT_MODE
@@ -498,7 +498,7 @@ int main(int argc, char **argv)
         CPU_SET(cpu_idx, &set);
         pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
-        rv = pthread_create(&tid[i], &attr, non_learned_sort_join_thread, (void*)&args[i]);
+        rv = pthread_create(&tid[i], &attr, non_learned_non_imv_sort_join_thread, (void*)&args[i]);
         if (rv){
             printf("[ERROR] return code from pthread_create() is %d\n", rv);
             exit(-1);
