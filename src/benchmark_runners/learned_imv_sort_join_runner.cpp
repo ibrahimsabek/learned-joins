@@ -137,8 +137,12 @@ void initialize_learned_imv_sort_join_thread_args(Relation<KeyType, PayloadType>
                         LearnedSortMergeMultiwayJoinThread<KeyType, PayloadType> * args)
 {
     int32_t numperthr[2];
+    unsigned int SAMPLE_SZ_Rthr, SAMPLE_SZ_Sthr;
+
     numperthr[0] = rel_r->num_tuples / NUM_THREADS;
     numperthr[1] = rel_s->num_tuples / NUM_THREADS;
+    SAMPLE_SZ_Rthr = SAMPLE_SZ_R / NUM_THREADS;
+    SAMPLE_SZ_Sthr = SAMPLE_SZ_S / NUM_THREADS;
 
     int i;
     for(i = 0; i < NUM_THREADS; i++)
@@ -182,8 +186,8 @@ void initialize_learned_imv_sort_join_thread_args(Relation<KeyType, PayloadType>
         (*(args + i)).MINOR_BCKTS_OFFSET_s = s_MINOR_BCKTS_OFFSET[i];
         (*(args + i)).TOT_NUM_MINOR_BCKTS_r = r_TOT_NUM_MINOR_BCKTS;
         (*(args + i)).TOT_NUM_MINOR_BCKTS_s = s_TOT_NUM_MINOR_BCKTS;
-        (*(args + i)).INPUT_SZ_r = relR->num_tuples;
-        (*(args + i)).INPUT_SZ_s = relS->num_tuples; 
+        (*(args + i)).INPUT_SZ_r = rel_r->num_tuples;
+        (*(args + i)).INPUT_SZ_s = rel_s->num_tuples; 
 
         /**** start stuff for learning RMI models ****/
         (*(args + i)).rmi = rmi;
@@ -262,10 +266,10 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
     //const unsigned int SAMPLE_SZ = SAMPLE_SZ_R + SAMPLE_SZ_S;        
     
     // Start sampling
-    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR.tuples;
-    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR.tuples + (args->relR.num_tuples - 1);
-    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS.tuples;
-    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS.tuples + (args->relS.num_tuples - 1);
+    Tuple<KeyType, PayloadType> *   relR_start_sampling_ptr = args->relR->tuples;
+    Tuple<KeyType, PayloadType> *   relR_end_sampling_ptr = args->relR->tuples + (args->relR->num_tuples - 1);
+    Tuple<KeyType, PayloadType> *   relS_start_sampling_ptr = args->relS->tuples;
+    Tuple<KeyType, PayloadType> *   relS_end_sampling_ptr = args->relS->tuples + (args->relS->num_tuples - 1);
 
     uint32_t * sample_count = args->sample_count; 
     Tuple<KeyType, PayloadType> * tmp_training_sample = args->rmi->tmp_training_sample + args->tmp_training_sample_offset;
