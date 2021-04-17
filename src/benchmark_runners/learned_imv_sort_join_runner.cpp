@@ -259,10 +259,10 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
     unsigned int INPUT_SZ_S = args->original_relS->num_tuples;
     const unsigned int SAMPLE_SZ_R = std::min<unsigned int>(
         INPUT_SZ_R, std::max<unsigned int>(args->p.sampling_rate * INPUT_SZ_R,
-                                        RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
     const unsigned int SAMPLE_SZ_S = std::min<unsigned int>(
         INPUT_SZ_S, std::max<unsigned int>(args->p.sampling_rate * INPUT_SZ_S,
-                                        RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
     //const unsigned int SAMPLE_SZ = SAMPLE_SZ_R + SAMPLE_SZ_S;        
     
     // Start sampling
@@ -353,7 +353,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
 
       // Train the root model using linear interpolation
       auto *current_training_data = &(*training_data)[0][0];
-      typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
+      typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
 
       // Find the min and max values in the training set
       training_point<KeyType, PayloadType> min = current_training_data->front();
@@ -481,10 +481,10 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
     unsigned int INPUT_SZ_S = args->original_relS->num_tuples;
     const unsigned int SAMPLE_SZ_R = std::min<unsigned int>(
         INPUT_SZ_R, std::max<unsigned int>(args->r_p.sampling_rate * INPUT_SZ_R,
-                                        RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
     const unsigned int SAMPLE_SZ_S = std::min<unsigned int>(
         INPUT_SZ_S, std::max<unsigned int>(args->s_p.sampling_rate * INPUT_SZ_S,
-                                        RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE));
     //const unsigned int SAMPLE_SZ = SAMPLE_SZ_R + SAMPLE_SZ_S;        
     
     // Start sampling
@@ -605,7 +605,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
 
       // Train the root model using linear interpolation
       auto *current_training_data = &(*r_training_data)[0][0];
-      typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->r_rmi->models[0][0];
+      typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::linear_model *current_model = &args->r_rmi->models[0][0];
 
       // Find the min and max values in the training set
       training_point<KeyType, PayloadType> min = current_training_data->front();
@@ -734,7 +734,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
 
       // Train the root model using linear interpolation
       auto *current_training_data = &(*s_training_data)[0][0];
-      typename RMI<KeyType, PayloadType>::linear_model *current_model = &args->s_rmi->models[0][0];
+      typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::linear_model *current_model = &args->s_rmi->models[0][0];
 
       // Find the min and max values in the training set
       training_point<KeyType, PayloadType> min = current_training_data->front();
@@ -1172,7 +1172,7 @@ int main(int argc, char **argv)
     sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned((SAMPLE_SZ_R + SAMPLE_SZ_S) * sizeof(Tuple<KeyType, PayloadType>));
     #endif
 
-    RMI<KeyType, PayloadType> rmi(rmi_params, tmp_training_sample_in, sorted_training_sample_in,
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> rmi(rmi_params, tmp_training_sample_in, sorted_training_sample_in,
                                               r_tmp_training_sample_in, r_sorted_training_sample_in,
                                               s_tmp_training_sample_in, s_sorted_training_sample_in);
 
@@ -1205,7 +1205,7 @@ int main(int argc, char **argv)
     r_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
     #endif
 
-    RMI<KeyType, PayloadType> r_rmi(r_rmi_params, r_tmp_training_sample_in, r_sorted_training_sample_in);
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> r_rmi(r_rmi_params, r_tmp_training_sample_in, r_sorted_training_sample_in);
 
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params s_rmi_params;
     learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(s_rmi_params, rel_s.num_tuples);
@@ -1218,7 +1218,7 @@ int main(int argc, char **argv)
     s_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_S * sizeof(Tuple<KeyType, PayloadType>));
     #endif
 
-    RMI<KeyType, PayloadType> s_rmi(s_rmi_params, s_tmp_training_sample_in, s_sorted_training_sample_in);
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> s_rmi(s_rmi_params, s_tmp_training_sample_in, s_sorted_training_sample_in);
     
     
     vector<vector<vector<training_point<KeyType, PayloadType>>>> r_training_data(r_rmi_params.arch.size());
