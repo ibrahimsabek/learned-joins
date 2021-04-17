@@ -34,8 +34,6 @@
 
 #define RUN_NUMS 1 //10 
 
-#define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
-
 using namespace std;
 using namespace learned_sort_for_sort_merge;
 

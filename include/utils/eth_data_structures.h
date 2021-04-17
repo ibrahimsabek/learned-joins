@@ -347,6 +347,9 @@ struct MergeTask {
 template<typename KeyType, typename PayloadType>
 struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyType, PayloadType> 
 {
+    int32_t numR_to_be_partitioned;
+    int32_t numS_to_be_partitioned;
+
     Tuple<KeyType, PayloadType> * tmp_minor_bckts_r;
     Tuple<KeyType, PayloadType> * tmp_minor_bckts_s;
     int64_t * tmp_minor_bckt_sizes_r;
@@ -372,8 +375,31 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
     unsigned int INPUT_SZ_r;
     unsigned int INPUT_SZ_s;
 
+    /**** start stuff for learning RMI models ****/
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi_r;
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi_s;
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params r_p;
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params s_p;
+    Relation<KeyType, PayloadType> *     original_relR;
+    Relation<KeyType, PayloadType> *     original_relS;
+    Tuple<KeyType, PayloadType> * tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_sorted_training_sample_in;
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data;
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * r_training_data;
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * s_training_data;
+    uint32_t tmp_training_sample_R_offset, tmp_training_sample_S_offset, tmp_training_sample_offset;
+    uint32_t * sample_count, * sample_count_R, * sample_count_S;
+    vector<double>* slopes; vector<double>* intercepts;
+    vector<double>* r_slopes; vector<double>* r_intercepts;
+    vector<double>* s_slopes; vector<double>* s_intercepts;
+    /**** end stuff for learning RMI models ****/
+
 
     struct timeval sample_end_time;
 #ifndef DEVELOPMENT_MODE
@@ -397,8 +423,10 @@ init_models_training_data_and_sample_counts(vector<vector<vector<training_point<
     for(int i = 0; i < num_threads; i++)
     {
         sample_count[i] = 0;
+#ifdef BUILD_RMI_FROM_TWO_DATASETS
         sample_count_R[i] = 0;
         sample_count_S[i] = 0;
+#endif
     }
 }
 
