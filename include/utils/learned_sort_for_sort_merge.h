@@ -1604,6 +1604,7 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
   }
 
 #else
+printf("here1 \n");
   // Iterate over the elements in the current bucket in batch-mode
   for (unsigned int batch_idx = 0; batch_idx < num_batches; ++batch_idx) 
   {
