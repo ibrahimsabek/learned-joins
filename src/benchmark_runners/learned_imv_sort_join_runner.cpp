@@ -989,7 +989,7 @@ void * learned_imv_sort_join_thread(void * param)
             gettimeofday(&args->partition_end_time, NULL);
 
             deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
-            printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned IMV sort join", deltaT * 1.0 / 1000);
+            printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
         }
     
         if(!(rp == (RUN_NUMS - 1))){
