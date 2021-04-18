@@ -946,7 +946,7 @@ void * learned_imv_sort_join_thread(void * param)
                                                 tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, -1, -1);
 
 
-            for(int i = 0; i < NUM_THREADS; i++)
+/*          for(int i = 0; i < NUM_THREADS; i++)
             {
                printf("r_partition_offsets for thread %d is %d\n", i, r_partition_offsets[i]);
                printf("r_partition_sizes_for_threads for thread %d is %d\n", i, r_partition_sizes_for_threads[i]);
@@ -962,8 +962,9 @@ void * learned_imv_sort_join_thread(void * param)
                }
                printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
             }
+*/
             
-            for(int i = 0; i < NUM_THREADS; i++)
+/*          for(int i = 0; i < NUM_THREADS; i++)
             {
                printf("s_partition_offsets for thread %d is %d\n", i, s_partition_offsets[i]);
                printf("s_partition_sizes_for_threads for thread %d is %d\n", i, s_partition_sizes_for_threads[i]);
@@ -979,6 +980,7 @@ void * learned_imv_sort_join_thread(void * param)
                }
                printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
             }
+*/
         }
 
         // wait at a barrier until each thread completes the partition phase
