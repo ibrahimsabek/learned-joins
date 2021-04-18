@@ -125,9 +125,9 @@ void initialize_learned_imv_sort_join_thread_args(Relation<KeyType, PayloadType>
                         Tuple<KeyType, PayloadType> * r_sorted_training_sample_in,
                         Tuple<KeyType, PayloadType> * s_tmp_training_sample_in,
                         Tuple<KeyType, PayloadType> * s_sorted_training_sample_in,
-                        vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data,
-                        vector<vector<vector<training_point<KeyType, PayloadType>>>> * r_training_data,
-                        vector<vector<vector<training_point<KeyType, PayloadType>>>> * s_training_data,
+                        vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> * training_data,
+                        vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> * r_training_data,
+                        vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> * s_training_data,
                         uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S,
                         vector<double>* slopes, vector<double>* intercepts,
                         vector<double>* r_slopes, vector<double>* r_intercepts,
@@ -346,7 +346,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       }
          
       // Populate the training data for the root model
-      vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
+      vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> * training_data = args->training_data;
       for (unsigned int i = 0; i < total_sample_count; ++i) {
         (*training_data)[0][0].push_back({((*(args->rmi->training_sample))[i]), 1. * i / total_sample_count});
       }
@@ -356,8 +356,8 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::linear_model *current_model = &args->rmi->models[0][0];
 
       // Find the min and max values in the training set
-      training_point<KeyType, PayloadType> min = current_training_data->front();
-      training_point<KeyType, PayloadType> max = current_training_data->back();
+      learned_sort_for_sort_merge::training_point<KeyType, PayloadType> min = current_training_data->front();
+      learned_sort_for_sort_merge::training_point<KeyType, PayloadType> max = current_training_data->back();
 
       // Calculate the slope and intercept terms
       current_model->slope =
@@ -400,7 +400,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
 
             // Insert a fictive training point to avoid propagating more than one
             // empty initial models.
-            training_point<KeyType, PayloadType> tp;
+            learned_sort_for_sort_merge::training_point<KeyType, PayloadType> tp;
             tp.x.key = 0;
             tp.x.payload = 0;
             tp.y = 0;
@@ -444,7 +444,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             // empty initial models.
             // NOTE: This will _NOT_ throw to DIV/0 due to identical x's and y's
             // because it is working backwards.
-            training_point<KeyType, PayloadType> tp;
+            learned_sort_for_sort_merge::training_point<KeyType, PayloadType> tp;
             tp.x = (*training_data)[1][model_idx - 1].back().x;
             tp.y = (*training_data)[1][model_idx - 1].back().y;
             current_training_data->push_back(tp);
@@ -598,7 +598,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       }
          
       // Populate the training data for the root model
-      vector<vector<vector<training_point<KeyType, PayloadType>>>> * r_training_data = args->r_training_data;
+      vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> * r_training_data = args->r_training_data;
       for (unsigned int i = 0; i < total_sample_count_R; ++i) {
         (*r_training_data)[0][0].push_back({((*(args->r_rmi->training_sample))[i]), 1. * i / total_sample_count_R});
       }
@@ -608,8 +608,8 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::linear_model *current_model = &args->r_rmi->models[0][0];
 
       // Find the min and max values in the training set
-      training_point<KeyType, PayloadType> min = current_training_data->front();
-      training_point<KeyType, PayloadType> max = current_training_data->back();
+      learned_sort_for_sort_merge::training_point<KeyType, PayloadType> min = current_training_data->front();
+      learned_sort_for_sort_merge::training_point<KeyType, PayloadType> max = current_training_data->back();
 
       // Calculate the slope and intercept terms
       current_model->slope =
@@ -652,7 +652,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
 
             // Insert a fictive training point to avoid propagating more than one
             // empty initial models.
-            training_point<KeyType, PayloadType> tp;
+            learned_sort_for_sort_merge::training_point<KeyType, PayloadType> tp;
             tp.x.key = 0;
             tp.x.payload = 0;
             tp.y = 0;
@@ -697,7 +697,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             // empty initial models.
             // NOTE: This will _NOT_ throw to DIV/0 due to identical x's and y's
             // because it is working backwards.
-            training_point<KeyType, PayloadType> tp;
+            learned_sort_for_sort_merge::training_point<KeyType, PayloadType> tp;
             tp.x = (*r_training_data)[1][model_idx - 1].back().x;
             tp.y = (*r_training_data)[1][model_idx - 1].back().y;
             current_training_data->push_back(tp);
@@ -727,7 +727,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       }
          
       // Populate the training data for the root model
-      vector<vector<vector<training_point<KeyType, PayloadType>>>> * s_training_data = args->s_training_data;
+      vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> * s_training_data = args->s_training_data;
       for (unsigned int i = 0; i < total_sample_count; ++i) {
         (*s_training_data)[0][0].push_back({((*(args->s_rmi->training_sample))[i]), 1. * i / total_sample_count_S});
       }
@@ -737,8 +737,8 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::linear_model *current_model = &args->s_rmi->models[0][0];
 
       // Find the min and max values in the training set
-      training_point<KeyType, PayloadType> min = current_training_data->front();
-      training_point<KeyType, PayloadType> max = current_training_data->back();
+      learned_sort_for_sort_merge::training_point<KeyType, PayloadType> min = current_training_data->front();
+      learned_sort_for_sort_merge::training_point<KeyType, PayloadType> max = current_training_data->back();
 
       // Calculate the slope and intercept terms
       current_model->slope =
@@ -781,7 +781,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
 
             // Insert a fictive training point to avoid propagating more than one
             // empty initial models.
-            training_point<KeyType, PayloadType> tp;
+            learned_sort_for_sort_merge::training_point<KeyType, PayloadType> tp;
             tp.x.key = 0;
             tp.x.payload = 0;
             tp.y = 0;
@@ -826,7 +826,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             // empty initial models.
             // NOTE: This will _NOT_ throw to DIV/0 due to identical x's and y's
             // because it is working backwards.
-            training_point<KeyType, PayloadType> tp;
+            learned_sort_for_sort_merge::training_point<KeyType, PayloadType> tp;
             tp.x = (*training_data)[1][model_idx - 1].back().x;
             tp.y = (*training_data)[1][model_idx - 1].back().y;
             current_training_data->push_back(tp);
@@ -1176,7 +1176,7 @@ int main(int argc, char **argv)
                                               r_tmp_training_sample_in, r_sorted_training_sample_in,
                                               s_tmp_training_sample_in, s_sorted_training_sample_in);
 
-    vector<vector<vector<training_point<KeyType, PayloadType>>>> training_data(rmi_params.arch.size());
+    vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> training_data(rmi_params.arch.size());
     for (unsigned int layer_idx = 0; layer_idx < rmi_params.arch.size(); ++layer_idx) {
         training_data[layer_idx].resize(rmi_params.arch[layer_idx]);
     }
@@ -1221,11 +1221,11 @@ int main(int argc, char **argv)
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> s_rmi(s_rmi_params, s_tmp_training_sample_in, s_sorted_training_sample_in);
     
     
-    vector<vector<vector<training_point<KeyType, PayloadType>>>> r_training_data(r_rmi_params.arch.size());
+    vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> r_training_data(r_rmi_params.arch.size());
     for (unsigned int layer_idx = 0; layer_idx < r_rmi_params.arch.size(); ++layer_idx) {
         r_training_data[layer_idx].resize(r_rmi_params.arch[layer_idx]);
     }
-    vector<vector<vector<training_point<KeyType, PayloadType>>>> s_training_data(s_rmi_params.arch.size());
+    vector<vector<vector<learned_sort_for_sort_merge::training_point<KeyType, PayloadType>>>> s_training_data(s_rmi_params.arch.size());
     for (unsigned int layer_idx = 0; layer_idx < s_rmi_params.arch.size(); ++layer_idx) {
         s_training_data[layer_idx].resize(s_rmi_params.arch[layer_idx]);
     }
