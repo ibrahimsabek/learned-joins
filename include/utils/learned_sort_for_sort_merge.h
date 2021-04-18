@@ -1604,14 +1604,15 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
   }
 
 #else
-printf("here1 \n");
   // Iterate over the elements in the current bucket in batch-mode
   for (unsigned int batch_idx = 0; batch_idx < num_batches; ++batch_idx) 
   {
+    printf("here2 \n");
     // Iterate over the elements in the batch and store their predicted
     // ranks
     for (unsigned int elm_idx = 0; elm_idx < BATCH_SZ; ++elm_idx) 
     {
+      printf("here3 \n");
       // Find the current element
       auto cur_elm = major_bckt[bckt_start_offset + elm_idx];
       
