@@ -946,39 +946,39 @@ void * learned_imv_sort_join_thread(void * param)
                                                 tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, -1, -1);
 
 
-            //for(int i = 0; i < NUM_THREADS; i++)
-            //{
-            //   printf("r_partition_offsets for thread %d is %d\n", i, r_partition_offsets[i]);
-            //   printf("r_partition_sizes_for_threads for thread %d is %d\n", i, r_partition_sizes_for_threads[i]);
-            //   uint32_t min_key = args->original_relR->num_tuples; uint32_t max_key = 0;
-            //   for(int j = 0; j < r_partition_sizes_for_threads[i]; j++)
-            //   {
-            //      if(tmpRelpartR[r_partition_offsets[i] + j].key < min_key)
-            //         min_key = tmpRelpartR[r_partition_offsets[i] + j].key;
-            //      if(tmpRelpartR[r_partition_offsets[i] + j].key > max_key)
-            //         max_key = tmpRelpartR[r_partition_offsets[i] + j].key;
-            //      //if(i == 3)
-            //       //printf("tmpRelpartR[r_partition_offsets[i] + j].key %ld\n", tmpRelpartR[r_partition_offsets[i] + j].key);
-            //   }
-            //   printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
-            //}
+            for(int i = 0; i < NUM_THREADS; i++)
+            {
+               printf("r_partition_offsets for thread %d is %d\n", i, r_partition_offsets[i]);
+               printf("r_partition_sizes_for_threads for thread %d is %d\n", i, r_partition_sizes_for_threads[i]);
+               uint32_t min_key = args->original_relR->num_tuples; uint32_t max_key = 0;
+               for(int j = 0; j < r_partition_sizes_for_threads[i]; j++)
+               {
+                  if(tmpRelpartR[r_partition_offsets[i] + j].key < min_key)
+                     min_key = tmpRelpartR[r_partition_offsets[i] + j].key;
+                  if(tmpRelpartR[r_partition_offsets[i] + j].key > max_key)
+                     max_key = tmpRelpartR[r_partition_offsets[i] + j].key;
+                  //if(i == 3)
+                   //printf("tmpRelpartR[r_partition_offsets[i] + j].key %ld\n", tmpRelpartR[r_partition_offsets[i] + j].key);
+               }
+               printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
+            }
             
-            //for(int i = 0; i < NUM_THREADS; i++)
-            //{
-            //   printf("s_partition_offsets for thread %d is %d\n", i, s_partition_offsets[i]);
-            //   printf("s_partition_sizes_for_threads for thread %d is %d\n", i, s_partition_sizes_for_threads[i]);
-            //   uint32_t min_key = args->original_relS->num_tuples; uint32_t max_key = 0;
-            //   for(int j = 0; j < s_partition_sizes_for_threads[i]; j++)
-            //   {
-            //      if(tmpRelpartS[s_partition_offsets[i] + j].key < min_key)
-            //         min_key = tmpRelpartS[s_partition_offsets[i] + j].key;
-            //      if(tmpRelpartS[s_partition_offsets[i] + j].key > max_key)
-            //         max_key = tmpRelpartS[s_partition_offsets[i] + j].key;
-            //      //if(i == 3)
-            //       //printf("tmpRelpartS[s_partition_offsets[i] + j].key %ld\n", tmpRelpartS[s_partition_offsets[i] + j].key);
-            //   }
-            //   printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
-            //}
+            for(int i = 0; i < NUM_THREADS; i++)
+            {
+               printf("s_partition_offsets for thread %d is %d\n", i, s_partition_offsets[i]);
+               printf("s_partition_sizes_for_threads for thread %d is %d\n", i, s_partition_sizes_for_threads[i]);
+               uint32_t min_key = args->original_relS->num_tuples; uint32_t max_key = 0;
+               for(int j = 0; j < s_partition_sizes_for_threads[i]; j++)
+               {
+                  if(tmpRelpartS[s_partition_offsets[i] + j].key < min_key)
+                     min_key = tmpRelpartS[s_partition_offsets[i] + j].key;
+                  if(tmpRelpartS[s_partition_offsets[i] + j].key > max_key)
+                     max_key = tmpRelpartS[s_partition_offsets[i] + j].key;
+                  //if(i == 3)
+                   //printf("tmpRelpartS[s_partition_offsets[i] + j].key %ld\n", tmpRelpartS[s_partition_offsets[i] + j].key);
+               }
+               printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
+            }
         }
 
         // wait at a barrier until each thread completes the partition phase
