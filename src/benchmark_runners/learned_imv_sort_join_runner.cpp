@@ -890,7 +890,7 @@ void * learned_imv_sort_join_thread(void * param)
             gettimeofday(&t2, NULL);
 
             deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
-            printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+            printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
     #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
