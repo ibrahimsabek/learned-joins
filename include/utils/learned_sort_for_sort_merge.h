@@ -1725,7 +1725,7 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
   if(thread_id == 0 && partition_id == 0)
   {
     //printf("curr spill bucket is %d \n", spill_bucket->size());
-    printf("curr spill bucket is %d \n", spill_bucket_size);
+    //printf("curr spill bucket is %d \n", spill_bucket_size);
   }
 
   //----------------------------------------------------------//

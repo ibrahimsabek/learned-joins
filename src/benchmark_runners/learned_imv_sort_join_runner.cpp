@@ -1028,7 +1028,7 @@ void * learned_imv_sort_join_thread(void * param)
             gettimeofday(&args->sort_end_time, NULL);
 
             deltaT = (args->sort_end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->sort_end_time.tv_usec - args->partition_end_time.tv_usec;
-            printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Non-learned sort join", deltaT * 1.0 / 1000);
+            printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -1066,7 +1066,7 @@ void * learned_imv_sort_join_thread(void * param)
             gettimeofday(&args->mergejoin_end_time, NULL);
 
             deltaT = (args->mergejoin_end_time.tv_sec - args->tmp_mergejoin_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->tmp_mergejoin_end_time.tv_usec;
-            printf("---- %5s joining costs time (ms) = %10.4lf\n", "Non-learned sort join", deltaT * 1.0 / 1000);
+            printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
         }
     }
 
