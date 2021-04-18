@@ -1709,7 +1709,7 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
     }
   }
 
-  if(thread_id == 0 && partition_id == 0 && major_bckt_idx <= 25)
+  if(thread_id == 0 && partition_id == 0 /*&& major_bckt_idx <= 25*/)
   {
     printf("minor bckt sizes \n");
     for(unsigned int i = 0; i < NUM_MINOR_BCKT_PER_MAJOR_BCKT; i++)
