@@ -82,6 +82,7 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
     if(learnedsortflag)
     {
 #ifdef USE_LEARNED_SORT_FOR_SORT_MERGE
+        printf("here for sorting \n");
         learned_sort_for_sort_merge::sort_avx(outptrR, args->rmi_r, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_r, args->MINOR_BCKTS_OFFSET_r, args->TOT_NUM_MINOR_BCKTS_r, 
                                     args->INPUT_SZ_r, inptrR, args->numR - args->tmp_total_repeatedKeysCountsR, 
                                     args->tmp_minor_bckts_r, args->tmp_minor_bckt_sizes_r,
