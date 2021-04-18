@@ -356,7 +356,7 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
     Tuple<KeyType, PayloadType> * rtuples = args->threadrelchunks[args->my_tid][0].R.tuples;
     Tuple<KeyType, PayloadType> * stuples = args->threadrelchunks[args->my_tid][0].S.tuples;
 
-/*
+
     printf("my_tid %d R num_elems %ld min %ld %ld max %ld %ld\n", args->my_tid, args->threadrelchunks[args->my_tid][0].R.num_tuples, rtuples[0].key, rtuples[0].payload, rtuples[args->threadrelchunks[args->my_tid][0].R.num_tuples >
     for(int i = 0; i < args->threadrelchunks[args->my_tid][0].R.num_tuples - 1; i++)
     {
@@ -369,7 +369,7 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
       if(rtuples[i].key > rtuples[i+1].key)
        printf("my_tid %d unsorted R elems keys %ld %ld payload %ld %ld at %d %d\n", args->my_tid, rtuples[i].key, rtuples[i+1].key, rtuples[i].payload, rtuples[i+1].payload, i, i+1);
     }
-*/
+
     nresults = merge_join(rtuples, stuples, 
                 args->threadrelchunks[args->my_tid][0].R.num_tuples, 
                 args->threadrelchunks[args->my_tid][0].S.num_tuples, chainedbuf);
