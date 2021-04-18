@@ -1628,19 +1628,19 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
           0., std::min(NUM_MINOR_BCKT_PER_MAJOR_BCKT - 1.,
                         pred_cdf * TOT_NUM_MINOR_BCKTS - MINOR_BCKTS_OFFSET)));
 
-      //if(thread_id == 0 && partition_id == 0 && (bckt_start_offset + elm_idx) <= 25)
+      if(thread_id == 0 && partition_id == 0 && (bckt_start_offset + elm_idx) <= 25)
       //if(thread_id == 0 && partition_id == 0 && (bckt_start_offset + elm_idx) <= 500000)
-      //{
-        /*printf("thread_id %d cur_elm %ld batch_cache[elm_idx] %d pred_cdf %lf MINOR_BCKTS_OFFSET %ld NUM_MINOR_BCKT_PER_MAJOR_BCKT %ld batch_cache[elm_idx] %ld \n", 
+      {
+        printf("thread_id %d cur_elm %ld batch_cache[elm_idx] %d pred_cdf %lf MINOR_BCKTS_OFFSET %ld NUM_MINOR_BCKT_PER_MAJOR_BCKT %ld batch_cache[elm_idx] %ld \n", 
                 thread_id, cur_elm.key, static_cast<int>(std::max(0.,std::min(num_models - 1., root_slope * cur_elm.key + root_intrcpt))),
-                pred_cdf, MINOR_BCKTS_OFFSET, NUM_MINOR_BCKT_PER_MAJOR_BCKT, batch_cache[elm_idx]);*/
+                pred_cdf, MINOR_BCKTS_OFFSET, NUM_MINOR_BCKT_PER_MAJOR_BCKT, batch_cache[elm_idx]);
 
-        /*printf("cur_elm %ld root_slope %lf root_intrcpt %lf batch_cache[elm_idx] %d slopes[batch_cache[elm_idx]] %lf intercepts[batch_cache[elm_idx]] %lf pred_cdf %lf pred_cdf * TOT_NUM_MINOR_BCKTS %lf MINOR_BCKTS_OFFSET %ld pred_cdf * TOT_NUM_MINOR_BCKTS - MINOR_BCKTS_OFFSET %lf NUM_MINOR_BCKT_PER_MAJOR_BCKT %ld batch_cache[elm_idx] %ld \n", 
+        printf("cur_elm %ld root_slope %lf root_intrcpt %lf batch_cache[elm_idx] %d slopes[batch_cache[elm_idx]] %lf intercepts[batch_cache[elm_idx]] %lf pred_cdf %lf pred_cdf * TOT_NUM_MINOR_BCKTS %lf MINOR_BCKTS_OFFSET %ld pred_cdf * TOT_NUM_MINOR_BCKTS - MINOR_BCKTS_OFFSET %lf NUM_MINOR_BCKT_PER_MAJOR_BCKT %ld batch_cache[elm_idx] %ld \n", 
                 cur_elm.key, root_slope, root_intrcpt, static_cast<int>(std::max(0.,std::min(num_models - 1., root_slope * cur_elm.key + root_intrcpt))), 
                 slopes[static_cast<int>(std::max(0., std::min(num_models - 1., root_slope * cur_elm.key + root_intrcpt)))], 
                 intercepts[static_cast<int>(std::max(0., std::min(num_models - 1., root_slope * cur_elm.key + root_intrcpt)))], 
-                pred_cdf, pred_cdf * TOT_NUM_MINOR_BCKTS, MINOR_BCKTS_OFFSET, pred_cdf * TOT_NUM_MINOR_BCKTS - MINOR_BCKTS_OFFSET, NUM_MINOR_BCKT_PER_MAJOR_BCKT, batch_cache[elm_idx]);*/
-      //}
+                pred_cdf, pred_cdf * TOT_NUM_MINOR_BCKTS, MINOR_BCKTS_OFFSET, pred_cdf * TOT_NUM_MINOR_BCKTS - MINOR_BCKTS_OFFSET, NUM_MINOR_BCKT_PER_MAJOR_BCKT, batch_cache[elm_idx]);
+      }
 
 
     }
