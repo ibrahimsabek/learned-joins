@@ -1005,6 +1005,13 @@ void * learned_imv_sort_join_thread(void * param)
         } 
     }
 
+    args->numR = r_partition_sizes_for_threads[my_tid] + r_total_repeated_keys_sizes_for_threads[my_tid];
+    args->numS = s_partition_sizes_for_threads[my_tid] + s_total_repeated_keys_sizes_for_threads[my_tid];
+    args->tmp_repeatedKeysCountsR = r_repeated_keys_sizes_for_threads[my_tid];
+    args->tmp_repeatedKeysCountsS = s_repeated_keys_sizes_for_threads[my_tid];
+    args->tmp_total_repeatedKeysCountsR = r_total_repeated_keys_sizes_for_threads[my_tid];
+    args->tmp_total_repeatedKeysCountsS = s_total_repeated_keys_sizes_for_threads[my_tid];    
+
     BARRIER_ARRIVE(args->barrier, rv);
 
     /*************************************************************************
