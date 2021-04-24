@@ -168,3 +168,9 @@ target_include_directories(learned_imv_sort_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
+
+#add_executable(indexed_nested_loop_join_runner src/benchmark_runners/indexed_nested_loop_join_runner.cpp)
+#target_include_directories(indexed_nested_loop_join_runner PUBLIC
+#  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#  $<INSTALL_INTERFACE:include>
+#  PRIVATE src)  

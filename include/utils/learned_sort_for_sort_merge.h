@@ -332,7 +332,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
   rmi.training_sample_size = sample_count;
 #else
 
-  std::sort((int64_t *)(rmi.tmp_training_sample), (int64_t *)(rmi.tmp_training_sample) + sample_count - 1);
+  std::sort((int64_t *)(rmi.tmp_training_sample), (int64_t *)(rmi.tmp_training_sample) + sample_count /*- 1*/);
   rmi.training_sample = &(rmi.tmp_training_sample);
   rmi.training_sample_size = sample_count;
 
@@ -376,7 +376,8 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
   // Populate the training data for the next layer
   for (const auto &d : *current_training_data) {
     // Predict the model index in next layer
-    unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+    //unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+    unsigned int rank = round(current_model->slope * d.x.key*1.00 + current_model->intercept);
 
     // Normalize the rank between 0 and the number of models in the next layer
     rank =
@@ -414,7 +415,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
         max = current_training_data->back();
 
         current_model->slope =
-            (max.y) / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
+            (max.y)*1.00 / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
         current_model->intercept = min.y - current_model->slope * min.x.key;
       }
     } else if (model_idx == p.arch[1] - 1) {
@@ -429,7 +430,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
         max = current_training_data->back();
 
         current_model->slope =
-            (min.y - 1) / (min.x.key - max.x.key);  // Hallucinating as if max.y = 1
+            (1 - min.y) * 1.00 / (max.x.key - min.x.key);  // Hallucinating as if max.y = 1
         current_model->intercept = min.y - current_model->slope * min.x.key;
       }
     } else {  // The current model is not the first model in the current layer
@@ -457,7 +458,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
         min = training_data[1][model_idx - 1].back();
         max = current_training_data->back();
 
-        current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
+        current_model->slope = (max.y - min.y) * 1.00 / (max.x.key - min.x.key);
         current_model->intercept = min.y - current_model->slope * min.x.key;
       }
     }
@@ -581,15 +582,15 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
 
 #else
 
-  std::sort((int64_t *)(rmi.tmp_training_sample), (int64_t *)(rmi.tmp_training_sample) + sample_count - 1);
+  std::sort((int64_t *)(rmi.tmp_training_sample), (int64_t *)(rmi.tmp_training_sample) + sample_count /*- 1*/);
   rmi.training_sample = &(rmi.tmp_training_sample);
   rmi.training_sample_size = sample_count;
 
-  std::sort((int64_t *)(rmi.tmp_training_sample_R), (int64_t *)(rmi.tmp_training_sample_R) + sample_count_R - 1);
+  std::sort((int64_t *)(rmi.tmp_training_sample_R), (int64_t *)(rmi.tmp_training_sample_R) + sample_count_R /*- 1*/);
   rmi.training_sample_R = &(rmi.tmp_training_sample_R);
   rmi.training_sample_size_R = sample_count_R;
 
-  std::sort((int64_t *)(rmi.tmp_training_sample_S), (int64_t *)(rmi.tmp_training_sample_S) + sample_count_S - 1);
+  std::sort((int64_t *)(rmi.tmp_training_sample_S), (int64_t *)(rmi.tmp_training_sample_S) + sample_count_S /*- 1*/);
   rmi.training_sample_S = &(rmi.tmp_training_sample_S);
   rmi.training_sample_size_S = sample_count_S;
 #endif
@@ -629,7 +630,8 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
   // Populate the training data for the next layer
   for (const auto &d : *current_training_data) {
     // Predict the model index in next layer
-    unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+    //unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+    unsigned int rank = round(current_model->slope * d.x.key*1.00 + current_model->intercept);
 
     // Normalize the rank between 0 and the number of models in the next layer
     rank =
@@ -667,7 +669,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
         max = current_training_data->back();
 
         current_model->slope =
-            (max.y) / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
+            (max.y)*1.00 / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
         current_model->intercept = min.y - current_model->slope * min.x.key;
       }
     } else if (model_idx == p.arch[1] - 1) {
@@ -682,7 +684,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
         max = current_training_data->back();
 
         current_model->slope =
-            (min.y - 1) / (min.x.key - max.x.key);  // Hallucinating as if max.y = 1
+            (1 - min.y) * 1.00 / (max.x.key - min.x.key);  // Hallucinating as if max.y = 1
         current_model->intercept = min.y - current_model->slope * min.x.key;
       }
     } else {  // The current model is not the first model in the current layer
@@ -710,7 +712,7 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType> learned_sort_for_sort_mer
         min = training_data[1][model_idx - 1].back();
         max = current_training_data->back();
 
-        current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
+        current_model->slope = (max.y - min.y) * 1.00 / (max.x.key - min.x.key);
         current_model->intercept = min.y - current_model->slope * min.x.key;
       }
     }
@@ -1913,7 +1915,7 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
   //std::sort((int64_t *)(&((*spill_bucket)[0])), (int64_t *)(&((*spill_bucket)[0])) + spill_bucket->size());
   ////std::sort(spill_bucket->begin(), spill_bucket->end());
 
-  std::sort((int64_t *)(tmp_spill_bucket), (int64_t *)(tmp_spill_bucket) + spill_bucket_size - 1);
+  std::sort((int64_t *)(tmp_spill_bucket), (int64_t *)(tmp_spill_bucket) + spill_bucket_size /*- 1*/);
   spill_bucket = tmp_spill_bucket;
 #endif
 

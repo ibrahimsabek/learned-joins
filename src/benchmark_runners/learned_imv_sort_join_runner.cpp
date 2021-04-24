@@ -327,7 +327,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count += sample_count[i];
 
-      std::sort((int64_t *)(args->rmi->tmp_training_sample), (int64_t *)(args->rmi->tmp_training_sample) + total_sample_count - 1);
+      std::sort((int64_t *)(args->rmi->tmp_training_sample), (int64_t *)(args->rmi->tmp_training_sample) + total_sample_count);
       args->rmi->training_sample = &(args->rmi->tmp_training_sample);
       args->rmi->training_sample_size = total_sample_count;
     }
@@ -371,7 +371,8 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       // Populate the training data for the next layer
       for (const auto &d : *current_training_data) {
         // Predict the model index in next layer
-        unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+        //unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+        unsigned int rank = round(current_model->slope * d.x.key*1.00 + current_model->intercept);
 
         // Normalize the rank between 0 and the number of models in the next layer
         rank =
@@ -411,7 +412,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             max = current_training_data->back();
 
             current_model->slope =
-                (max.y) / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
+                (max.y) * 1.00 / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
             current_model->intercept = min.y - current_model->slope * min.x.key;
           }
         } else if (model_idx == args->p.arch[1] - 1) {
@@ -426,7 +427,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             max = current_training_data->back();
 
             current_model->slope =
-                (min.y - 1) / (min.x.key - max.x.key);  // Hallucinating as if max.y = 1
+                (1 - min.y) * 1.00 / (max.x.key - min.x.key);  // Hallucinating as if max.y = 1
             current_model->intercept = min.y - current_model->slope * min.x.key;
           }
         } else {  // The current model is not the first model in the current layer
@@ -453,7 +454,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             min = (*training_data)[1][model_idx - 1].back();
             max = current_training_data->back();
 
-            current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
+            current_model->slope = (max.y - min.y) * 1.00 / (max.x.key - min.x.key);
             current_model->intercept = min.y - current_model->slope * min.x.key;
             //if(model_idx == 5)
             //printf("min.y %lf max.y %lf min.x.key %ld max.x.key %ld current_model->slope %lf current_model->intercept %lf\n", min.y, max.y, min.x.key, max.x.key, current_model->slope, current_model->intercept);
@@ -568,7 +569,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count_R += sample_count_R[i];
 
-      std::sort((int64_t *)(args->r_rmi->tmp_training_sample), (int64_t *)(args->r_rmi->tmp_training_sample) + total_sample_count_R - 1);
+      std::sort((int64_t *)(args->r_rmi->tmp_training_sample), (int64_t *)(args->r_rmi->tmp_training_sample) + total_sample_count_R);
       args->r_rmi->training_sample = &(args->r_rmi->tmp_training_sample);
       args->r_rmi->training_sample_size = total_sample_count_R;
     }
@@ -579,7 +580,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count_S += sample_count_S[i];
 
-      std::sort((int64_t *)(args->s_rmi->tmp_training_sample), (int64_t *)(args->s_rmi->tmp_training_sample) + total_sample_count_S - 1);
+      std::sort((int64_t *)(args->s_rmi->tmp_training_sample), (int64_t *)(args->s_rmi->tmp_training_sample) + total_sample_count_S);
       args->s_rmi->training_sample = &(args->s_rmi->tmp_training_sample);
       args->s_rmi->training_sample_size = total_sample_count_S;
     }
@@ -623,7 +624,8 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       // Populate the training data for the next layer
       for (const auto &d : *current_training_data) {
         // Predict the model index in next layer
-        unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+        //unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+        unsigned int rank = round(current_model->slope * d.x.key*1.00 + current_model->intercept);
 
         // Normalize the rank between 0 and the number of models in the next layer
         rank =
@@ -663,7 +665,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             max = current_training_data->back();
 
             current_model->slope =
-                (max.y) / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
+                (max.y)*1.00 / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
             current_model->intercept = min.y - current_model->slope * min.x.key;
           }
         } else if (model_idx == args->r_p.arch[1] - 1) {
@@ -678,7 +680,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             max = current_training_data->back();
 
             current_model->slope =
-                (min.y - 1) / (min.x.key - max.x.key);  // Hallucinating as if max.y = 1
+                (1 - min.y) * 1.00 / (max.x.key - min.x.key);  // Hallucinating as if max.y = 1
             current_model->intercept = min.y - current_model->slope * min.x.key;
           }
         } else {  // The current model is not the first model in the current layer
@@ -706,7 +708,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             min = (*r_training_data)[1][model_idx - 1].back();
             max = current_training_data->back();
 
-            current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
+            current_model->slope = (max.y - min.y) * 1.00 / (max.x.key - min.x.key);
             current_model->intercept = min.y - current_model->slope * min.x.key;
             //if(model_idx == 5)
             //printf("min.y %lf max.y %lf min.x.key %ld max.x.key %ld current_model->slope %lf current_model->intercept %lf\n", min.y, max.y, min.x.key, max.x.key, current_model->slope, current_model->intercept);
@@ -752,7 +754,8 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
       // Populate the training data for the next layer
       for (const auto &d : *current_training_data) {
         // Predict the model index in next layer
-        unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+        //unsigned int rank = current_model->slope * d.x.key + current_model->intercept;
+        unsigned int rank = round(current_model->slope * d.x.key*1.00 + current_model->intercept);
 
         // Normalize the rank between 0 and the number of models in the next layer
         rank =
@@ -792,7 +795,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             max = current_training_data->back();
 
             current_model->slope =
-                (max.y) / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
+                (max.y)*1.00 / (max.x.key - min.x.key);  // Hallucinating as if min.y = 0
             current_model->intercept = min.y - current_model->slope * min.x.key;
           }
         } else if (model_idx == args->s_p.arch[1] - 1) {
@@ -807,7 +810,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             max = current_training_data->back();
 
             current_model->slope =
-                (min.y - 1) / (min.x.key - max.x.key);  // Hallucinating as if max.y = 1
+                (1 - min.y) * 1.00 / (max.x.key - min.x.key);  // Hallucinating as if max.y = 1
             current_model->intercept = min.y - current_model->slope * min.x.key;
           }
         } else {  // The current model is not the first model in the current layer
@@ -835,7 +838,7 @@ void sample_and_train_models_threaded(LearnedSortMergeMultiwayJoinThread<KeyType
             min = (*s_training_data)[1][model_idx - 1].back();
             max = current_training_data->back();
 
-            current_model->slope = (min.y - max.y) / (min.x.key - max.x.key);
+            current_model->slope = (max.y - min.y) * 1.00 / (max.x.key - min.x.key);
             current_model->intercept = min.y - current_model->slope * min.x.key;
             //if(model_idx == 5)
             //printf("min.y %lf max.y %lf min.x.key %ld max.x.key %ld current_model->slope %lf current_model->intercept %lf\n", min.y, max.y, min.x.key, max.x.key, current_model->slope, current_model->intercept);

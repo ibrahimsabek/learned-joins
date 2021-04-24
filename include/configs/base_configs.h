@@ -127,3 +127,13 @@
 #define LS_FOR_SORT_MERGE_SIMDStateSize 5
 
 #define LS_FOR_SORT_MERGE_PDIS 320
+
+#define INLJ_ETH_AVX_IMV 1
+
+#define INLJ_VECTOR_SCALE 8
+
+#define INLJ_MAX_VECTOR_SCALE 16
+
+#define INLJ_PDIS 320
+
+#define INLJ_SIMDStateSize 5

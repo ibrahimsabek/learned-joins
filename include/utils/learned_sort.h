@@ -337,7 +337,8 @@ learned_sort::RMI<typename iterator_traits<RandomIt>::value_type> learned_sort::
   // Populate the training data for the next layer
   for (const auto &d : *current_training_data) {
     // Predict the model index in next layer
-    unsigned int rank = current_model->slope * d.x + current_model->intercept;
+    //unsigned int rank = current_model->slope * d.x + current_model->intercept;
+    unsigned int rank = round(current_model->slope * d.x*1.00 + current_model->intercept);
 
     // Normalize the rank between 0 and the number of models in the next layer
     rank =
@@ -374,7 +375,7 @@ learned_sort::RMI<typename iterator_traits<RandomIt>::value_type> learned_sort::
         max = current_training_data->back();
 
         current_model->slope =
-            (max.y) / (max.x - min.x);  // Hallucinating as if min.y = 0
+            (max.y) * 1.00 / (max.x - min.x);  // Hallucinating as if min.y = 0
         current_model->intercept = min.y - current_model->slope * min.x;
       }
     } else if (model_idx == p.arch[1] - 1) {
@@ -389,7 +390,7 @@ learned_sort::RMI<typename iterator_traits<RandomIt>::value_type> learned_sort::
         max = current_training_data->back();
 
         current_model->slope =
-            (min.y - 1) / (min.x - max.x);  // Hallucinating as if max.y = 1
+            (1 - min.y) * 1.00 / (max.x - min.x);  // Hallucinating as if max.y = 1
         current_model->intercept = min.y - current_model->slope * min.x;
       }
     } else {  // The current model is not the first model in the current layer
@@ -417,7 +418,7 @@ learned_sort::RMI<typename iterator_traits<RandomIt>::value_type> learned_sort::
         min = training_data[1][model_idx - 1].back();
         max = current_training_data->back();
 
-        current_model->slope = (min.y - max.y) / (min.x - max.x);
+        current_model->slope = (max.y - min.y) * 1.00 / (max.x - min.x);
         current_model->intercept = min.y - current_model->slope * min.x;
       }
     }
