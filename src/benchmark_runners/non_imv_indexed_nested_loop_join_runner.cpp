@@ -38,6 +38,7 @@
 
 #ifdef INLJ_WITH_LEARNED_INDEX
 #include "rmi/all_rmis.h"
+using namespace INLJ_RMI_NAMESPACE;
 #endif
 
 using namespace std;
