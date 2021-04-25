@@ -83,3 +83,5 @@ def prepare_binary_format(input_file_path, key_type_str, payload_type_str, shoul
 #prepare_binary_format("/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_int_int_100000000.txt", 'uint32', 'uint32', 0, 1, 0.50, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_int_int_100000000_key_uint32")
 #prepare_binary_format("/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v3_int_int_100000000.txt", 'uint32', 'uint32', 0, 0, 0.50, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v3_int_int_100000000_key_uint32")
 
+prepare_binary_format("/spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32")
+prepare_binary_format("/spinning/sabek/learned_join_datasets/s_UNIQUE_v3_uint32_uint32_128000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v3_uint32_uint32_128000000_key_uint32")
