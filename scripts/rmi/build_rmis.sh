@@ -46,8 +46,8 @@ cd $(dirname "$0")/../../RMI && cargo build --release && cd $(dirname "$0")
 #optimize_rmis r_LOGNORMAL_v2_int_int_100000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_int_int_100000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
 #build_rmi_set r_LOGNORMAL_v2_int_int_100000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_int_int_100000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs $(dirname "$0")/../../include/rmi_data 8
 
-optimize_rmis r_LOGNORMAL_v1_int_int_1000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v1_int_int_1000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
-build_rmi_set r_LOGNORMAL_v1_int_int_1000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v1_int_int_1000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs $(dirname "$0")/../../include/rmi_data 8
+optimize_rmis r_UNIQUE_v3_uint32_uint32_128000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
+build_rmi_set r_UNIQUE_v3_uint32_uint32_128000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs $(dirname "$0")/../../include/rmi_data 8
 
 
 /bin/bash $(dirname "$0")/generate_all_rmis.sh
