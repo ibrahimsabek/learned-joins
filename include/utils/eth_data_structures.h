@@ -232,6 +232,45 @@ struct ETHNonPartitionJoinThread {
 #endif     
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
+template<typename KeyType, typename PayloadType, typename TaskType>
+struct IndexedNestedLoopJoinThread 
+{
+    int32_t             tid;
+    Relation<KeyType, PayloadType>     relR;
+    Relation<KeyType, PayloadType>     relS;
+    Relation<KeyType, PayloadType> *     original_relR;
+    Relation<KeyType, PayloadType> *     original_relS;
+    pthread_barrier_t * barrier;
+    int64_t             num_results = 0;
+
+    /* results of the thread */
+    ThreadResult * threadresult;
+
+    #ifdef INLJ_WITH_HASH_INDEX
+    Hashtable<KeyType, PayloadType> *  ht;
+    #endif
+
+    #ifdef INLJ_WITH_LEARNED_INDEX
+    /**** start stuff for learning RMI models ****/
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
+    Tuple<KeyType, PayloadType> * tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * r_sorted_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType> * s_sorted_training_sample_in;
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data;
+    uint32_t tmp_training_sample_R_offset, tmp_training_sample_S_offset, tmp_training_sample_offset;
+    uint32_t * sample_count, * sample_count_R, * sample_count_S;
+    vector<double>* slopes; 
+    vector<double>* intercepts;
+    /**** end stuff for learning RMI models ****/
+    #endif
+
+    /* stats about the thread */
+    struct timeval start_time, end_time;
+} __attribute__((aligned(CACHE_LINE_SIZE)));
 
 
 template<typename KeyType, typename PayloadType>
@@ -250,6 +289,19 @@ struct ETHNonPartitionJoinBuild {
     vector<KeyType> * probe_keys_list;
     vector<uint64_t> * probe_keys_hash_list; 
 #endif    
+};
+
+template<typename KeyType, typename PayloadType>
+struct IndexedNestedLoopJoinBuild {
+#ifdef INLJ_WITH_HASH_INDEX
+    Hashtable<KeyType, PayloadType> * ht;
+    BucketBuffer<KeyType, PayloadType> ** overflowbuf;
+#endif
+#ifdef INLJ_WITH_LEARNED_INDEX
+    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    vector<double>* slopes;
+    vector<double>* intercepts;
+#endif
 };
 
 /**************** Common data structures for ETH non partition hash join ******************/

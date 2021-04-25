@@ -1774,7 +1774,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count += sample_count[i];
 
-      std::sort((int64_t *)(args->rmi->tmp_training_sample), (int64_t *)(args->rmi->tmp_training_sample) + total_sample_count /*- 1*/);
+      std::sort((int64_t *)(args->rmi->tmp_training_sample), (int64_t *)(args->rmi->tmp_training_sample) + total_sample_count);
       args->rmi->training_sample = &(args->rmi->tmp_training_sample);
       args->rmi->training_sample_size = total_sample_count;
     }
@@ -1785,7 +1785,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count_R += sample_count_R[i];
 
-      std::sort((int64_t *)(args->rmi->tmp_training_sample_R), (int64_t *)(args->rmi->tmp_training_sample_R) + total_sample_count_R /*- 1*/);
+      std::sort((int64_t *)(args->rmi->tmp_training_sample_R), (int64_t *)(args->rmi->tmp_training_sample_R) + total_sample_count_R);
       args->rmi->training_sample_R = &(args->rmi->tmp_training_sample_R);
       args->rmi->training_sample_size_R = total_sample_count_R;
     }
@@ -1796,7 +1796,7 @@ void sample_and_train_models_threaded(ETHNonPartitionJoinThread<KeyType, Payload
       for(int i = 0; i < NUM_THREADS; i++)
         total_sample_count_S += sample_count_S[i];
 
-      std::sort((int64_t *)(args->rmi->tmp_training_sample_S), (int64_t *)(args->rmi->tmp_training_sample_S) + total_sample_count_S /*- 1*/);
+      std::sort((int64_t *)(args->rmi->tmp_training_sample_S), (int64_t *)(args->rmi->tmp_training_sample_S) + total_sample_count_S);
       args->rmi->training_sample_S = &(args->rmi->tmp_training_sample_S);
       args->rmi->training_sample_size_S = total_sample_count_S;
     }*/
