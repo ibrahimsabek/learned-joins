@@ -37,8 +37,7 @@
 #define SINGLE_TUPLE_PER_BUCKET
 
 #ifdef INLJ_WITH_LEARNED_INDEX
-//#include "rmi/all_rmis.h"
-#include "rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.h"
+#include "rmi/all_rmis.h"
 using namespace INLJ_RMI_NAMESPACE;
 #endif
 
