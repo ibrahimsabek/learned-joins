@@ -37,7 +37,7 @@
 #define SINGLE_TUPLE_PER_BUCKET
 
 #ifdef INLJ_WITH_LEARNED_INDEX
-#include "rmi/all_rmi.h"
+#include "rmi/all_rmis.h"
 #endif
 
 using namespace std;
