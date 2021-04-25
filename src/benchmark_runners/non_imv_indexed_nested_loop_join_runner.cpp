@@ -631,7 +631,6 @@ int main(int argc, char **argv)
                                     &barrier, joinresult, args_ptr);
 
     inlj_global_curse = 0;
-    inlj_global_upper = rel_r.num_tuples;
     if(NUM_THREADS==1){
         inlj_global_morse_size= rel_r.num_tuples;
     }else{
