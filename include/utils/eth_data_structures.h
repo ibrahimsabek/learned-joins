@@ -251,8 +251,9 @@ struct IndexedNestedLoopJoinThread
     #endif
 
     #ifdef INLJ_WITH_LEARNED_INDEX
+    KeyType * sorted_relation_r_keys_only;
     /**** start stuff for learning RMI models ****/
-    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
     Tuple<KeyType, PayloadType> * tmp_training_sample_in;
     Tuple<KeyType, PayloadType> * sorted_training_sample_in;
@@ -264,7 +265,7 @@ struct IndexedNestedLoopJoinThread
     uint32_t tmp_training_sample_R_offset, tmp_training_sample_S_offset, tmp_training_sample_offset;
     uint32_t * sample_count, * sample_count_R, * sample_count_S;
     vector<double>* slopes; 
-    vector<double>* intercepts;
+    vector<double>* intercepts;*/
     /**** end stuff for learning RMI models ****/
     #endif
 
@@ -298,10 +299,13 @@ struct IndexedNestedLoopJoinBuild {
     BucketBuffer<KeyType, PayloadType> ** overflowbuf;
 #endif
 #ifdef INLJ_WITH_LEARNED_INDEX
-    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
+    /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
     vector<double>* slopes;
-    vector<double>* intercepts;
+    vector<double>* intercepts;*/
+    KeyType * sorted_relation_r_keys_only;
 #endif
+    Relation<KeyType, PayloadType> *     original_relR;
+    Relation<KeyType, PayloadType> *     original_relS;
 };
 
 /**************** Common data structures for ETH non partition hash join ******************/

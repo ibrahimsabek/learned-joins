@@ -36,6 +36,9 @@
 #define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
 #define SINGLE_TUPLE_PER_BUCKET
 
+#ifdef INLJ_WITH_LEARNED_INDEX
+#include "rmi/all_rmi.h"
+#endif
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
@@ -221,12 +224,63 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
 }
 #endif
 
+#ifdef INLJ_WITH_LEARNED_INDEX
+uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
+{
+    uint64_t i;
+    uint64_t matches = 0; 
+    size_t err;
+    uint64_t rmi_guess;
+    uint64_t bound_start, bound_end;
+    int n; uint64_t lower;
+    KeyType * sorted_relation_r_keys_only = build_output->sorted_relation_r_keys_only;
+    uint64_t original_relR_num_tuples = build_output->original_relR->num_tuples;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {        
+        rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_s_partition->tuples[i].key, &err);
+        bound_start = rmi_guess - err; 
+        bound_start = (bound_start < 0)? 0 : bound_start;
+        bound_end = rmi_guess + err;
+        bound_end = (bound_end > original_relR_num_tuples - 1)? original_relR_num_tuples - 1 : bound_end;
+
+        n = bound_end - bound_start + 1; // `end` is inclusive.
+        lower = bound_start;
+
+        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
+        // Authored by Giorgio Vinciguerra.
+        while (const int half = n / 2) {
+            const uint64_t middle = lower + half;
+            // Prefetch next two middles.
+            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
+            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
+            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
+            n -= half;
+        }
+
+        // Scroll back to the first occurrence.
+        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
+
+        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
+        {
+            // Sum over all values with that key.
+            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
+                matches ++;
+            }
+
+        }
+    }
+
+    return matches;
+}
+#endif
+
 void * inlj_join_thread(void * param)
 {
     IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args   = (IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
 #ifdef INLJ_WITH_LEARNED_INDEX        
-    for (int rp = 0; rp < RUN_NUMS; ++rp) 
+    /*for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
             init_models_training_data_and_sample_counts<KeyType, PayloadType>(args->training_data, args->p.arch, 
@@ -258,7 +312,7 @@ void * inlj_join_thread(void * param)
             } 
 #endif            
         }        
-    }
+    }*/
 #endif
     
 #ifdef INLJ_WITH_HASH_INDEX
@@ -286,9 +340,8 @@ void * inlj_join_thread(void * param)
 #endif
 
 #ifdef INLJ_WITH_LEARNED_INDEX        
-        strcpy(inlj_pfun[0].fun_name, "Learned");
-
-        inlj_pfun[0].fun_ptr = inlj_with_rmi_build_rel_r_partition;
+        //strcpy(inlj_pfun[0].fun_name, "Learned");
+        //inlj_pfun[0].fun_ptr = inlj_with_rmi_build_rel_r_partition;
 
         strcpy(inlj_pfun1[0].fun_name, "Learned");
         
@@ -301,6 +354,12 @@ void * inlj_join_thread(void * param)
     
     
     IndexedNestedLoopJoinBuild<KeyType, PayloadType> build_data; 
+    build_data.original_relR = args->original_relR;
+    build_data.original_relS = args->original_relS;
+#ifdef INLJ_WITH_LEARNED_INDEX
+    build_data.sorted_relation_r_keys_only = args->sorted_relation_r_keys_only;
+#endif
+
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
@@ -321,9 +380,9 @@ void * inlj_join_thread(void * param)
         #endif
 
         #ifdef INLJ_WITH_LEARNED_INDEX   
-            build_data.rmi = args->rmi;
+            /*build_data.rmi = args->rmi;
             build_data.slopes = args->slopes;
-            build_data.intercepts = args->intercepts;
+            build_data.intercepts = args->intercepts;*/
         #endif
         #ifdef PERF_COUNTERS
             if(args->tid == 0){
@@ -333,6 +392,7 @@ void * inlj_join_thread(void * param)
 
             BARRIER_ARRIVE(args->barrier, rv);
 
+#ifndef INLJ_WITH_LEARNED_INDEX 
             if(args->tid == 0){
                 gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
@@ -368,7 +428,7 @@ void * inlj_join_thread(void * param)
                 inlj_total_num = 0;
                 inlj_global_curse = 0;
             }
-        
+#endif        
             if(!((fid == (inlj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
             
             #ifdef INLJ_WITH_HASH_INDEX  
@@ -422,7 +482,8 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                                  Hashtable<KeyType, PayloadType> * ht, 
                         #endif
                         #ifdef INLJ_WITH_LEARNED_INDEX
-                                 learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
+                                 KeyType * sorted_relation_r_keys_only,
+                                 /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
                                  learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p,
                                  unsigned int SAMPLE_SZ_R, unsigned int SAMPLE_SZ_S,
                                  Tuple<KeyType, PayloadType> * tmp_training_sample_in,
@@ -433,7 +494,7 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                                  Tuple<KeyType, PayloadType> * s_sorted_training_sample_in,
                                  vector<vector<vector<training_point<KeyType, PayloadType>>>> * training_data,
                                  uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S,
-                                 vector<double>* slopes, vector<double>* intercepts,
+                                 vector<double>* slopes, vector<double>* intercepts,*/
                         #endif
                                  pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
@@ -442,15 +503,15 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
     uint64_t numR, numS, numRthr, numSthr; /* total and per thread num */
 
 #ifdef INLJ_WITH_LEARNED_INDEX
-    unsigned int SAMPLE_SZ_Rthr, SAMPLE_SZ_Sthr;
+    //unsigned int SAMPLE_SZ_Rthr, SAMPLE_SZ_Sthr;
 #endif
     numR = rel_r->num_tuples;
     numS = rel_s->num_tuples;
     numRthr = numR / NUM_THREADS;
     numSthr = numS / NUM_THREADS;
 #ifdef INLJ_WITH_LEARNED_INDEX
-    SAMPLE_SZ_Rthr = SAMPLE_SZ_R / NUM_THREADS;
-    SAMPLE_SZ_Sthr = SAMPLE_SZ_S / NUM_THREADS;
+    /*SAMPLE_SZ_Rthr = SAMPLE_SZ_R / NUM_THREADS;
+    SAMPLE_SZ_Sthr = SAMPLE_SZ_S / NUM_THREADS;*/
 #endif
 
     for(i = 0; i < NUM_THREADS; i++)
@@ -473,8 +534,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).original_relS = rel_s;
 
     #ifdef INLJ_WITH_LEARNED_INDEX
+        (*(args + i)).sorted_relation_r_keys_only = sorted_relation_r_keys_only;
         /**** start stuff for learning RMI models ****/
-        (*(args + i)).rmi = rmi;
+        /*(*(args + i)).rmi = rmi;
         (*(args + i)).p = p;
         (*(args + i)).tmp_training_sample_in = tmp_training_sample_in;
         (*(args + i)).sorted_training_sample_in = sorted_training_sample_in;
@@ -490,7 +552,7 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).sample_count_R = sample_count_R;
         (*(args + i)).sample_count_S = sample_count_S;
         (*(args + i)).slopes = slopes;
-        (*(args + i)).intercepts = intercepts;
+        (*(args + i)).intercepts = intercepts;*/
         /**** end stuff for learning RMI models ****/
     #endif
 
@@ -562,6 +624,17 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef INLJ_WITH_LEARNED_INDEX
+  
+    std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;
+
+    KeyType * sorted_relation_r_keys_only = (KeyType *) alloc_aligned(rel_r.num_tuples  * sizeof(KeyType));
+
+    for(int j = 0; j < rel_r.num_tuples; j++)
+        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
+    
+    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
+    
+/*
     //////////////////////////////////////////////////////////////////////////////
     // start stuff for sampling and building RMI models for both relations R and S
     //////////////////////////////////////////////////////////////////////////////
@@ -614,6 +687,7 @@ int main(int argc, char **argv)
     //////////////////////////////////////////////////////////////////////////////
     // End stuff for sampling and building RMI models for both relations R and S
     //////////////////////////////////////////////////////////////////////////////
+*/
 #endif
 
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
@@ -621,12 +695,13 @@ int main(int argc, char **argv)
                                     ht, 
                                 #endif
                                 #ifdef INLJ_WITH_LEARNED_INDEX
-                                    &rmi, rmi_params,
+                                    sorted_relation_r_keys_only,
+                                    /*&rmi, rmi_params,
                                     SAMPLE_SZ_R, SAMPLE_SZ_S,
                                     tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
                                     r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
                                     &training_data, sample_count, sample_count_R, sample_count_S,
-                                    slopes, intercepts,
+                                    slopes, intercepts,*/
                                 #endif
                                     &barrier, joinresult, args_ptr);
 
@@ -666,225 +741,6 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
-
-/*void inlj_with_rmi_build_rel_r_partition(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
-{   
-    Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
-    BucketBuffer<KeyType, PayloadType>** overflowbuf = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
-    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->rmi;
-
-    // Cache the model parameters
-    auto root_slope = rmi->models[0][0].slope;
-    auto root_intrcpt = rmi->models[0][0].intercept;
-    unsigned int num_models = rmi->hp.arch[1];
-    vector<double>* slopes = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->slopes;
-    vector<double>* intercepts = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->intercepts;
-    static const unsigned int FANOUT = rmi->hp.fanout;
-    double pred_cdf = 0.; uint64_t i; uint64_t idx_prefetch, idx;
-
-#ifdef PREFETCH_INLJ
-    size_t prefetch_index = PREFETCH_DISTANCE;
-#endif
-    for(i=0; i < rel_r_partition->num_tuples; i++)
-    {
-        Tuple<KeyType, PayloadType> * dest;
-        Bucket<KeyType, PayloadType> * curr, * nxt;
-
-#ifdef PREFETCH_INLJ
-        if (prefetch_index < rel_r_partition->num_tuples) {
-            idx_prefetch = static_cast<uint64_t>(std::max(
-                                0.,
-                            std::min(num_models - 1., round(root_slope * rel_r_partition->tuples[prefetch_index].key + root_intrcpt))));
-#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
-            // Predict the CDF
-            pred_cdf =
-                (*slopes)[idx_prefetch] * rel_r_partition->tuples[prefetch_index].key + (*intercepts)[idx_prefetch];
-
-            // Scale the CDF to the number of buckets
-            idx_prefetch = static_cast<uint64_t>(
-                std::max(0., std::min(FANOUT - 1., round(pred_cdf * FANOUT))));    
-#endif            
-            prefetch_index++;
-			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
-        }
-#endif
-
-        idx = static_cast<uint64_t>(std::max(
-                                0.,
-                               std::min(num_models - 1., round(root_slope * rel_r_partition->tuples[i].key + root_intrcpt))));
-#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
-        // Predict the CDF
-        pred_cdf =
-            (*slopes)[idx] * rel_r_partition->tuples[i].key + (*intercepts)[idx];
-
-        // Scale the CDF to the number of buckets
-        idx = static_cast<uint64_t>(
-            std::max(0., std::min(FANOUT - 1., round(pred_cdf * FANOUT))));
-#endif
-        //if( (rel_r_partition->tuples[i].key == 368)|| (rel_r_partition->tuples[i].key == 192) || (rel_r_partition->tuples[i].key == 175)||(rel_r_partition->tuples[i].key >299 && rel_r_partition->tuples[i].key < 400))
-        //{
-        //    printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_r_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx]%.7lf (*intercepts)[idx] %.7lf pred_cdf %f pred_cdf * FANOUT %.7lf idx %ld \n", 
-        //            rel_r_partition->tuples[i].key, root_slope, root_intrcpt, round(root_slope * rel_r_partition->tuples[i].key + root_intrcpt), 
-        //            static_cast<uint64_t>(std::max(
-        //                        0.,
-        //                    std::min(num_models - 1., round(root_slope * rel_r_partition->tuples[i].key + root_intrcpt)))),
-        //            (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
-        //}    
-
-        curr = ht->buckets + idx;
-        lock(&curr->latch);
-
-        nxt = curr->next;
-
-        if(curr->count == BUCKET_SIZE) {
-            if(!nxt || nxt->count == BUCKET_SIZE) {
-                Bucket<KeyType, PayloadType> * b;
-                get_new_bucket(&b, overflowbuf);
-                curr->next = b;
-                b->next    = nxt;
-                b->count   = 1;
-                dest       = b->tuples;
-            }
-            else {
-                dest = nxt->tuples + nxt->count;
-                nxt->count ++;
-            }
-        }
-        else 
-        {
-            dest = curr->tuples + curr->count;
-            curr->count ++;
-        }
-
-        *dest = rel_r_partition->tuples[i];
-
-        //if(rel_r_partition->tuples[i].key < 10){
-        //    int curr_buckts_num;
-        //    for(int j=0; j < 5; j++)
-        //    {
-        //        Bucket<KeyType, PayloadType> * b = ht->buckets+j;
-        //        if((j < 5) && b && (b->count > 0))
-        //            printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
-        //        curr_buckts_num = 0;
-        //        do {
-        //            b = b->next;
-        //            if((j < 5) && b && (b->count > 0))
-        //                printf("learned build j %ld key %ld \n", j, b->tuples[0].key);
-        //            curr_buckts_num++;
-        //        } while(b);
-        //        if((curr_buckts_num > 2) && (j < 100))
-        //            printf("learned build j %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", j, curr_buckts_num, ht->num_buckets, FANOUT);
-        //    }
-        //}
-        unlock(&curr->latch);
-    }
-}*/
-
-/*uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
-{
-    Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
-    learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->rmi;
-
-    // Cache the model parameters
-    auto root_slope = rmi->models[0][0].slope;
-    auto root_intrcpt = rmi->models[0][0].intercept;
-    unsigned int num_models = rmi->hp.arch[1];
-    vector<double>* slopes = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->slopes;
-    vector<double>* intercepts = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->intercepts;
-    static const unsigned int FANOUT = rmi->hp.fanout;
-    double pred_cdf = 0.; uint64_t idx_prefetch, idx;
-
-    uint64_t i, j;
-    uint64_t matches;
-
-#ifdef PREFETCH_INLJ    
-    size_t prefetch_index = PREFETCH_DISTANCE;
-#endif
-    
-    matches = 0; //int curr_buckts_num;
-    //for(i=0; i < ht->num_buckets; i++)
-    //{
-    //    Bucket<KeyType, PayloadType> * b = ht->buckets+i;
-    //    if((i == 1) && b && (b->count > 0))
-    //        printf("learned probe i %ld key %ld \n", i, b->tuples[0].key);
-    //    curr_buckts_num = 0;
-    //    do {
-    //        b = b->next;
-    //        if((i == 1) && b && (b->count > 0))
-    //            printf("learned probe i %ld key %ld \n", i, b->tuples[0].key);
-    //        curr_buckts_num++;
-    //    } while(b);
-    //    if((curr_buckts_num > 2) && (i < 100))
-    //        printf("learned probe i %ld curr_buckets_num %d nbuckets %ld FANOUT %ld \n", i, curr_buckts_num, ht->num_buckets, FANOUT);
-    //}
-
-    for (i = 0; i < rel_s_partition->num_tuples; i++)
-    {
-#ifdef PREFETCH_INLJ        
-        if (prefetch_index < rel_s_partition->num_tuples) 
-        {
-            idx_prefetch = static_cast<uint64_t>(std::max(
-                                0.,
-                            std::min(num_models - 1., round(root_slope * rel_s_partition->tuples[prefetch_index].key + root_intrcpt))));
-#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
-            // Predict the CDF
-            pred_cdf =
-                (*slopes)[idx_prefetch] * rel_s_partition->tuples[prefetch_index].key + (*intercepts)[idx_prefetch];
-
-            // Scale the CDF to the number of buckets
-            idx_prefetch = static_cast<uint64_t>(
-                std::max(0., std::min(FANOUT - 1., round(pred_cdf * FANOUT))));    
-#endif
-            prefetch_index++;
-
-			__builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
-        }
-#endif
-        
-        idx = static_cast<uint64_t>(std::max(
-                                0.,
-                            std::min(num_models - 1., round(root_slope * rel_s_partition->tuples[i].key + root_intrcpt))));
-#ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
-        // Predict the CDF
-        pred_cdf =
-            (*slopes)[idx] * rel_s_partition->tuples[i].key + (*intercepts)[idx];
-
-        // Scale the CDF to the number of buckets
-        idx = static_cast<uint64_t>(
-            std::max(0., std::min(FANOUT - 1., round(pred_cdf * FANOUT))));
-#endif
-        //if(i < 10)
-        //{
-        //    printf("key %ld root_slope %f root_intrcpt %f root_slope * rel_s_partition->tuples[i].key + root_intrcpt %f idx_first %ld (*slopes)[idx] %f (*intercepts)[idx] %f pred_cdf %f pred_cdf * FANOUT %f idx %ld \n", 
-        //            rel_s_partition->tuples[i].key, root_slope, root_intrcpt, round(root_slope * rel_s_partition->tuples[i].key + root_intrcpt), 
-        //            static_cast<uint64_t>(std::max(
-        //                        0.,
-        //                    std::min(num_models - 1., round(root_slope * rel_s_partition->tuples[i].key + root_intrcpt)))),
-        //            (*slopes)[idx], (*intercepts)[idx], pred_cdf, pred_cdf * FANOUT, idx);
-        //}    
-
-        Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
-
-        do {
-        #ifdef SINGLE_TUPLE_PER_BUCKET    
-            if(rel_s_partition->tuples[i].key == b->tuples[0].key){
-                    matches ++;
-            }
-        #else
-            for(j = 0; j < b->count; j++) {
-                if(rel_s_partition->tuples[i].key == b->tuples[j].key){
-                    matches ++;
-                }
-            }
-        #endif
-
-            b = b->next;
-        } while(b);
-    }
-
-    return matches;
-}*/
 
 
 
