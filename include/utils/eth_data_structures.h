@@ -269,7 +269,7 @@ struct IndexedNestedLoopJoinThread
     #endif
 
     /* stats about the thread */
-    struct timeval start_time, end_time;
+    struct timeval start_time, partition_end_time, end_time;
 } __attribute__((aligned(CACHE_LINE_SIZE)));
 
 
