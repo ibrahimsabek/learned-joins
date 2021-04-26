@@ -97,7 +97,7 @@ INLJ_SIMDStateSize=5
 INLJ_ETH_AVX_IMV=1
 INLJ_WITH_HASH_INDEX=1
 INLJ_WITH_LEARNED_INDEX=0
-INLJ_RMI_DATA_PATH='"'/spinning/sabek/rmi_data/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0_L1_PARAMETERS'"'
+INLJ_RMI_DATA_PATH='"'/spinning/sabek/rmi_data'"'
 INLJ_RMI_NAMESPACE=r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0
 
 usage()
