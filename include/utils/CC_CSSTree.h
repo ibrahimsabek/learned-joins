@@ -177,7 +177,7 @@ int cc_constructCSSTree(Tuple<KeyType, PayloadType> *Rin, int rLen, CC_CSSTree<K
 	return (*tree)->numNode;
 }
 
-template<typename KeyType, typename PayloadType>
+/*template<typename KeyType, typename PayloadType>
 int cc_equiTreeSearch(Tuple<KeyType, PayloadType> *Rin, int rLen, CC_CSSTree<KeyType, PayloadType> *tree, KeyType keyForSearch, Tuple<KeyType, PayloadType>** Rout)
 {
 	int result=0;
@@ -208,4 +208,4 @@ int cc_equiTreeSearch(Tuple<KeyType, PayloadType> *Rin, int rLen, CC_CSSTree<Key
 	ll->copyToArray((*Rout));
 	delete ll;
 	return result;
-}
+}*/
