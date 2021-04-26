@@ -18,7 +18,7 @@ using namespace std;
 
 //we use implicit pointer to perform the addressing.
 template<typename KeyType, typename PayloadType>
-class CC_CSSTree:public CC_GenericTree<KeyType, PayloadType>
+class CC_CSSTree
 {
 public:
 	int numRecord;
