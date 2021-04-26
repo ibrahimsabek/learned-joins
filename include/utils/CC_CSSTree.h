@@ -18,7 +18,7 @@ using namespace std;
 
 //we use implicit pointer to perform the addressing.
 template<typename KeyType, typename PayloadType>
-class CC_GenericTree
+class CC_CSSTree:public CC_GenericTree<KeyType, PayloadType>
 {
 public:
 	int numRecord;
@@ -27,32 +27,17 @@ public:
 	int numNode;
 	int level;
 	int gResult;
-	CC_GenericTree(){}
-	//we assume that numR=2^i. Otherwise, we pad the array with -1 from the beginning.
-	//we also assume that the record are sorted by the key.
-	CC_GenericTree(Tuple<KeyType, PayloadType> *d, int numR)
-	{
-		data=d;
-		numRecord=numR;	
-	}
-	~CC_GenericTree(){}
-
-	virtual int search(int key)=0;
-};
-
-
-template<typename KeyType, typename PayloadType>
-class CC_CSSTree:public CC_GenericTree<KeyType, PayloadType>
-{
-public:
 	KeyType *ntree;
 	int fanout;
 	int blockSize;
 	int *vStart;
 	int *vG;//vG[0] is used in computing the position for level 1.
 	int numKey;
-	CC_CSSTree(Tuple<KeyType, PayloadType> *d, int numR, int f):CC_GenericTree<KeyType, PayloadType>(d,numR)
+	CC_CSSTree(Tuple<KeyType, PayloadType> *d, int numR, int f)
 	{
+        data=d;
+		numRecord=numR;	
+
 		fanout=f;
 		blockSize=fanout-1;
 		int numLeaf=divRoundUp(numR,blockSize);		
