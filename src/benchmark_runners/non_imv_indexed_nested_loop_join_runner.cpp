@@ -757,7 +757,7 @@ int main(int argc, char **argv)
     for(int j = 0; j < rel_r.num_tuples; j++)
         rel_r.tuples[j].key = sorted_relation_r_keys_only[j];
 
-	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(&rel_r, rel_r.num_tuples, INLJ_CSS_TREE_FANOUT);
+	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(rel_r.tuples, rel_r.num_tuples, INLJ_CSS_TREE_FANOUT);
 
 #endif
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 

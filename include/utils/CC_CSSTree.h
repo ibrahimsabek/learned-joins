@@ -21,7 +21,7 @@ template<typename KeyType, typename PayloadType>
 class CC_CSSTree
 {
 public:
-	int numRecord;
+	uint64_t numRecord;
 	Tuple<KeyType, PayloadType> *data;
 	//we use the BFS layout as the default layout.
 	int numNode;
@@ -33,7 +33,7 @@ public:
 	int *vStart;
 	int *vG;//vG[0] is used in computing the position for level 1.
 	int numKey;
-	CC_CSSTree(Tuple<KeyType, PayloadType> *d, int numR, int f)
+	CC_CSSTree(Tuple<KeyType, PayloadType> *d, uint64_t numR, int f)
 	{
         data=d;
 		numRecord=numR;	
