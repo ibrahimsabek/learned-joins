@@ -51,7 +51,7 @@ public:
 	int *vStart;
 	int *vG;//vG[0] is used in computing the position for level 1.
 	int numKey;
-	CC_CSSTree(Tuple<KeyType, PayloadType> *d, int numR, int f):CC_GenericTree(d,numR)
+	CC_CSSTree(Tuple<KeyType, PayloadType> *d, int numR, int f):CC_GenericTree<KeyType, PayloadType>(d,numR)
 	{
 		fanout=f;
 		blockSize=fanout-1;
