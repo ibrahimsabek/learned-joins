@@ -145,7 +145,7 @@ enable_testing()
 set(CTEST_OUTPUT_ON_FAILURE "1")
 
 add_library(rmi_lib
-    include/rmi/*.cpp
+    include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
 )
 
 target_include_directories(rmi_lib PUBLIC
