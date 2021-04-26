@@ -8,6 +8,7 @@
 #include "utils/data_structures.h"
 #include "utils/eth_generic_task_queue.h"
 #include "utils/learned_sort_for_sort_merge.h"
+#include "utils/CC_CSSTree.h"
 
 using namespace learned_sort_for_sort_merge;
 
@@ -184,6 +185,139 @@ destroy_hashtable(Hashtable<KeyType, PayloadType> * ht)
     free(ht);
 }
 
+#define EVAL(Rhs, Tmp) { Rhs->key = Tmp->key;Rhs->payload = Tmp->payload;}
+
+template<typename KeyType, typename PayloadType>
+struct LinkedList
+{
+//attributes
+	Bucket<KeyType, PayloadType>* header;
+	Bucket<KeyType, PayloadType>* newBucket;
+	int curEntry;
+	int numBuckets;
+//methods,
+
+	void init()
+	{
+		newBucket=header=(Bucket<KeyType, PayloadType>*)malloc(sizeof(Bucket<KeyType, PayloadType>));
+		header->next = NULL;		
+		curEntry=0;
+		numBuckets=0;
+	}
+
+	void destroy()
+	{
+		Bucket<KeyType, PayloadType> *b=header;
+		Bucket<KeyType, PayloadType> *bnext=header;
+		while(bnext!=NULL)
+		{
+			bnext=b->next;
+			free(b);
+			b=bnext;
+		}
+	}
+
+	int size()
+	{
+		return (numBuckets*BUCKET_SIZE)+curEntry;
+	}
+
+	void fill(Tuple<KeyType, PayloadType> * r)
+	{
+		if(curEntry==BUCKET_SIZE)
+		{
+			if(newBucket->next==NULL)
+			{
+				newBucket->next=(Bucket<KeyType, PayloadType>*)malloc(sizeof(Bucket<KeyType, PayloadType>));
+				newBucket->next->next = NULL;
+			}
+			newBucket=newBucket->next;
+			EVAL((newBucket->tuples),r);
+			curEntry=1;
+			numBuckets++;
+		}
+		else
+		{	
+			EVAL((newBucket->tuples+curEntry),r);
+			curEntry++;
+		}
+	}
+
+	void copyToArray(Tuple<KeyType, PayloadType>* Rout)
+	{
+		/*Bucket<KeyType, PayloadType> *sBucket=header;
+		int i=0;
+		int cur=0;
+		while(sBucket->next!=NULL)
+		{
+			for(i=0;i<BUCKET_SIZE;i++)
+			{
+				EVAL((Rout+cur),(sBucket->tuples+i));
+				cur++;
+			}
+			sBucket=sBucket->next;
+		}
+		//the last bucket
+		for(i=0;i<curEntry;i++)
+		{
+			EVAL((Rout+cur),(sBucket->tuples+i));
+			cur++;
+		}*/
+		//using memory copy
+		Bucket<KeyType, PayloadType> *sBucket=header;
+		int i=0;
+		int cur=0;
+		int bucketSizeInBytes=BUCKET_SIZE*sizeof(Tuple<KeyType, PayloadType>);
+		while(sBucket->next!=NULL)
+		{
+			memcpy(Rout+cur,sBucket->tuples,bucketSizeInBytes);
+			cur=cur+BUCKET_SIZE;
+			sBucket=sBucket->next;
+		}
+		//the last bucket
+		memcpy(Rout+cur,sBucket->tuples,curEntry*sizeof(Tuple<KeyType, PayloadType>));
+		//cur=cur+curEntry;
+	}
+	int print()
+	{
+		Bucket<KeyType, PayloadType> *sBucket=header;
+		int i=0;
+		int cur=0;
+		while(sBucket->next!=NULL)
+		{
+			for(i=0;i<BUCKET_SIZE;i++)
+			{
+				printf("%d; ",sBucket->tuples[i].key);
+				cur++;
+			}
+			sBucket=sBucket->next;
+		}
+		//the last bucket
+		for(i=0;i<curEntry;i++)
+		{
+			printf("%d, ",(sBucket->tuples+i)->key);
+			cur++;
+		}
+		return cur;
+	}
+
+	static void test()
+	{		
+		LinkedList<KeyType, PayloadType>* ll=(LinkedList<KeyType, PayloadType>*)malloc(sizeof(LinkedList<KeyType, PayloadType>));
+		ll->init();		
+		Tuple<KeyType, PayloadType> *r=(Tuple<KeyType, PayloadType> *)malloc(sizeof(Tuple<KeyType, PayloadType>));
+		int i=0;		
+		for(i=0;i<65;i++)
+		{			
+			r->key=i;
+			ll->fill(r);
+		}
+	
+		ll->print();
+		ll->destroy();
+	}
+};
+
 /***************************************************************/
 
 template<typename KeyType, typename PayloadType, typename TaskType>
@@ -250,8 +384,9 @@ struct IndexedNestedLoopJoinThread
     Hashtable<KeyType, PayloadType> *  ht;
     #endif
 
-    #ifdef INLJ_WITH_LEARNED_INDEX
     KeyType * sorted_relation_r_keys_only;
+
+    #ifdef INLJ_WITH_LEARNED_INDEX
     /**** start stuff for learning RMI models ****/
     /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
     typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p;
@@ -268,6 +403,10 @@ struct IndexedNestedLoopJoinThread
     vector<double>* intercepts;*/
     /**** end stuff for learning RMI models ****/
     #endif
+
+#ifdef INLJ_WITH_CSS_TREE_INDEX
+    CC_CSSTree<KeyType, PayloadType> *tree;
+#endif
 
     /* stats about the thread */
     struct timeval start_time, partition_end_time, end_time;
@@ -302,8 +441,11 @@ struct IndexedNestedLoopJoinBuild {
     /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;
     vector<double>* slopes;
     vector<double>* intercepts;*/
-    KeyType * sorted_relation_r_keys_only;
 #endif
+#ifdef INLJ_WITH_CSS_TREE_INDEX
+    CC_CSSTree<KeyType, PayloadType> *tree;
+#endif
+    KeyType * sorted_relation_r_keys_only;
     Relation<KeyType, PayloadType> *     original_relR;
     Relation<KeyType, PayloadType> *     original_relS;
 };

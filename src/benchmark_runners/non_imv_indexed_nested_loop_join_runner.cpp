@@ -41,6 +41,10 @@
 using namespace INLJ_RMI_NAMESPACE;
 #endif
 
+#ifdef INLJ_WITH_CSS_TREE_INDEX
+#include "utils/CC_CSSTree.h"
+#endif
+
 using namespace std;
 using namespace learned_sort_for_sort_merge;
 
@@ -276,6 +280,47 @@ uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * re
 }
 #endif
 
+
+#ifdef INLJ_WITH_CSS_TREE_INDEX
+uint64_t inlj_with_csstree_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
+{
+    uint64_t i, j;
+    uint64_t matches = 0; 
+    uint64_t curIndex=0;
+	KeyType keyForSearch;
+
+    CC_CSSTree<KeyType, PayloadType> *tree = build_output->tree;
+    KeyType * sorted_relation_r_keys_only = build_output->sorted_relation_r_keys_only;
+    uint64_t original_relR_num_tuples = build_output->original_relR->num_tuples;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {
+		keyForSearch = rel_s_partition->tuples[i].key;
+		curIndex = tree->search(keyForSearch);
+        
+        for(j = curIndex-1; j > 0; j--)
+		{
+            if (sorted_relation_r_keys_only[j] == keyForSearch)
+                matches++;
+            else 
+                if(sorted_relation_r_keys_only[j] < keyForSearch)
+			    	break;
+        }
+        
+        for(j = curIndex; j < original_relR_num_tuples; j++)
+        {
+            if (sorted_relation_r_keys_only[j] == keyForSearch)
+                matches++;
+            else 
+                if(sorted_relation_r_keys_only[j] > keyForSearch)
+			    	break;
+        }
+    }
+
+    return matches;
+}
+#endif
+
 void * inlj_join_thread(void * param)
 {
     IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args   = (IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> *) param;
@@ -349,7 +394,18 @@ void * inlj_join_thread(void * param)
         inlj_pfun1[0].fun_ptr = inlj_with_rmi_probe_rel_s_partition;
 
         inlj_pf_num = 1;
-#endif        
+#endif
+
+#ifdef INLJ_WITH_CSS_TREE_INDEX        
+        //strcpy(inlj_pfun[0].fun_name, "CSSTree");
+        //inlj_pfun[0].fun_ptr = inlj_with_csstree_build_rel_r_partition;
+
+        strcpy(inlj_pfun1[0].fun_name, "CSSTree");
+        
+        inlj_pfun1[0].fun_ptr = inlj_with_csstree_probe_rel_s_partition;
+
+        inlj_pf_num = 1;
+#endif
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
@@ -357,8 +413,9 @@ void * inlj_join_thread(void * param)
     IndexedNestedLoopJoinBuild<KeyType, PayloadType> build_data; 
     build_data.original_relR = args->original_relR;
     build_data.original_relS = args->original_relS;
-#ifdef INLJ_WITH_LEARNED_INDEX
     build_data.sorted_relation_r_keys_only = args->sorted_relation_r_keys_only;
+#ifdef INLJ_WITH_CSS_TREE_INDEX        
+    build_data.tree = args->tree;
 #endif
 
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
@@ -393,7 +450,7 @@ void * inlj_join_thread(void * param)
 
             BARRIER_ARRIVE(args->barrier, rv);
 
-#ifndef INLJ_WITH_LEARNED_INDEX 
+#ifdef INLJ_WITH_HASH_INDEX 
             if(args->tid == 0){
                 gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
@@ -482,8 +539,8 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                         #ifdef INLJ_WITH_HASH_INDEX
                                  Hashtable<KeyType, PayloadType> * ht, 
                         #endif
-                        #ifdef INLJ_WITH_LEARNED_INDEX
                                  KeyType * sorted_relation_r_keys_only,
+                        #ifdef INLJ_WITH_LEARNED_INDEX
                                  /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
                                  learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p,
                                  unsigned int SAMPLE_SZ_R, unsigned int SAMPLE_SZ_S,
@@ -497,6 +554,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                                  uint32_t * sample_count, uint32_t * sample_count_R, uint32_t * sample_count_S,
                                  vector<double>* slopes, vector<double>* intercepts,*/
                         #endif
+                        #ifdef INLJ_WITH_CSS_TREE_INDEX
+                                CC_CSSTree<KeyType, PayloadType> *tree,
+                        #endif                        
                                  pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
                                  IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args){
@@ -534,8 +594,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).original_relR = rel_r;
         (*(args + i)).original_relS = rel_s;
 
-    #ifdef INLJ_WITH_LEARNED_INDEX
         (*(args + i)).sorted_relation_r_keys_only = sorted_relation_r_keys_only;
+
+    #ifdef INLJ_WITH_LEARNED_INDEX
         /**** start stuff for learning RMI models ****/
         /*(*(args + i)).rmi = rmi;
         (*(args + i)).p = p;
@@ -556,7 +617,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).intercepts = intercepts;*/
         /**** end stuff for learning RMI models ****/
     #endif
-
+    #ifdef INLJ_WITH_CSS_TREE_INDEX
+        (*(args + i)).tree = tree;
+    #endif
         (*(args + i)).barrier = barrier_ptr;
         (*(args + i)).threadresult  = &(joinresult->resultlist[i]);
     }
@@ -624,17 +687,16 @@ int main(int argc, char **argv)
     allocate_hashtable(&ht, nbuckets);
 #endif
 
-#ifdef INLJ_WITH_LEARNED_INDEX
-  
-    std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;
-
     KeyType * sorted_relation_r_keys_only = (KeyType *) alloc_aligned(rel_r.num_tuples  * sizeof(KeyType));
 
     for(int j = 0; j < rel_r.num_tuples; j++)
         sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
     
     std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
-    
+
+#ifdef INLJ_WITH_LEARNED_INDEX
+  
+    std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;    
 /*
     //////////////////////////////////////////////////////////////////////////////
     // start stuff for sampling and building RMI models for both relations R and S
@@ -691,18 +753,28 @@ int main(int argc, char **argv)
 */
 #endif
 
+#ifdef INLJ_WITH_CSS_TREE_INDEX
+    for(int j = 0; j < rel_r.num_tuples; j++)
+        rel_r.tuples[j].key = sorted_relation_r_keys_only[j];
+
+	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(&rel_r, rel_r.num_tuples, INLJ_CSS_TREE_FANOUT);
+
+#endif
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
                                 #ifdef INLJ_WITH_HASH_INDEX
                                     ht, 
                                 #endif
-                                #ifdef INLJ_WITH_LEARNED_INDEX
                                     sorted_relation_r_keys_only,
+                                #ifdef INLJ_WITH_LEARNED_INDEX                                    
                                     /*&rmi, rmi_params,
                                     SAMPLE_SZ_R, SAMPLE_SZ_S,
                                     tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
                                     r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
                                     &training_data, sample_count, sample_count_R, sample_count_S,
                                     slopes, intercepts,*/
+                                #endif
+                                #ifdef INLJ_WITH_CSS_TREE_INDEX
+                                    tree,
                                 #endif
                                     &barrier, joinresult, args_ptr);
 

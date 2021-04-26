@@ -46,6 +46,9 @@
 /* return a random number in range [0,N] */
 #define RAND_RANGE(N) ((double)rand() / ((double)RAND_MAX + 1) * (N))
 
+#define divRoundDown(n,s)  ((n) / (s))
+#define divRoundUp(n,s)    (((n) / (s)) + ((((n) % (s)) > 0) ? 1 : 0))
+
 // Finalization step of Murmur3 hash (based on the stanford implementation for cuckoo hashing)
 uint32_t murmur_hash_32(uint32_t value) {
   value ^= value >> 16;
