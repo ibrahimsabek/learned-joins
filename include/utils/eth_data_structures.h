@@ -8,7 +8,10 @@
 #include "utils/data_structures.h"
 #include "utils/eth_generic_task_queue.h"
 #include "utils/learned_sort_for_sort_merge.h"
+
+#ifdef INLJ_WITH_CSS_TREE_INDEX
 #include "utils/CC_CSSTree.h"
+#endif
 
 using namespace learned_sort_for_sort_merge;
 
