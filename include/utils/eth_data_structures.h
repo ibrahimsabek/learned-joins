@@ -13,6 +13,10 @@
 #include "utils/CC_CSSTree.h"
 #endif
 
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+#include "utils/art32_tree.h"
+#endif
+
 using namespace learned_sort_for_sort_merge;
 
 /*********** Common data structures for ETH radix join ***********/
@@ -411,6 +415,10 @@ struct IndexedNestedLoopJoinThread
     CC_CSSTree<KeyType, PayloadType> *tree;
 #endif
 
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+    ART32<PayloadType> *art32_tree;
+#endif
+
     /* stats about the thread */
     struct timeval start_time, partition_end_time, end_time;
 } __attribute__((aligned(CACHE_LINE_SIZE)));
@@ -448,6 +456,11 @@ struct IndexedNestedLoopJoinBuild {
 #ifdef INLJ_WITH_CSS_TREE_INDEX
     CC_CSSTree<KeyType, PayloadType> *tree;
 #endif
+
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+    ART32<PayloadType> *art32_tree;
+#endif
+
     KeyType * sorted_relation_r_keys_only;
     Relation<KeyType, PayloadType> *     original_relR;
     Relation<KeyType, PayloadType> *     original_relS;

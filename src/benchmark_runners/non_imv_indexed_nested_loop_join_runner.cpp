@@ -45,6 +45,10 @@ using namespace INLJ_RMI_NAMESPACE;
 #include "utils/CC_CSSTree.h"
 #endif
 
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+#include "utils/art32_tree.h"
+#endif
+
 using namespace std;
 using namespace learned_sort_for_sort_merge;
 
@@ -321,6 +325,32 @@ uint64_t inlj_with_csstree_probe_rel_s_partition(Relation<KeyType, PayloadType> 
 }
 #endif
 
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
+{
+    uint64_t i;
+    uint64_t matches = 0; 
+	KeyType keyForSearch;
+    uint8_t key[4];
+
+    ART32<PayloadType> * art32_tree = build_output->art32_tree;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {
+        keyForSearch = rel_s_partition->tuples[i].key;    
+        art32_tree->swapBytes(keyForSearch, key);
+        Node* leaf = art32_tree->lookup(art32_tree->tree_, key, 4, 0, 4);
+        if (art32_tree->isLeaf(leaf))
+        {
+            if (art32_tree->getLeafValue(leaf) == keyForSearch)
+                    matches++;   
+        }
+    }
+
+    return matches;
+}
+#endif
+
 void * inlj_join_thread(void * param)
 {
     IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args   = (IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> *) param;
@@ -406,6 +436,17 @@ void * inlj_join_thread(void * param)
 
         inlj_pf_num = 1;
 #endif
+#ifdef INLJ_WITH_ART32_TREE_INDEX        
+        //strcpy(inlj_pfun[0].fun_name, "ART32Tree");
+        //inlj_pfun[0].fun_ptr = inlj_with_art32tree_build_rel_r_partition;
+
+        strcpy(inlj_pfun1[0].fun_name, "ART32Tree");
+        
+        inlj_pfun1[0].fun_ptr = inlj_with_art32tree_probe_rel_s_partition;
+
+        inlj_pf_num = 1;
+#endif
+
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
@@ -416,6 +457,9 @@ void * inlj_join_thread(void * param)
     build_data.sorted_relation_r_keys_only = args->sorted_relation_r_keys_only;
 #ifdef INLJ_WITH_CSS_TREE_INDEX        
     build_data.tree = args->tree;
+#endif
+#ifdef INLJ_WITH_ART32_TREE_INDEX        
+    build_data.art32_tree = args->art32_tree;
 #endif
 
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
@@ -557,6 +601,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                         #ifdef INLJ_WITH_CSS_TREE_INDEX
                                 CC_CSSTree<KeyType, PayloadType> *tree,
                         #endif                        
+                        #ifdef INLJ_WITH_ART32_TREE_INDEX                        
+                                ART32<PayloadType> *art32_tree,
+                        #endif
                                  pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
                                  IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args){
@@ -619,6 +666,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
     #endif
     #ifdef INLJ_WITH_CSS_TREE_INDEX
         (*(args + i)).tree = tree;
+    #endif
+    #ifdef INLJ_WITH_ART32_TREE_INDEX
+        (*(args + i)).art32_tree = art32_tree;
     #endif
         (*(args + i)).barrier = barrier_ptr;
         (*(args + i)).threadresult  = &(joinresult->resultlist[i]);
@@ -760,6 +810,17 @@ int main(int argc, char **argv)
 	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(rel_r.tuples, rel_r.num_tuples, INLJ_CSS_TREE_FANOUT);
 
 #endif
+
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+    vector<Tuple<uint32_t, PayloadType>> art32_data;
+    for(int j = 0; j < rel_r.num_tuples; j++)
+        art32_data.push_pack(rel_r.tuples[j]);
+
+	ART32<PayloadType> *art32_tree=new ART32<PayloadType>();
+    art32_tree.Build(art32_data);
+
+#endif
+
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
                                 #ifdef INLJ_WITH_HASH_INDEX
                                     ht, 
@@ -775,6 +836,9 @@ int main(int argc, char **argv)
                                 #endif
                                 #ifdef INLJ_WITH_CSS_TREE_INDEX
                                     tree,
+                                #endif
+                                #ifdef INLJ_WITH_ART32_TREE_INDEX
+                                    art32_tree,
                                 #endif
                                     &barrier, joinresult, args_ptr);
 
