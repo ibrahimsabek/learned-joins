@@ -20,62 +20,8 @@ using namespace std;
 template<typename PayloadType>
 class ART32 {
  public:
-  Node* tree_ = NULL;
-  static uint64_t allocated_byte_count; // track bytes allocated
 
-
-  ~ART32() { destructTree(tree_); }
-
-  void Build(const std::vector<Tuple<uint32_t, PayloadType>>& data) {
-    data_ = &data;
-
-    for (const auto& key_value : *data_) {
-      const uint32_t data_key = key_value.key;
-      const uint64_t data_value = (uint64_t) key_value.payload;
-
-      // Check whether most significant bit of value (TID) is set.
-      if (data_value >> 63)
-        printf("ART doesn't support values with the most significant bit set. \n");
-
-      uint8_t key[4];
-      swapBytes(data_key, key);
-      insert(tree_, &tree_, key, 0, data_value, 4);
-    }
-  }
-
-  uint64_t EqualityLookup(const uint64_t lookup_key) {
-    uint8_t key[4];
-    swapBytes(lookup_key, key);
-    Node* leaf = lookup(tree_, key, 4, 0, 4);
-    if (!isLeaf(leaf))
-      printf("ART32: search ended in inner node\n");
-    return getLeafValue(leaf);
-  }
-
-
-  std::size_t size() const {
-    return sizeof(*this) + allocated_byte_count;
-  }
-
-  
-  /*
-  Adaptive Radix Tree
-  Viktor Leis, 2012
-  leis@in.tum.de
- */
-
-  // Constants for the node types
-  static const int8_t NodeType4 = 0;
-  static const int8_t NodeType16 = 1;
-  static const int8_t NodeType48 = 2;
-  static const int8_t NodeType256 = 3;
-
-// The maximum prefix length for compressed paths stored in the
-// header, if the path is longer it is loaded from the database on
-// demand
-  static const unsigned maxPrefixLength = 9;
-
-// Shared header of all inner nodes
+ // Shared header of all inner nodes
   struct Node {
     // length of the compressed path (prefix)
     uint32_t prefixLength;
@@ -157,6 +103,62 @@ class ART32 {
       allocated_byte_count += sizeof(*this);
     }
   };
+
+  Node* tree_ = NULL;
+  static uint64_t allocated_byte_count; // track bytes allocated
+
+
+  ~ART32() { destructTree(tree_); }
+
+  void Build(const std::vector<Tuple<uint32_t, PayloadType>>& data) {
+    data_ = &data;
+
+    for (const auto& key_value : *data_) {
+      const uint32_t data_key = key_value.key;
+      const uint64_t data_value = (uint64_t) key_value.payload;
+
+      // Check whether most significant bit of value (TID) is set.
+      if (data_value >> 63)
+        printf("ART doesn't support values with the most significant bit set. \n");
+
+      uint8_t key[4];
+      swapBytes(data_key, key);
+      insert(tree_, &tree_, key, 0, data_value, 4);
+    }
+  }
+
+  uint64_t EqualityLookup(const uint64_t lookup_key) {
+    uint8_t key[4];
+    swapBytes(lookup_key, key);
+    Node* leaf = lookup(tree_, key, 4, 0, 4);
+    if (!isLeaf(leaf))
+      printf("ART32: search ended in inner node\n");
+    return getLeafValue(leaf);
+  }
+
+
+  std::size_t size() const {
+    return sizeof(*this) + allocated_byte_count;
+  }
+
+  
+  /*
+  Adaptive Radix Tree
+  Viktor Leis, 2012
+  leis@in.tum.de
+ */
+
+  // Constants for the node types
+  static const int8_t NodeType4 = 0;
+  static const int8_t NodeType16 = 1;
+  static const int8_t NodeType48 = 2;
+  static const int8_t NodeType256 = 3;
+
+// The maximum prefix length for compressed paths stored in the
+// header, if the path is longer it is loaded from the database on
+// demand
+  static const unsigned maxPrefixLength = 9;
+
 
   inline Node* makeLeaf(uintptr_t tid) {
     // Create a pseudo-leaf
