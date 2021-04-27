@@ -17,11 +17,7 @@
 
 using namespace std;
 
-template<typename PayloadType>
-class ART32 {
- public:
-
-  /*
+/*
   Adaptive Radix Tree
   Viktor Leis, 2012
   leis@in.tum.de
@@ -122,6 +118,13 @@ class ART32 {
       allocated_byte_count += sizeof(*this);
     }
   };
+
+
+template<typename PayloadType>
+class ART32 {
+ public:
+
+  
 
   Node* tree_ = NULL;
 
