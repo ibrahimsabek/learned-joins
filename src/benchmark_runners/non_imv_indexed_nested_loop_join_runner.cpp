@@ -814,7 +814,7 @@ int main(int argc, char **argv)
 #ifdef INLJ_WITH_ART32_TREE_INDEX
     vector<Tuple<uint32_t, PayloadType>> art32_data;
     for(int j = 0; j < rel_r.num_tuples; j++)
-        art32_data.push_pack(rel_r.tuples[j]);
+        art32_data.push_back(rel_r.tuples[j]);
 
 	ART32<PayloadType> *art32_tree=new ART32<PayloadType>();
     art32_tree->Build(art32_data);
