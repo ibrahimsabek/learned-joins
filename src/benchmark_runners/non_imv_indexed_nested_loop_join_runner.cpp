@@ -342,10 +342,8 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
         Node* leaf = art32_tree->lookup(art32_tree->tree_, key, 4, 0, 4);
         if (art32_tree->isLeaf(leaf))
         {
-            cout << "Key: " << keyForSearch << " ART32 value: " << art32_tree->getLeafValue(leaf) << endl;
-            matches++;
-            //if (art32_tree->getLeafValue(leaf) == keyForSearch)
-            //        matches++;   
+            if (art32_tree->getLeafValue(leaf) == keyForSearch)
+                matches++;   
         }
     }
 
@@ -816,7 +814,10 @@ int main(int argc, char **argv)
 #ifdef INLJ_WITH_ART32_TREE_INDEX
     vector<Tuple<uint32_t, PayloadType>> art32_data;
     for(int j = 0; j < rel_r.num_tuples; j++)
+    {
+        rel_r.tuples[j].payload = rel_r.tuples[j].key;
         art32_data.push_back(rel_r.tuples[j]);
+    }
 
 	ART32<PayloadType> *art32_tree=new ART32<PayloadType>();
     art32_tree->Build(art32_data);
