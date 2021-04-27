@@ -853,4 +853,4 @@ class ART32 {
   const std::vector<Tuple<uint32_t, PayloadType>>* data_;
 };
 
-uint64_t ART32::allocated_byte_count;
+//uint64_t ART32::allocated_byte_count;
