@@ -20,6 +20,9 @@ using namespace std;
 template<typename PayloadType>
 class ART32 {
  public:
+  Node* tree_ = NULL;
+  static uint64_t allocated_byte_count; // track bytes allocated
+
 
   ~ART32() { destructTree(tree_); }
 
@@ -39,7 +42,7 @@ class ART32 {
       insert(tree_, &tree_, key, 0, data_value, 4);
     }
   }
-//TODO: copy it from here to the loop in the runner
+
   uint64_t EqualityLookup(const uint64_t lookup_key) {
     uint8_t key[4];
     swapBytes(lookup_key, key);
@@ -54,9 +57,7 @@ class ART32 {
     return sizeof(*this) + allocated_byte_count;
   }
 
-  Node* tree_ = NULL;
-  static uint64_t allocated_byte_count; // track bytes allocated
-
+  
   /*
   Adaptive Radix Tree
   Viktor Leis, 2012

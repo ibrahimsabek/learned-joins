@@ -817,7 +817,7 @@ int main(int argc, char **argv)
         art32_data.push_pack(rel_r.tuples[j]);
 
 	ART32<PayloadType> *art32_tree=new ART32<PayloadType>();
-    art32_tree.Build(art32_data);
+    art32_tree->Build(art32_data);
 
 #endif
 
