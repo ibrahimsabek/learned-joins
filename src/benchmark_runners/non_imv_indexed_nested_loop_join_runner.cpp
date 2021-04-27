@@ -342,6 +342,7 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
         Node* leaf = art32_tree->lookup(art32_tree->tree_, key, 4, 0, 4);
         if (art32_tree->isLeaf(leaf))
         {
+            matches++;
             if (art32_tree->getLeafValue(leaf) == keyForSearch)
                     matches++;   
         }
