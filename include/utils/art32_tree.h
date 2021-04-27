@@ -21,6 +21,26 @@ template<typename PayloadType>
 class ART32 {
  public:
 
+  /*
+  Adaptive Radix Tree
+  Viktor Leis, 2012
+  leis@in.tum.de
+ */
+
+  // Constants for the node types
+  static const int8_t NodeType4 = 0;
+  static const int8_t NodeType16 = 1;
+  static const int8_t NodeType48 = 2;
+  static const int8_t NodeType256 = 3;
+
+// The maximum prefix length for compressed paths stored in the
+// header, if the path is longer it is loaded from the database on
+// demand
+  static const unsigned maxPrefixLength = 9;
+
+  static const uint8_t emptyMarker = 48;
+  static uint64_t allocated_byte_count; // track bytes allocated
+
  // Shared header of all inner nodes
   struct Node {
     // length of the compressed path (prefix)
@@ -80,7 +100,6 @@ class ART32 {
     }
   };
 
-  static const uint8_t emptyMarker = 48;
 
 // Node with up to 48 children
   struct Node48 : Node {
@@ -105,7 +124,6 @@ class ART32 {
   };
 
   Node* tree_ = NULL;
-  static uint64_t allocated_byte_count; // track bytes allocated
 
 
   ~ART32() { destructTree(tree_); }
@@ -142,22 +160,6 @@ class ART32 {
   }
 
   
-  /*
-  Adaptive Radix Tree
-  Viktor Leis, 2012
-  leis@in.tum.de
- */
-
-  // Constants for the node types
-  static const int8_t NodeType4 = 0;
-  static const int8_t NodeType16 = 1;
-  static const int8_t NodeType48 = 2;
-  static const int8_t NodeType256 = 3;
-
-// The maximum prefix length for compressed paths stored in the
-// header, if the path is longer it is loaded from the database on
-// demand
-  static const unsigned maxPrefixLength = 9;
 
 
   inline Node* makeLeaf(uintptr_t tid) {
