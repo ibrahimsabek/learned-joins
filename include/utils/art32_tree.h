@@ -35,7 +35,7 @@ using namespace std;
   static const unsigned maxPrefixLength = 9;
 
   static const uint8_t emptyMarker = 48;
-  static uint64_t allocated_byte_count; // track bytes allocated
+  //static uint64_t allocated_byte_count; // track bytes allocated
 
  // Shared header of all inner nodes
   struct Node {
@@ -53,19 +53,19 @@ using namespace std;
     ~Node() {
       switch (type) {
         case NodeType4: {
-          allocated_byte_count -= sizeof(Node4);
+          //allocated_byte_count -= sizeof(Node4);
           break;
         }
         case NodeType16: {
-          allocated_byte_count -= sizeof(Node16);
+          //allocated_byte_count -= sizeof(Node16);
           break;
         }
         case NodeType48: {
-          allocated_byte_count -= sizeof(Node48);
+          //allocated_byte_count -= sizeof(Node48);
           break;
         }
         case NodeType256: {
-          allocated_byte_count -= sizeof(Node256);
+          //allocated_byte_count -= sizeof(Node256);
           break;
         }
       }
@@ -80,7 +80,7 @@ using namespace std;
     Node4() : Node(NodeType4) {
       memset(key, 0, sizeof(key));
       memset(child, 0, sizeof(child));
-      allocated_byte_count += sizeof(*this);
+      //allocated_byte_count += sizeof(*this);
     }
   };
 
@@ -92,7 +92,7 @@ using namespace std;
     Node16() : Node(NodeType16) {
       memset(key, 0, sizeof(key));
       memset(child, 0, sizeof(child));
-      allocated_byte_count += sizeof(*this);
+      //allocated_byte_count += sizeof(*this);
     }
   };
 
@@ -105,7 +105,7 @@ using namespace std;
     Node48() : Node(NodeType48) {
       memset(childIndex, emptyMarker, sizeof(childIndex));
       memset(child, 0, sizeof(child));
-      allocated_byte_count += sizeof(*this);
+      //allocated_byte_count += sizeof(*this);
     }
   };
 
@@ -115,7 +115,7 @@ using namespace std;
 
     Node256() : Node(NodeType256) {
       memset(child, 0, sizeof(child));
-      allocated_byte_count += sizeof(*this);
+      //allocated_byte_count += sizeof(*this);
     }
   };
 
@@ -158,10 +158,10 @@ class ART32 {
   }
 
 
-  std::size_t size() const {
+/*  std::size_t size() const {
     return sizeof(*this) + allocated_byte_count;
   }
-
+*/
   
 
 
