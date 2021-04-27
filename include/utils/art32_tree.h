@@ -136,7 +136,7 @@ class ART32 {
 
     for (const auto& key_value : *data_) {
       const uint32_t data_key = key_value.key;
-      const uint64_t data_value = (uint64_t) key_value.payload;
+      const uint64_t data_value = (uint64_t) key_value.key;
 
       // Check whether most significant bit of value (TID) is set.
       if (data_value >> 63)
