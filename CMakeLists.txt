@@ -144,8 +144,9 @@ ENDIF(LINUX)
 enable_testing()
 set(CTEST_OUTPUT_ON_FAILURE "1")
 
-add_library(rmi_lib
-    include/rmi/*.cpp
+FILE(GLOB MyCSources include/rmi/*.cpp)
+add_library(rmi_lib ${MyCSources}
+    #include/rmi/*.cpp
     #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
     #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
     #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
