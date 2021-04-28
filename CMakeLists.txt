@@ -144,17 +144,8 @@ ENDIF(LINUX)
 enable_testing()
 set(CTEST_OUTPUT_ON_FAILURE "1")
 
-FILE(GLOB MyCSources include/rmi/*.cpp)
-add_library(rmi_lib ${MyCSources}
-    #include/rmi/*.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-    #include/rmi/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32_0.cpp
-)
+FILE(GLOB RMICPPSources include/rmi/*.cpp)
+add_library(rmi_lib ${RMICPPSources})
 
 target_include_directories(rmi_lib PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
