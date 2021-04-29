@@ -876,9 +876,9 @@ int main(int argc, char **argv)
         int cpu_idx = get_cpu_id(i);
         #endif
 
-        //CPU_ZERO(&set);
-        //CPU_SET(cpu_idx, &set);
-        //pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
 
         rv = pthread_create(&tid[i], &attr, inlj_join_thread, (void*)&args[i]);
         if (rv){
