@@ -30,7 +30,7 @@
 #define NUM_THREADS NUM_THREADS_FOR_EVALUATION
 #endif
 
-#define RUN_NUMS 10 
+//#define RUN_NUMS 10 
 #define INLJ_MORSE_SIZE 0 //100000
 
 #define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
@@ -402,51 +402,47 @@ void * inlj_join_thread(void * param)
 
 #endif    
     if (args->tid == 0) {
-
+        inlj_pf_num = 0;
 #ifdef INLJ_WITH_HASH_INDEX        
-        strcpy(inlj_pfun[0].fun_name, "Hashing");
+        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
+        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
 
-        inlj_pfun[0].fun_ptr = inlj_with_hash_build_rel_r_partition;
-
-        strcpy(inlj_pfun1[0].fun_name, "Hashing");
-
-        inlj_pfun1[0].fun_ptr = inlj_with_hash_probe_rel_s_partition;
-
-        inlj_pf_num = 1;
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Hashing");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
+        inlj_pf_num++;
 #endif
 
 #ifdef INLJ_WITH_LEARNED_INDEX        
-        //strcpy(inlj_pfun[0].fun_name, "Learned");
-        //inlj_pfun[0].fun_ptr = inlj_with_rmi_build_rel_r_partition;
+        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
+        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
+        //strcpy(inlj_pfun[inlj_pf_num].fun_name, "Learned");
+        //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_rmi_build_rel_r_partition;
 
-        strcpy(inlj_pfun1[0].fun_name, "Learned");
-        
-        inlj_pfun1[0].fun_ptr = inlj_with_rmi_probe_rel_s_partition;
-
-        inlj_pf_num = 1;
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Learned");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_rmi_probe_rel_s_partition;
+        inlj_pf_num++;
 #endif
 
 #ifdef INLJ_WITH_CSS_TREE_INDEX        
-        //strcpy(inlj_pfun[0].fun_name, "CSSTree");
-        //inlj_pfun[0].fun_ptr = inlj_with_csstree_build_rel_r_partition;
+        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
+        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
+        //strcpy(inlj_pfun[inlj_pf_num].fun_name, "CSSTree");
+        //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_csstree_build_rel_r_partition;
 
-        strcpy(inlj_pfun1[0].fun_name, "CSSTree");
-        
-        inlj_pfun1[0].fun_ptr = inlj_with_csstree_probe_rel_s_partition;
-
-        inlj_pf_num = 1;
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "CSSTree");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_csstree_probe_rel_s_partition;
+        inlj_pf_num++;
 #endif
-#ifdef INLJ_WITH_ART32_TREE_INDEX        
-        //strcpy(inlj_pfun[0].fun_name, "ART32Tree");
-        //inlj_pfun[0].fun_ptr = inlj_with_art32tree_build_rel_r_partition;
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
+        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
+        //strcpy(inlj_pfun[inlj_pf_num].fun_name, "ART32Tree");
+        //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_art32tree_build_rel_r_partition;
 
-        strcpy(inlj_pfun1[0].fun_name, "ART32Tree");
-        
-        inlj_pfun1[0].fun_ptr = inlj_with_art32tree_probe_rel_s_partition;
-
-        inlj_pf_num = 1;
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "ART32Tree");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_art32tree_probe_rel_s_partition;
+        inlj_pf_num++;
 #endif
-
     }
     BARRIER_ARRIVE(args->barrier, rv);
     

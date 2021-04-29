@@ -32,7 +32,7 @@
 #endif
 
 
-#define RUN_NUMS 1 //10 
+//#define RUN_NUMS 1 //10 
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;

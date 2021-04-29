@@ -36,7 +36,7 @@
 #endif
 
 
-#define RUN_NUMS 1 //10 
+//#define RUN_NUMS 1 //10 
 
 #define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
 
