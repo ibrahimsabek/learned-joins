@@ -10,15 +10,33 @@
 #include "utils/data_structures.h"
 #include "utils/memory.h"
 
+
+template<class KeyType, class PayloadType>
+struct write_read_arg_t {
+    Relation<KeyType, PayloadType>          rel;
+    int                 thread_id;
+    const char * folder_path;    
+    const char * filename;
+    const char * file_extension;
+    Relation<KeyType, PayloadType> *        fullrel;
+};
+
+
 //based on the ETH implementation 
 // persisting a relation to the disk
 template<class KeyType, class PayloadType>
 void write_relation(Relation<KeyType, PayloadType>* rel, const char * filename);
 
+template<class KeyType, class PayloadType>
+void write_relation_threaded(Relation<KeyType, PayloadType>* rel, int nthreads, const char * folder_path, const char * filename, const char * file_extension);
+
 //based on the ETH implementation 
 // reading a persisted relation from the disk
 template<class KeyType, class PayloadType>
 int load_relation(Relation<KeyType, PayloadType>* relation, const char * filename, uint64_t num_tuples);
+
+template<class KeyType, class PayloadType>
+int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthreads, const char * folder_path, const char * filename, const char * file_extension, uint64_t num_tuples);
 
 /**
  * Free memory allocated for only tuples.
@@ -166,6 +184,77 @@ void write_relation(Relation<KeyType, PayloadType>* rel, const char * filename)
 
     fclose(fp);
 }
+
+template<class KeyType, class PayloadType>
+void * write_relation_thread(void * args) 
+{
+    write_read_arg_t<KeyType, PayloadType> * arg = (write_read_arg_t<KeyType, PayloadType> *) args;
+
+    stringstream full_filename;
+    
+    full_filename << args->folder_path;
+    full_filename << args->filename;
+    full_filename << "_";
+    full_filename << args->thread_id;
+    full_filename << args->file_extension;
+
+    write_relation(&(args->rel), full_filename.str().c_str());
+
+    return 0;
+}
+
+template<class KeyType, class PayloadType>
+void write_relation_threaded(Relation<KeyType, PayloadType>* rel, int nthreads, const char * folder_path, const char * filename, const char * file_extension)
+{    
+    uint32_t i, rv;
+    uint64_t offset = 0;
+
+    write_read_arg_t<KeyType, PayloadType> args[nthreads];
+    pthread_t tid[nthreads];
+    cpu_set_t set;
+    pthread_attr_t attr;
+
+    uint64_t ntuples_perthr;
+    uint64_t ntuples_lastthr;
+
+    ntuples_perthr  = rel->num_tuples / nthreads;
+    ntuples_lastthr = rel->num_tuples - ntuples_perthr * (nthreads-1);
+
+    pthread_attr_init(&attr);
+
+    for(i = 0; i < nthreads; i++ ) 
+    {
+        #ifdef DEVELOPMENT_MODE
+        int cpu_idx = get_cpu_id_develop(i);
+        #else
+        int cpu_idx = get_cpu_id_v2(i);
+        #endif
+    
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+
+        args[i].folder_path = folder_path;
+        args[i].filename = filename;
+        args[i].file_extension = file_extension;
+        args[i].thread_id = i;
+        args[i].rel.tuples     = rel->tuples + offset;
+        args[i].rel.num_tuples = (i == nthreads-1) ? ntuples_lastthr 
+                                 : ntuples_perthr;
+        offset += ntuples_perthr;
+
+        rv = pthread_create(&tid[i], &attr, write_relation_thread<KeyType, PayloadType>, (void*)&args[i]);
+        if (rv){
+            fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
+            exit(-1);
+        }
+    }
+
+    for(i = 0; i < nthreads; i++){
+        pthread_join(tid[i], NULL);
+    }
+}
+
 
 // based on the ETH implementation
 template<class KeyType, class PayloadType>
@@ -332,6 +421,95 @@ int load_relation(Relation<KeyType, PayloadType>* relation, const char * filenam
 
     return 0;    
 }
+
+template<class KeyType, class PayloadType>
+void * read_relation_thread(void * args) 
+{
+    write_read_arg_t<KeyType, PayloadType> * arg = (write_read_arg_t<KeyType, PayloadType> *) args;
+
+    stringstream full_filename;
+    
+    full_filename << args->folder_path;
+    full_filename << args->filename;
+    full_filename << "_";
+    full_filename << args->thread_id;
+    full_filename << args->file_extension;
+
+    read_relation(&(args->rel), full_filename.str().c_str());
+
+    return 0;
+}
+
+template<class KeyType, class PayloadType>
+void read_relation_threaded(Relation<KeyType, PayloadType>* rel, int nthreads, const char * folder_path, const char * filename, const char * file_extension)
+{    
+    uint32_t i, rv;
+    uint64_t offset = 0;
+
+    write_read_arg_t<KeyType, PayloadType> args[nthreads];
+    pthread_t tid[nthreads];
+    cpu_set_t set;
+    pthread_attr_t attr;
+
+    uint64_t ntuples_perthr;
+    uint64_t ntuples_lastthr;
+
+    ntuples_perthr  = rel->num_tuples / nthreads;
+    ntuples_lastthr = rel->num_tuples - ntuples_perthr * (nthreads-1);
+
+    pthread_attr_init(&attr);
+
+    for(i = 0; i < nthreads; i++ ) 
+    {
+        #ifdef DEVELOPMENT_MODE
+        int cpu_idx = get_cpu_id_develop(i);
+        #else
+        int cpu_idx = get_cpu_id_v2(i);
+        #endif
+    
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+
+        args[i].folder_path = folder_path;
+        args[i].filename = filename;
+        args[i].file_extension = file_extension;
+        args[i].thread_id = i;
+        args[i].rel.tuples     = rel->tuples + offset;
+        args[i].rel.num_tuples = (i == nthreads-1) ? ntuples_lastthr 
+                                 : ntuples_perthr;
+        offset += ntuples_perthr;
+
+        rv = pthread_create(&tid[i], &attr, read_relation_thread<KeyType, PayloadType>, (void*)&args[i]);
+        if (rv){
+            fprintf(stderr, "[ERROR] pthread_create() return code is %d\n", rv);
+            exit(-1);
+        }
+    }
+
+    for(i = 0; i < nthreads; i++){
+        pthread_join(tid[i], NULL);
+    }
+}
+
+template<class KeyType, class PayloadType>
+int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthreads, const char * folder_path, const char * filename, const char * file_extension, uint64_t num_tuples)
+{
+    relation->num_tuples = num_tuples;
+
+    /* we need aligned allocation of items */
+    relation->tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(num_tuples * sizeof(Tuple<KeyType, PayloadType>));
+
+    if (!relation->tuples) { 
+        perror("out of memory");
+        return -1; 
+    }
+
+    read_relation_threaded(relation, nthreads, folder_path, filename, file_extension);
+
+    return 0;
+}
+
 
 template<class KeyType, class PayloadType>
 void delete_relation(Relation<KeyType, PayloadType> * rel)

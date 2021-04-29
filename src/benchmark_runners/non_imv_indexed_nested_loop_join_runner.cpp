@@ -677,6 +677,44 @@ int main(int argc, char **argv)
 
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
+    string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
+    string curr_rel_s_folder_path = RELATION_S_FOLDER_PATH;
+
+    string curr_rel_r_file_name = RELATION_R_FILE_NAME;
+    string curr_rel_s_file_name = RELATION_S_FILE_NAME;
+
+    string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
+    string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
+
+    load_relation_threaded<KeyType, PayloadType>(&rel_r, NUM_THREADS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+    load_relation_threaded<KeyType, PayloadType>(&rel_s, NUM_THREADS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);
+#else
+
+    string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
+    string curr_rel_s_folder_path = RELATION_S_FOLDER_PATH;
+
+    string curr_rel_r_file_name = RELATION_R_FILE_NAME;
+    string curr_rel_s_file_name = RELATION_S_FILE_NAME;
+
+    string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
+    string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
+
+    // creating new datasets on-the-flay 
+    result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, 0);
+    //ASSERT_EQ(result, 0);
+    #ifdef PERSIST_RELATIONS_FOR_EVALUATION
+    write_relation_threaded<KeyType, PayloadType>(&rel_r, NUM_THREADS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
+    #endif
+    
+    result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, 0);
+    //ASSERT_EQ(result, 0);
+    #ifdef PERSIST_RELATIONS_FOR_EVALUATION
+    write_relation_threaded<KeyType, PayloadType>(&rel_s, NUM_THREADS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str());
+    #endif
+#endif
+
+/*#ifdef LOAD_RELATIONS_FOR_EVALUATION
+    // loading pre-built datasets
     string curr_rel_r_path = RELATION_R_PATH;
     string curr_rel_s_path = RELATION_S_PATH;
 
@@ -695,7 +733,7 @@ int main(int argc, char **argv)
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation<KeyType, PayloadType>(&rel_s, rel_s_path.c_str());
     #endif
-#endif
+#endif*/
 
     int i, rv;
     pthread_barrier_t barrier;
@@ -866,32 +904,6 @@ int main(int argc, char **argv)
         pthread_join(tid[i], NULL);
         result += args[i].num_results;
     }
-
-
-    for(i = 0; i < NUM_THREADS; i++)
-    {
-        #ifdef DEVELOPMENT_MODE
-        int cpu_idx = get_cpu_id_develop(i);
-        #else
-        int cpu_idx = get_cpu_id(i);
-        #endif
-
-        CPU_ZERO(&set);
-        CPU_SET(cpu_idx, &set);
-        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
-
-        rv = pthread_create(&tid[i], &attr, inlj_join_thread, (void*)&args[i]);
-        if (rv){
-            printf("[ERROR] return code from pthread_create() is %d\n", rv);
-            exit(-1);
-        }
-    }
-
-    // wait for threads to finish
-    for(i = 0; i < NUM_THREADS; i++){
-        pthread_join(tid[i], NULL);
-        result += args[i].num_results;
-    }        
 
     printf("join results: %ld \n", result);
 
