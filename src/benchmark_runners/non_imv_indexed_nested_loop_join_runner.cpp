@@ -865,6 +865,32 @@ int main(int argc, char **argv)
     for(i = 0; i < NUM_THREADS; i++){
         pthread_join(tid[i], NULL);
         result += args[i].num_results;
+    }
+
+
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        #ifdef DEVELOPMENT_MODE
+        int cpu_idx = get_cpu_id_develop(i);
+        #else
+        int cpu_idx = get_cpu_id(i);
+        #endif
+
+        //CPU_ZERO(&set);
+        //CPU_SET(cpu_idx, &set);
+        //pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+
+        rv = pthread_create(&tid[i], &attr, inlj_join_thread, (void*)&args[i]);
+        if (rv){
+            printf("[ERROR] return code from pthread_create() is %d\n", rv);
+            exit(-1);
+        }
+    }
+
+    // wait for threads to finish
+    for(i = 0; i < NUM_THREADS; i++){
+        pthread_join(tid[i], NULL);
+        result += args[i].num_results;
     }        
 
     printf("join results: %ld \n", result);
