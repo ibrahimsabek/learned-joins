@@ -198,6 +198,7 @@ void * write_relation_thread(void * args)
     full_filename << arg->thread_id;
     full_filename << arg->file_extension;
 
+    cout << full_filename.str().c_str() << "\n" <<;
     write_relation(&(arg->rel), full_filename.str().c_str());
 
     return 0;
