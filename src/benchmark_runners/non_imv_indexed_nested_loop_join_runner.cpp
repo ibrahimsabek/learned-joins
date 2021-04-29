@@ -413,8 +413,6 @@ void * inlj_join_thread(void * param)
 #endif
 
 #ifdef INLJ_WITH_LEARNED_INDEX        
-        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
-        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
         //strcpy(inlj_pfun[inlj_pf_num].fun_name, "Learned");
         //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_rmi_build_rel_r_partition;
 
@@ -424,8 +422,6 @@ void * inlj_join_thread(void * param)
 #endif
 
 #ifdef INLJ_WITH_CSS_TREE_INDEX        
-        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
-        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
         //strcpy(inlj_pfun[inlj_pf_num].fun_name, "CSSTree");
         //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_csstree_build_rel_r_partition;
 
@@ -434,8 +430,6 @@ void * inlj_join_thread(void * param)
         inlj_pf_num++;
 #endif
 #ifdef INLJ_WITH_ART32_TREE_INDEX
-        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
-        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
         //strcpy(inlj_pfun[inlj_pf_num].fun_name, "ART32Tree");
         //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_art32tree_build_rel_r_partition;
 
