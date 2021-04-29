@@ -867,7 +867,7 @@ int main(int argc, char **argv)
         result += args[i].num_results;
     }
 
-/*
+
     for(i = 0; i < NUM_THREADS; i++)
     {
         #ifdef DEVELOPMENT_MODE
@@ -892,7 +892,7 @@ int main(int argc, char **argv)
         pthread_join(tid[i], NULL);
         result += args[i].num_results;
     }        
-*/
+
     printf("join results: %ld \n", result);
 
   return 0;
