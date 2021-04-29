@@ -192,13 +192,13 @@ void * write_relation_thread(void * args)
 
     stringstream full_filename;
     
-    full_filename << args->folder_path;
-    full_filename << args->filename;
+    full_filename << arg->folder_path;
+    full_filename << arg->filename;
     full_filename << "_";
-    full_filename << args->thread_id;
-    full_filename << args->file_extension;
+    full_filename << arg->thread_id;
+    full_filename << arg->file_extension;
 
-    write_relation(&(args->rel), full_filename.str().c_str());
+    write_relation(&(arg->rel), full_filename.str().c_str());
 
     return 0;
 }
@@ -429,13 +429,13 @@ void * read_relation_thread(void * args)
 
     stringstream full_filename;
     
-    full_filename << args->folder_path;
-    full_filename << args->filename;
+    full_filename << arg->folder_path;
+    full_filename << arg->filename;
     full_filename << "_";
-    full_filename << args->thread_id;
-    full_filename << args->file_extension;
+    full_filename << arg->thread_id;
+    full_filename << arg->file_extension;
 
-    read_relation(&(args->rel), full_filename.str().c_str());
+    read_relation(&(arg->rel), full_filename.str().c_str());
 
     return 0;
 }
