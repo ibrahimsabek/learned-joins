@@ -759,6 +759,9 @@ int main(int argc, char **argv)
     sorted_relation_r.num_tuples = rel_r.num_tuples;
     sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
 
+    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
+        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
+
     string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
 
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
@@ -858,11 +861,7 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef INLJ_WITH_CSS_TREE_INDEX
-    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
-        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
-
 	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(sorted_relation_r.tuples, sorted_relation_r.num_tuples, INLJ_CSS_TREE_FANOUT);
-
 #endif
 
 #ifdef INLJ_WITH_ART32_TREE_INDEX
