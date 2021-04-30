@@ -759,7 +759,7 @@ int main(int argc, char **argv)
     sorted_relation_r.num_tuples = rel_r.num_tuples;
     sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
 
-    string sorte_r_file_name = curr_rel_r_file_name + "_sorted";
+    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
 
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
