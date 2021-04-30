@@ -771,7 +771,7 @@ int main(int argc, char **argv)
     for(int j = 0; j < rel_r.num_tuples; j++)
         sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
     
-    std::sort(std::parallel::par_unseq, (KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
+    std::sort(std::execution::par_unseq, (KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
 
 #ifdef INLJ_WITH_LEARNED_INDEX
   
