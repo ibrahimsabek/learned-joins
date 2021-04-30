@@ -437,6 +437,8 @@ void * read_relation_thread(void * args)
 
     read_relation(&(arg->rel), full_filename.str().c_str());
 
+    printf("read thread %d\n", arg->thread_id);
+
     return 0;
 }
 
