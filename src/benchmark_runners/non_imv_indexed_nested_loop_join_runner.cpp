@@ -736,6 +736,36 @@ int main(int argc, char **argv)
     #endif
 #endif*/
 
+    KeyType * sorted_relation_r_keys_only = (KeyType *) alloc_aligned(rel_r.num_tuples  * sizeof(KeyType));
+    Relation<KeyType, PayloadType> sorted_relation_r;
+#ifdef LOAD_RELATIONS_FOR_EVALUATION
+
+    string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
+
+    string curr_rel_r_file_name = RELATION_R_FILE_NAME;
+    string sorte_r_file_name = curr_rel_r_file_name + "_sorted";
+
+    string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
+
+    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorte_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+
+#else
+
+    for(int j = 0; j < rel_r.num_tuples; j++)
+        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
+    
+    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
+
+    sorted_relation_r.num_tuples = rel_r.num_tuples;
+    sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
+
+    string sorte_r_file_name = curr_rel_r_file_name + "_sorted";
+
+    #ifdef PERSIST_RELATIONS_FOR_EVALUATION
+    write_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
+    #endif
+#endif
+
     int i, rv;
     pthread_barrier_t barrier;
     Result * joinresult;
@@ -766,12 +796,7 @@ int main(int argc, char **argv)
     allocate_hashtable(&ht, nbuckets);
 #endif
 
-    KeyType * sorted_relation_r_keys_only = (KeyType *) alloc_aligned(rel_r.num_tuples  * sizeof(KeyType));
 
-    for(int j = 0; j < rel_r.num_tuples; j++)
-        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
-    
-    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
 
 #ifdef INLJ_WITH_LEARNED_INDEX
   
@@ -833,10 +858,10 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef INLJ_WITH_CSS_TREE_INDEX
-    for(int j = 0; j < rel_r.num_tuples; j++)
-        rel_r.tuples[j].key = sorted_relation_r_keys_only[j];
+    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
+        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
 
-	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(rel_r.tuples, rel_r.num_tuples, INLJ_CSS_TREE_FANOUT);
+	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(sorted_relation_r.tuples, sorted_relation_r.num_tuples, INLJ_CSS_TREE_FANOUT);
 
 #endif
 
