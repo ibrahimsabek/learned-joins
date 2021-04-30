@@ -743,11 +743,11 @@ int main(int argc, char **argv)
     string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
 
     string curr_rel_r_file_name = RELATION_R_FILE_NAME;
-    string sorte_r_file_name = curr_rel_r_file_name + "_sorted";
+    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
 
     string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
-    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorte_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
 
 #else
 
