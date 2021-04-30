@@ -740,12 +740,12 @@ int main(int argc, char **argv)
     Relation<KeyType, PayloadType> sorted_relation_r;
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
 
-    string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
+    curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
 
-    string curr_rel_r_file_name = RELATION_R_FILE_NAME;
+    curr_rel_r_file_name = RELATION_R_FILE_NAME;
     string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
 
-    string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
+    curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
     load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
 
