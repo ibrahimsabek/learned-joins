@@ -6,6 +6,7 @@
 #include "immintrin.h"
 #include "smmintrin.h"
 #include <sys/time.h> /* gettimeofday */
+#include <execution>
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
