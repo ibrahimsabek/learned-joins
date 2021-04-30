@@ -521,6 +521,7 @@ void * inlj_join_thread(void * param)
                 inlj_global_curse = 0;
             }
 #endif        
+            rp = RUN_NUMS - 1;
             if(!((fid == (inlj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
             
             #ifdef INLJ_WITH_HASH_INDEX  
@@ -678,7 +679,6 @@ int main(int argc, char **argv)
 
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
-    printf("start reading\n");
     string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
     string curr_rel_s_folder_path = RELATION_S_FOLDER_PATH;
 
@@ -689,10 +689,7 @@ int main(int argc, char **argv)
     string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
 
     load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
-        printf("finish reading 1\n");
-
     load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);
-    printf("finish reading 2\n");
 
 #else
 
@@ -745,8 +742,6 @@ int main(int argc, char **argv)
     Relation<KeyType, PayloadType> sorted_relation_r;
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
 
-    printf("start reading sorting \n");
-
     curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
 
     curr_rel_r_file_name = RELATION_R_FILE_NAME;
@@ -755,7 +750,6 @@ int main(int argc, char **argv)
     curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
     load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
-    printf("finish reading sorting \n");
 
     for(int j = 0; j < rel_r.num_tuples; j++)
         sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
