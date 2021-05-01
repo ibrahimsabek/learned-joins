@@ -262,13 +262,13 @@ void read_relation(Relation<KeyType, PayloadType> * rel, const char * filename){
 
     FILE * fp = fopen(filename, "r");
 
-    /* skip the header line */
+    // skip the header line 
     char c;
     do{
         c = fgetc(fp);
     } while (c != '\n');
 
-    /* search for a whitespace for "key payload" format */
+    // search for a whitespace for "key payload" format 
     int fmtspace = 0;
     //int fmtcomma = 0;
     do{
@@ -283,9 +283,9 @@ void read_relation(Relation<KeyType, PayloadType> * rel, const char * filename){
     //    }
     } while (c != '\n');
 
-    /* rewind back to the beginning and start parsing again */
+    // rewind back to the beginning and start parsing again 
     rewind(fp);
-    /* skip the header line */
+    // skip the header line
     do{
         c = fgetc(fp);
     } while (c != '\n');
@@ -294,6 +294,338 @@ void read_relation(Relation<KeyType, PayloadType> * rel, const char * filename){
     KeyType key;
     PayloadType payload = 0;
     int warn = 1;
+    if(fmtspace){
+        if (std::is_same<KeyType, int>::value && std::is_same<PayloadType, int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%d %d\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, int>::value && std::is_same<PayloadType, unsigned int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%d %u\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, int>::value && std::is_same<PayloadType, long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%d %ld\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, int>::value && std::is_same<PayloadType, unsigned long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%d %lu\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, int>::value && std::is_same<PayloadType, double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%d %lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, int>::value && std::is_same<PayloadType, long double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%d %Lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned int>::value && std::is_same<PayloadType, int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%u %d\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned int>::value && std::is_same<PayloadType, unsigned int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%u %u\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned int>::value && std::is_same<PayloadType, long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%u %ld\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned int>::value && std::is_same<PayloadType, unsigned long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%u %lu\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned int>::value && std::is_same<PayloadType, double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%u %lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned int>::value && std::is_same<PayloadType, long double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%u %Lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, long long int>::value && std::is_same<PayloadType, int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%ld %d\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }        
+        else if (std::is_same<KeyType, long long int>::value && std::is_same<PayloadType, unsigned int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%ld %u\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, long long int>::value && std::is_same<PayloadType, long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%ld %ld\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, long long int>::value && std::is_same<PayloadType, unsigned long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%ld %lu\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }        
+        else if (std::is_same<KeyType, long long int>::value && std::is_same<PayloadType, double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%ld %lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        } 
+        else if (std::is_same<KeyType, long long int>::value && std::is_same<PayloadType, long double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%ld %Lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }    
+        else if (std::is_same<KeyType, unsigned long long int>::value && std::is_same<PayloadType, int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lu %d\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, unsigned long long int>::value && std::is_same<PayloadType, unsigned int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lu %u\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned long long int>::value && std::is_same<PayloadType, long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lu %ld\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, unsigned long long int>::value && std::is_same<PayloadType, unsigned long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lu %lu\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, unsigned long long int>::value && std::is_same<PayloadType, double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lu %lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, unsigned long long int>::value && std::is_same<PayloadType, long double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lu %Lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }
+        else if (std::is_same<KeyType, double>::value && std::is_same<PayloadType, int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lf %d\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, double>::value && std::is_same<PayloadType, unsigned int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lf %u\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }      
+        else if (std::is_same<KeyType, double>::value && std::is_same<PayloadType, long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lf %ld\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, double>::value && std::is_same<PayloadType, unsigned long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lf %lu\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, double>::value && std::is_same<PayloadType, double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lf %lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }   
+        else if (std::is_same<KeyType, double>::value && std::is_same<PayloadType, long double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%lf %Lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }    
+        else if (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%Lf %d\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }      
+        else if (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, unsigned int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%Lf %u\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%Lf %ld\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, unsigned long long int>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%Lf %lu\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else if (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%Lf %lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+        else (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, long double>::value)
+        {
+            for(uint64_t i = 0; i < ntuples; i++)
+            {
+                fscanf(fp, "%Lf %Lf\n", &key, &payload);
+                rel->tuples[i].key = key;
+                rel->tuples[i].payload = payload;
+            }
+        }       
+    }
+    else
+    {
+        perror("Incorrect format");
+    }
+
+/*    
     for(uint64_t i = 0; i < ntuples; i++){
         if(fmtspace){
             if (std::is_same<KeyType, int>::value)
@@ -399,7 +731,7 @@ void read_relation(Relation<KeyType, PayloadType> * rel, const char * filename){
         rel->tuples[i].key = key;
         rel->tuples[i].payload = payload;
     }
-
+*/
     fclose(fp);
 }
 
