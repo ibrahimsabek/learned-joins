@@ -22,6 +22,8 @@
 #include "utils/lock.h" 
 #include "utils/learned_sort_for_sort_merge.h"
 
+#include <chrono>
+using namespace chrono;
 
 #ifndef KeyType
 #define KeyType RELATION_KEY_TYPE
@@ -63,6 +65,8 @@ struct StateSIMDForHashINLJ {
 
 volatile static char inlj_g_lock = 0, inlj_g_lock_morse = 0;
 volatile static uint64_t inlj_total_num = 0, inlj_global_curse = 0, inlj_global_morse_size;
+
+
 
 typedef void (*INLJBuildFun)(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r);
 volatile static struct Fun {
@@ -354,7 +358,7 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
 void * inlj_join_thread(void * param)
 {
     IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args   = (IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> *) param;
-    int rv;   int deltaT = 0; struct timeval t1, t2;
+    int rv;   uint32_t deltaT = 0; struct timeval t1, t2;
 #ifdef INLJ_WITH_LEARNED_INDEX        
     /*for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
@@ -538,6 +542,9 @@ void * inlj_join_thread(void * param)
 
     BARRIER_ARRIVE(args->barrier, rv);
     
+    auto end_time = high_resolution_clock::now();
+    auto partition_end_time = high_resolution_clock::now();
+
     //Probe phase
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
@@ -546,7 +553,8 @@ void * inlj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
 
             if(args->tid == 0){
-                gettimeofday(&args->partition_end_time, NULL);
+                //gettimeofday(&args->partition_end_time, NULL);
+                partition_end_time = high_resolution_clock::now();
             }
 
             #if INLJ_MORSE_SIZE
@@ -558,9 +566,11 @@ void * inlj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
             // probe phase finished, thread-0 checkpoints the time
             if(args->tid == 0){
-                gettimeofday(&args->end_time, NULL);
-
-                deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+                //gettimeofday(&args->end_time, NULL);
+                end_time = high_resolution_clock::now();
+                
+                //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+                deltaT = std::chrono::duration_cast<std::chrono::microseconds>(end_time - partition_end_time).count();
                 printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
             }
         }
