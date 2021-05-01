@@ -610,7 +610,7 @@ void read_relation(Relation<KeyType, PayloadType> * rel, const char * filename){
                 rel->tuples[i].payload = payload;
             }
         }       
-        else (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, long double>::value)
+        else if (std::is_same<KeyType, long double>::value && std::is_same<PayloadType, long double>::value)
         {
             for(uint64_t i = 0; i < ntuples; i++)
             {
@@ -618,6 +618,10 @@ void read_relation(Relation<KeyType, PayloadType> * rel, const char * filename){
                 rel->tuples[i].key = key;
                 rel->tuples[i].payload = payload;
             }
+        }
+        else
+        {
+            perror("Not supported format");            
         }       
     }
     else
