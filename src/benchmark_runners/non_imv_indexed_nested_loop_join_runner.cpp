@@ -688,7 +688,9 @@ int main(int argc, char **argv)
     string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
     string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
 
+printf("loading first relation \n");
     load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+printf("loading second relation \n");
     load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);
 
 #else
@@ -749,10 +751,13 @@ int main(int argc, char **argv)
 
     curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
+printf("loading sorted relation \n");
     load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
 
+printf("finsihed loading sorted relation \n");
     for(int j = 0; j < rel_r.num_tuples; j++)
         sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
+
 #else
 
     for(int j = 0; j < rel_r.num_tuples; j++)
