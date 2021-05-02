@@ -548,6 +548,7 @@ void * inlj_join_thread(void * param)
 
     //Probe phase
     vector<uint32_t> final_probe_timings_in_ms;
+    vector<uint32_t> final_probe_throughputs_mtuples_per_sec;
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
         vector<uint32_t> curr_probe_timings_in_ms;
@@ -581,12 +582,13 @@ void * inlj_join_thread(void * param)
         if(args->tid == 0){
             std::sort(curr_probe_timings_in_ms.begin(), curr_probe_timings_in_ms.end());
             final_probe_timings_in_ms.push_back(curr_probe_timings_in_ms[(int)(curr_probe_timings_in_ms.size()/2)]);
+            final_probe_throughputs_mtuples_per_sec.push_back((uint32_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * curr_probe_timings_in_ms[(int)(curr_probe_timings_in_ms.size()/2)])));
         }
     }
 
     if(args->tid == 0){
-        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_timings_in_ms = {{"Join_in_ms", final_probe_timings_in_ms}};
-        write_csv(BENCHMARK_RESULTS_PATH, final_timings_in_ms);
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results = {{"Join_in_ms", final_probe_timings_in_ms}, {"Throughput_in_mtuples_per_sec", final_probe_throughputs_mtuples_per_sec}};
+        write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
 
     return 0;
