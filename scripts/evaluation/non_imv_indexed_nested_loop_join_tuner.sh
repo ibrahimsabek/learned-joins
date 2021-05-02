@@ -90,7 +90,7 @@ process_non_imv_indexed_nested_loop_join()
 
                 ./non_imv_indexed_nested_loop_join_runner
 
-                cd $(dirname "$0")
+                cd ../../scripts/evaluation/
             done
         done
 
