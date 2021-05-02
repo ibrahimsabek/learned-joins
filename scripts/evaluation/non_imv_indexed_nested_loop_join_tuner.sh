@@ -82,7 +82,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 -USE_MURMUR3_HASH 1 \
                                                 -INPUT_HASH_TABLE_SIZE $curr_input_hash_table_size
 
-                cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on -DKNL=OFF  $(dirname "$0")/../.. > /dev/null
+                cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on -DKNL=OFF -Wno-dev $(dirname "$0")/../.. > /dev/null
 
                 cd $(dirname "$0")/../../build/release
 
