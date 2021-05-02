@@ -51,8 +51,9 @@ process_non_imv_indexed_nested_loop_join()
             do
                 curr_threads=${threads[$th]}
 
-                curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_v'$((ds))'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
-
+                #curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_v'$((ds))'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
+                curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_'$((curr_r_dataset_size))'_'$((curr_s_dataset_size))'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
+                
                 sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 1 \
 												-INLJ_WITH_LEARNED_INDEX 0 \
  												-INLJ_WITH_CSS_TREE_INDEX 0 \
