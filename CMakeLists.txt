@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+#cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 if(UNIX AND NOT APPLE)
   set(LINUX true)
@@ -114,7 +114,7 @@ ENDIF(AUTOVECTORIZE)
 # Now simply link your own targets against gtest, gmock,
 # etc. as appropriate
 
-project(exec_engine_comparison)
+project("Learned In-memory Joins")
 
 IF(DATADIR)
     message(STATUS "setting datadir to user defined")
