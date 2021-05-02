@@ -89,6 +89,8 @@ process_non_imv_indexed_nested_loop_join()
                 make > /dev/null
 
                 ./non_imv_indexed_nested_loop_join_runner
+
+                cd $(dirname "$0")
             done
         done
 
