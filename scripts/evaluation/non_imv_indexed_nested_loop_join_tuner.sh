@@ -2,7 +2,7 @@
 
 process_non_imv_indexed_nested_loop_join()
 {
-    threads=(64 32) #(2 4 8 16 32 64)
+    threads=(32 64) #(2 4 8 16 32 64)
 
     dataset_folder_path=/spinning/sabek/learned_join_datasets/
 
@@ -82,11 +82,11 @@ process_non_imv_indexed_nested_loop_join()
                                                 -USE_MURMUR3_HASH 1 \
                                                 -INPUT_HASH_TABLE_SIZE $curr_input_hash_table_size
 
-                cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on -DKNL=OFF  $(dirname "$0")/../..
-                
+                cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on -DKNL=OFF  $(dirname "$0")/../.. > /dev/null
+
                 cd $(dirname "$0")/../../build/release
 
-                make
+                make > /dev/null
 
                 ./non_imv_indexed_nested_loop_join_runner
             done
