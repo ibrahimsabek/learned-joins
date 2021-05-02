@@ -49,6 +49,7 @@ process_non_imv_indexed_nested_loop_join()
             
             for th in ${!threads[@]}
             do
+                echo 'thread .... ' 
                 curr_threads=${threads[$th]}
 
                 curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_v'$((ds))'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
