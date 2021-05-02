@@ -115,7 +115,7 @@ output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_i
 input_hash_table_size=(1073741824) #(1073741824 ....)
 
 
-process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 0 $input_hash_table_size
+process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 
 
 #lognormal datasets
