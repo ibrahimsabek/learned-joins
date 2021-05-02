@@ -2,7 +2,7 @@
 
 process_non_imv_indexed_nested_loop_join()
 {
-    threads=(32 64) #(2 4 8 16 32 64)
+    threads=(4 16 32 64) #(2 4 8 16 32 64)
 
     dataset_folder_path=/spinning/sabek/learned_join_datasets/
 
@@ -51,7 +51,6 @@ process_non_imv_indexed_nested_loop_join()
             do
                 curr_threads=${threads[$th]}
 
-                #curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_v'$((ds))'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
                 curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
                 
                 sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 1 \
@@ -104,18 +103,18 @@ process_non_imv_indexed_nested_loop_join()
 }
 
 run_nums=10
-load_relations_for_evaluation=1
-persist_relations_for_evaluation=0
+load_relations_for_evaluation=0
+persist_relations_for_evaluation=1
 
 #unique datasets
-r_unique_datasets=(r_UNIQUE_v8_uint32_uint32_1664000000) #(r_UNIQUE_v1_uint32_uint32_16000000 r_UNIQUE_v2_uint32_uint32_32000000 r_UNIQUE_v3_uint32_uint32_128000000 r_UNIQUE_v4_uint32_uint32_384000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v6_uint32_uint32_896000000 r_UNIQUE_v7_uint32_uint32_1152000000 r_UNIQUE_v8_uint32_uint32_1664000000 r_UNIQUE_v9_uint32_uint32_1920000000)
-s_unique_datasets=(s_UNIQUE_v8_uint32_uint32_1664000000) #(s_UNIQUE_v1_uint32_uint32_16000000 s_UNIQUE_v2_uint32_uint32_32000000 s_UNIQUE_v3_uint32_uint32_128000000 s_UNIQUE_v4_uint32_uint32_384000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v6_uint32_uint32_896000000 s_UNIQUE_v7_uint32_uint32_1152000000 s_UNIQUE_v8_uint32_uint32_1664000000 s_UNIQUE_v9_uint32_uint32_1920000000)
-r_unique_datasets_sizes=(1664E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E6)
-s_unique_datasets_sizes=(1664E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E6)
-r_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
-s_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
+r_unique_datasets=(r_UNIQUE_v3_uint32_uint32_128000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v9_uint32_uint32_1920000000) #(r_UNIQUE_v1_uint32_uint32_16000000 r_UNIQUE_v2_uint32_uint32_32000000 r_UNIQUE_v3_uint32_uint32_128000000 r_UNIQUE_v4_uint32_uint32_384000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v6_uint32_uint32_896000000 r_UNIQUE_v7_uint32_uint32_1152000000 r_UNIQUE_v8_uint32_uint32_1664000000 r_UNIQUE_v9_uint32_uint32_1920000000)
+s_unique_datasets=(s_UNIQUE_v3_uint32_uint32_128000000 r_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v9_uint32_uint32_1920000000) #(s_UNIQUE_v1_uint32_uint32_16000000 s_UNIQUE_v2_uint32_uint32_32000000 s_UNIQUE_v3_uint32_uint32_128000000 s_UNIQUE_v4_uint32_uint32_384000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v6_uint32_uint32_896000000 s_UNIQUE_v7_uint32_uint32_1152000000 s_UNIQUE_v8_uint32_uint32_1664000000 s_UNIQUE_v9_uint32_uint32_1920000000)
+r_unique_datasets_sizes=(128E6 640E6 1920E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E6)
+s_unique_datasets_sizes=(128E6 640E6 1920E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E6)
+r_unique_datasets_file_num_partitions=(64 64 64) #(64 64 64 64 64 64 64 64 64)
+s_unique_datasets_file_num_partitions=(64 64 64) #(64 64 64 64 64 64 64 64 64)
 output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
-input_hash_table_size=(1073741824) #(1073741824 ....)
+input_hash_table_size=(134217728 536870912 2147483648) #(134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
 
 process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
