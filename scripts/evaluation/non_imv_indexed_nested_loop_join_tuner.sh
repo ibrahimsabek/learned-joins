@@ -59,31 +59,31 @@ process_non_imv_indexed_nested_loop_join()
  												-INLJ_WITH_ART32_TREE_INDEX 0 \
 												-PREFETCH_INLJ 0 \
 												-RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
-                                                -NUM_THREADS_FOR_EVALUATION $curr_threads \
-                                                -RELATION_R_PATH $curr_r_dataset \
-                                                -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
-                                                -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
-                                                -RELATION_R_FILE_EXTENSION ${r_datasets_file_extension} \
-                                                -RELATION_R_NUM_TUPLES $curr_r_dataset_size  \
-												-RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
-                                                -RELATION_S_PATH  $curr_s_dataset \
-                                                -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
-                                                -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
-                                                -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
-                                                -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
-												-RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
+                                                -NUM_THREADS_FOR_EVALUATION $curr_threads \
+                                                -RELATION_R_PATH $curr_r_dataset \
+                                                -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
+                                                -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
+                                                -RELATION_R_FILE_EXTENSION ${r_datasets_file_extension} \
+                                                -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
+                                                -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
+                                                -RELATION_S_PATH $curr_s_dataset \
+                                                -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
+                                                -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
+                                                -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
+                                                -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
+                                                -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
 												-BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
 												-RUN_NUMS ${run_nums} \
 												-LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
 												-PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation}
 
                 sh $(dirname "$0")/eth_configs_maker.sh   -BUCKET_SIZE 1 \
-                                                          -PREFETCH_DISTANCE 128 \
-                                                          -USE_MURMUR3_HASH 1 \
-                                                          -INPUT_HASH_TABLE_SIZE $curr_input_hash_table_size
+                                                -PREFETCH_DISTANCE 128 \
+                                                -USE_MURMUR3_HASH 1 \
+                                                -INPUT_HASH_TABLE_SIZE $curr_input_hash_table_size
 
                 cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on -DKNL=OFF  $(dirname "$0")/../..
-
+                
                 cd $(dirname "$0")/../../build/release
 
                 make
