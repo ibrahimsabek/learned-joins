@@ -14,6 +14,7 @@
 #include "utils/eth_data_structures.h"
 #include "utils/data_generation.h"
 #include "utils/io.h"
+#include "utils/csv.h"
 
 #include "utils/base_utils.h"
 #include "utils/math.h"
@@ -358,7 +359,7 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
 void * inlj_join_thread(void * param)
 {
     IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args   = (IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> *) param;
-    int rv;   uint32_t deltaT = 0; struct timeval t1, t2;
+    int rv;   uint32_t deltaT = 0; struct timeval t1, t2; 
 #ifdef INLJ_WITH_LEARNED_INDEX        
     /*for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
@@ -546,8 +547,10 @@ void * inlj_join_thread(void * param)
     auto partition_end_time = high_resolution_clock::now();
 
     //Probe phase
+    vector<uint32_t> final_probe_timings_in_ms;
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
+        vector<uint32_t> curr_probe_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             BARRIER_ARRIVE(args->barrier, rv);
@@ -572,9 +575,20 @@ void * inlj_join_thread(void * param)
                 //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 deltaT = std::chrono::duration_cast<std::chrono::microseconds>(end_time - partition_end_time).count();
                 printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
+                curr_probe_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             }
         }
+        if(args->tid == 0){
+            std::sort(curr_probe_timings_in_ms.begin(), curr_probe_timings_in_ms.end());
+            final_probe_timings_in_ms.push_back(curr_probe_timings_in_ms[(int)(curr_probe_timings_in_ms.size()/2)]);
+        }
     }
+
+    if(args->tid == 0){
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_timings_in_ms = {{"Join", final_probe_timings_in_ms}};
+        write_csv("/spinning/sabek/learned_join_results/three_cols.csv", final_timings_in_ms);
+    }
+
 
     return 0;
 }
