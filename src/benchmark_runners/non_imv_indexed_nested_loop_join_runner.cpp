@@ -585,7 +585,7 @@ void * inlj_join_thread(void * param)
     }
 
     if(args->tid == 0){
-        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_timings_in_ms = {{"Join", final_probe_timings_in_ms}};
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_timings_in_ms = {{"Join_in_ms", final_probe_timings_in_ms}};
         write_csv(BENCHMARK_RESULTS_PATH, final_timings_in_ms);
     }
 
