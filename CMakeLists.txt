@@ -144,7 +144,7 @@ ENDIF(DATADIR)
 enable_testing()
 set(CTEST_OUTPUT_ON_FAILURE "1")
 
-FILE(GLOB RMICPPSources include/rmi/*.cpp)
+FILE(GLOB RMICPPSources ${CMAKE_CURRENT_SOURCE_DIR}/include/rmi/*.cpp)
 add_library(rmi_lib ${RMICPPSources})
 
 target_include_directories(rmi_lib PUBLIC
