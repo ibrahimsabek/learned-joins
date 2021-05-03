@@ -363,6 +363,9 @@ int main(int argc, char **argv)
     load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);
 #else
 
+    string curr_rel_r_path = RELATION_R_PATH;
+    string curr_rel_s_path = RELATION_S_PATH;
+
     string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
     string curr_rel_s_folder_path = RELATION_S_FOLDER_PATH;
 
@@ -377,12 +380,14 @@ int main(int argc, char **argv)
     //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
+    write_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str());    
     #endif
     
     result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, 0);
     //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str());
+    write_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str());    
     #endif
 #endif
 
