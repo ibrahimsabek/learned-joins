@@ -192,7 +192,7 @@ r_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
 s_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
 output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
-input_hash_table_size=(33554432) #(33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+input_hash_table_size=(134217728) #(33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
 process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 
@@ -205,7 +205,7 @@ r_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
 s_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
 output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
-input_hash_table_size=(33554432) #(33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+input_hash_table_size=(536870912) #(33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
 process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 
@@ -218,7 +218,7 @@ r_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
 s_unique_datasets_file_num_partitions=(64) #(64 64 64 64 64 64 64 64 64)
 output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
-input_hash_table_size=(2147483648) #(134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+input_hash_table_size=(1073741824) #(134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
 process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 
