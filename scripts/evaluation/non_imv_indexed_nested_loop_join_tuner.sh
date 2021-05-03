@@ -211,17 +211,18 @@ process_non_imv_indexed_nested_loop_join()
 												-LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
 												-PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation}
 
+                    cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
+
+                    cd $(dirname "$0")/../../build/release
+
+                    make > /dev/null
+
+                    ./non_imv_indexed_nested_loop_join_runner
+
+                    cd ../../scripts/evaluation/
+
                 done
                 
-                cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
-
-                cd $(dirname "$0")/../../build/release
-
-                make > /dev/null
-
-                ./non_imv_indexed_nested_loop_join_runner
-
-                cd ../../scripts/evaluation/
             done
         done
 
