@@ -43,11 +43,17 @@ rm -r $(dirname "$0")/../../include/rmi_specs/*
 
 cd $(dirname "$0")/../../RMI && cargo build --release && cd ../build/release
 
-#optimize_rmis r_LOGNORMAL_v2_int_int_100000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_int_int_100000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
-#build_rmi_set r_LOGNORMAL_v2_int_int_100000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_int_int_100000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 8
+optimize_rmis r_UNIQUE_v2_uint32_uint32_32000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v2_uint32_uint32_32000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
+build_rmi_set r_UNIQUE_v2_uint32_uint32_32000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v2_uint32_uint32_32000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 8
 
 optimize_rmis r_UNIQUE_v3_uint32_uint32_128000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
 build_rmi_set r_UNIQUE_v3_uint32_uint32_128000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 8
+
+optimize_rmis r_UNIQUE_v5_uint32_uint32_640000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v5_uint32_uint32_640000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
+build_rmi_set r_UNIQUE_v5_uint32_uint32_640000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v5_uint32_uint32_640000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 8
+
+optimize_rmis r_UNIQUE_v8_uint32_uint32_1664000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v8_uint32_uint32_1664000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 8
+build_rmi_set r_UNIQUE_v8_uint32_uint32_1664000000 /spinning/sabek/learned_join_datasets/r_UNIQUE_v8_uint32_uint32_1664000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 8
 
 
 /bin/bash $(dirname "$0")/generate_all_rmis.sh

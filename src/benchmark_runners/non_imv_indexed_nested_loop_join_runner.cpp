@@ -728,25 +728,25 @@ int main(int argc, char **argv)
     string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
 
     // creating new datasets on-the-flay 
-    synthetic_workload_distr_t data_distn_type = LOGNORMAL;
-    DataDistnParams data_distn_params;
-    data_distn_params.lognormal_stddev = 1.00;
-    data_distn_params.lognormal_scale = curr_num_tuples_r;
-    result = create_synthetic_workload_relation_fk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, data_distn_type, &data_distn_params, 0);
+    //synthetic_workload_distr_t data_distn_type = LOGNORMAL;
+    //DataDistnParams data_distn_params;
+    //data_distn_params.lognormal_stddev = 1.00;
+    //data_distn_params.lognormal_scale = curr_num_tuples_r;
+    //result = create_synthetic_workload_relation_fk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, data_distn_type, &data_distn_params, 0);
 
-    //result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, 0);
+    result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, 0);
     //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
     #endif
     
-    data_distn_type = LOGNORMAL;
-    data_distn_params;
-    data_distn_params.lognormal_stddev = 1.00;
-    data_distn_params.lognormal_scale = curr_num_tuples_s;
-    result = create_synthetic_workload_relation_fk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, data_distn_type, &data_distn_params, 0);
+    //data_distn_type = LOGNORMAL;
+    //data_distn_params;
+    //data_distn_params.lognormal_stddev = 1.00;
+    //data_distn_params.lognormal_scale = curr_num_tuples_s;
+    //result = create_synthetic_workload_relation_fk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, data_distn_type, &data_distn_params, 0);
 
-    //result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, 0);
+    result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, 0);
     //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str());
