@@ -3,6 +3,7 @@
 process_non_imv_indexed_nested_loop_join()
 {
     threads=(32 64) #(2 4 8 16 32 64)
+    rmi_models=(0 1 2 3 4 5 6 7 8 9)
 
     dataset_folder_path=/spinning/sabek/learned_join_datasets/
 
@@ -115,11 +116,11 @@ process_non_imv_indexed_nested_loop_join()
             do
                 curr_threads=${threads[$th]}
 
-                for rmi_model in (0 1 2 3 4 5 6 7 8 9)
+                for rmi_model in  ${!rmi_models[@]}
                 do
-                    curr_rmi_model=${r_datasets[$ds]}'_key_uint32_'${rmi_model}
+                    curr_rmi_model=${r_datasets[$ds]}'_key_uint32_'${rmi_models[$rmi_model]}
 
-                    curr_output_file=$output_folder_path'non_imv_inlj_with_learned_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_rmi_'$rmi_model'.csv'
+                    curr_output_file=$output_folder_path'non_imv_inlj_with_learned_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_rmi_'$curr_rmi_model'.csv'
                 
                     sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 0 \
                                                     -INLJ_WITH_LEARNED_INDEX 1 \
