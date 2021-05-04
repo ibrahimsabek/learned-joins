@@ -98,8 +98,8 @@ process_non_imv_indexed_nested_loop_join()
 
     fi
 
-#    if [ ${run_inlj_with_learned_index} == 1 ]
-#    then
+    if [ ${run_inlj_with_learned_index} == 1 ]
+    then
         echo "Running INLJ with learned index ..."
 
         for ds in ${!r_datasets[@]}
@@ -124,7 +124,7 @@ process_non_imv_indexed_nested_loop_join()
                     curr_output_file=$output_folder_path'non_imv_inlj_with_learned_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_rmi_'${rmi_models[$model]}'.csv'
                 
                     sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 0 \
-                                                    -INLJ_WITH_LEARNED_INDEX 0 \
+                                                    -INLJ_WITH_LEARNED_INDEX 1 \
                                                     -INLJ_WITH_CSS_TREE_INDEX 0 \
                                                     -INLJ_WITH_ART32_TREE_INDEX 0 \
                                                     -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
@@ -161,7 +161,7 @@ process_non_imv_indexed_nested_loop_join()
             done
         done
 
-#    fi
+    fi
 
     if [ ${run_inlj_with_csstree_index} == 1 ]
     then
@@ -288,8 +288,8 @@ process_non_imv_indexed_nested_loop_join()
 }
 
 run_nums=10
-load_relations_for_evaluation=0
-persist_relations_for_evaluation=1
+load_relations_for_evaluation=1
+persist_relations_for_evaluation=0
 
 #unique datasets
 ################
