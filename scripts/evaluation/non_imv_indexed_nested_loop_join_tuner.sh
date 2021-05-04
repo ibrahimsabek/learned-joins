@@ -2,8 +2,8 @@
 
 process_non_imv_indexed_nested_loop_join()
 {
-    threads=(4 16 32 64) #(2 4 8 16 32 64)
-    rmi_models=(0 1 2 3 4 5 6 7 8 9)
+    threads=(64) #(2 4 8 16 32 64)
+    rmi_models=(0)  #(0 1 2 3 4 5 6 7 8 9)
     css_fanouts=(10 33 40)
 
     dataset_folder_path=/spinning/sabek/learned_join_datasets/

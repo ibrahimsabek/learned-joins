@@ -815,7 +815,168 @@ int main(int argc, char **argv)
     #endif
 #endif
 
+    int i, rv;
+    pthread_barrier_t barrier;
+    Result * joinresult;
+    pthread_t tid[NUM_THREADS];
+    pthread_attr_t attr;
+    cpu_set_t set;
+    
+    joinresult = (Result *) malloc(sizeof(Result));
 
+    IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> args[NUM_THREADS];
+    IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args_ptr = args;
+
+    rv = pthread_barrier_init(&barrier, NULL, NUM_THREADS);
+    if(rv != 0){
+        printf("[ERROR] Couldn't create the barrier\n");
+        exit(EXIT_FAILURE);
+    }
+
+    pthread_attr_init(&attr);
+
+#ifdef INLJ_WITH_HASH_INDEX
+#if INPUT_HASH_TABLE_SIZE       
+    uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
+#else
+    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+
+#endif        
+    allocate_hashtable(&ht, nbuckets);
+#endif
+
+
+
+#ifdef INLJ_WITH_LEARNED_INDEX
+  
+    std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;    
+/*
+    //////////////////////////////////////////////////////////////////////////////
+    // start stuff for sampling and building RMI models for both relations R and S
+    //////////////////////////////////////////////////////////////////////////////
+    Tuple<KeyType, PayloadType>* r_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType>* r_sorted_training_sample_in;
+    Tuple<KeyType, PayloadType>* s_tmp_training_sample_in;
+    Tuple<KeyType, PayloadType>* s_sorted_training_sample_in;
+    unsigned int SAMPLE_SZ_R, SAMPLE_SZ_S;
+    
+    // Sampling and building RMI models for relations R and S together
+    typename learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params rmi_params;
+    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, rel_r.num_tuples);
+    learned_sort_for_sort_merge::validate_params<KeyType, PayloadType>(rmi_params, rel_s.num_tuples);
+    SAMPLE_SZ_R = std::min<unsigned int>(
+        rel_r.num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * rel_r.num_tuples,
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE)) + 1;
+    r_tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
+    #ifdef USE_AVXSORT_AS_STD_SORT
+    r_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_R * sizeof(Tuple<KeyType, PayloadType>));
+    #endif
+    SAMPLE_SZ_S = std::min<unsigned int>(
+        rel_s.num_tuples, std::max<unsigned int>(rmi_params.sampling_rate * rel_s.num_tuples,
+                                        learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params::MIN_SORTING_SIZE)) + 1;
+    s_tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_S * sizeof(Tuple<KeyType, PayloadType>));
+    #ifdef USE_AVXSORT_AS_STD_SORT
+    s_sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned(SAMPLE_SZ_S * sizeof(Tuple<KeyType, PayloadType>));
+    #endif
+    
+    Tuple<KeyType, PayloadType>* tmp_training_sample_in;
+    Tuple<KeyType, PayloadType>* sorted_training_sample_in;
+    tmp_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned((SAMPLE_SZ_R + SAMPLE_SZ_S) * sizeof(Tuple<KeyType, PayloadType>));
+    #ifdef USE_AVXSORT_AS_STD_SORT
+    sorted_training_sample_in = (Tuple<KeyType, PayloadType>*) alloc_aligned((SAMPLE_SZ_R + SAMPLE_SZ_S) * sizeof(Tuple<KeyType, PayloadType>));
+    #endif
+
+    RMI<KeyType, PayloadType> rmi(rmi_params, tmp_training_sample_in, sorted_training_sample_in,
+                                              r_tmp_training_sample_in, r_sorted_training_sample_in,
+                                              s_tmp_training_sample_in, s_sorted_training_sample_in);
+    vector<vector<vector<training_point<KeyType, PayloadType>>>> training_data(rmi_params.arch.size());
+    for (unsigned int layer_idx = 0; layer_idx < rmi_params.arch.size(); ++layer_idx) {
+        training_data[layer_idx].resize(rmi_params.arch[layer_idx]);
+    }
+
+    uint32_t * sample_count = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
+    uint32_t * sample_count_R = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t)); 
+    uint32_t * sample_count_S = (uint32_t *) calloc(NUM_THREADS, sizeof(uint32_t));
+
+    vector<double>* slopes = new vector<double>;                 
+    vector<double>* intercepts = new vector<double>;
+    //////////////////////////////////////////////////////////////////////////////
+    // End stuff for sampling and building RMI models for both relations R and S
+    //////////////////////////////////////////////////////////////////////////////
+*/
+#endif
+
+#ifdef INLJ_WITH_CSS_TREE_INDEX
+	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(sorted_relation_r.tuples, sorted_relation_r.num_tuples, INLJ_CSS_TREE_FANOUT);
+#endif
+
+#ifdef INLJ_WITH_ART32_TREE_INDEX
+    vector<Tuple<uint32_t, PayloadType>> art32_data;
+    for(int j = 0; j < rel_r.num_tuples; j++)
+    {
+        rel_r.tuples[j].payload = rel_r.tuples[j].key;
+        art32_data.push_back(rel_r.tuples[j]);
+    }
+
+	ART32<PayloadType> *art32_tree=new ART32<PayloadType>();
+    art32_tree->Build(art32_data);
+
+#endif
+
+    initialize_inlj_join_thread_args(&rel_r, &rel_s, 
+                                #ifdef INLJ_WITH_HASH_INDEX
+                                    ht, 
+                                #endif
+                                    sorted_relation_r_keys_only,
+                                #ifdef INLJ_WITH_LEARNED_INDEX                                    
+                                    /*&rmi, rmi_params,
+                                    SAMPLE_SZ_R, SAMPLE_SZ_S,
+                                    tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
+                                    r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
+                                    &training_data, sample_count, sample_count_R, sample_count_S,
+                                    slopes, intercepts,*/
+                                #endif
+                                #ifdef INLJ_WITH_CSS_TREE_INDEX
+                                    tree,
+                                #endif
+                                #ifdef INLJ_WITH_ART32_TREE_INDEX
+                                    art32_tree,
+                                #endif
+                                    &barrier, joinresult, args_ptr);
+
+    inlj_global_curse = 0;
+    if(NUM_THREADS==1){
+        inlj_global_morse_size= rel_r.num_tuples;
+    }else{
+        inlj_global_morse_size = INLJ_MORSE_SIZE;
+    }
+
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        #ifdef DEVELOPMENT_MODE
+        int cpu_idx = get_cpu_id_develop(i);
+        #else
+        int cpu_idx = get_cpu_id(i);
+        #endif
+
+        CPU_ZERO(&set);
+        CPU_SET(cpu_idx, &set);
+        pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &set);
+
+        rv = pthread_create(&tid[i], &attr, inlj_join_thread, (void*)&args[i]);
+        if (rv){
+            printf("[ERROR] return code from pthread_create() is %d\n", rv);
+            exit(-1);
+        }
+    }
+
+    // wait for threads to finish
+    for(i = 0; i < NUM_THREADS; i++){
+        pthread_join(tid[i], NULL);
+        result += args[i].num_results;
+    }
+
+    printf("join results: %ld \n", result);
 
   return 0;
 }
