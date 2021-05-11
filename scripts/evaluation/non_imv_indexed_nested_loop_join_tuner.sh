@@ -150,11 +150,11 @@ process_non_imv_indexed_nested_loop_join()
                                                     -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                     -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
 
-                    cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
+                    cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. #> /dev/null
 
                     cd $(dirname "$0")/../../build/release
 
-                    make > /dev/null
+                    make #> /dev/null
 
                     ./non_imv_indexed_nested_loop_join_runner
 
