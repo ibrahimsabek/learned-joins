@@ -92,8 +92,8 @@ struct PerfEvents {
          //add("cycles", "cpu/cpu-cycles/");
          add("cycles", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES);
          //add("LLC-misses", "cpu/cache-misses/"); //OK
-         add("LLC-misses", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES); //NOT TESTED
-         add("LLC-misses2", "mem_load_retired.l3_miss");
+         add("LLC-misses", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES); //OK
+         //add("LLC-misses2", "mem_load_retired.l3_miss");
          add("l1-misses", PERF_TYPE_HW_CACHE,
              PERF_COUNT_HW_CACHE_L1D | (PERF_COUNT_HW_CACHE_OP_READ << 8) |
                  (PERF_COUNT_HW_CACHE_RESULT_MISS << 16)); //OK
@@ -101,10 +101,10 @@ struct PerfEvents {
          //add("instr.", PERF_TYPE_HARDWARE, PERF_COUNT_HW_INSTRUCTIONS); //NOT TESTED
          add("br. misses", "cpu/branch-misses/"); //OK
          //add("br. misses", PERF_TYPE_HARDWARE, PERF_COUNT_HW_BRANCH_MISSES); //NOT TESTED
-         add("all_rd", "offcore_requests.all_data_rd");
-         add("stores", "mem_inst_retired.all_stores");
-         add("loads", "mem_inst_retired.all_loads");
-         add("mem_stall", "cycle_activity.stalls_mem_any");
+         //add("all_rd", "offcore_requests.all_data_rd");
+         //add("stores", "mem_inst_retired.all_stores");
+         //add("loads", "mem_inst_retired.all_loads");
+         //add("mem_stall", "cycle_activity.stalls_mem_any");
          //add("page-faults", "page-faults");
       } else {
          add("cycles", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES);
