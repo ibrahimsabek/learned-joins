@@ -75,8 +75,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
                                                 -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
                                                 -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
-                                                -RUN_NUMS ${run_nums} \
-                                                -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                                -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
                                                 -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
                                                 -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                 -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
@@ -146,8 +145,7 @@ process_non_imv_indexed_nested_loop_join()
                                                     -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
                                                     -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
                                                     -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
-                                                    -RUN_NUMS ${run_nums} \ 
-                                                    -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                                    -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
                                                     -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
                                                     -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                     -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
@@ -211,8 +209,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
                                                 -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
                                                 -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
-                                                -RUN_NUMS ${run_nums} \ 
-                                                -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                                -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
                                                 -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
                                                 -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                 -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
@@ -273,8 +270,7 @@ process_non_imv_indexed_nested_loop_join()
                                             -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
                                             -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
                                             -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
-                                            -RUN_NUMS ${run_nums} \
-                                            -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                            -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
                                             -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
                                             -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                             -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
