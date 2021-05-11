@@ -22,6 +22,7 @@
 #include "utils/memory.h"
 #include "utils/lock.h" 
 #include "utils/learned_sort_for_sort_merge.h"
+#include "utils/csv.h"
 
 #include "techniques/sortmerge_multiway_join_eth_steps.h"
 

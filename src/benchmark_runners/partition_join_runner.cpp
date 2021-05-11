@@ -14,6 +14,7 @@
 #include "utils/eth_data_structures.h"
 #include "utils/data_generation.h"
 #include "utils/io.h"
+#include "utils/csv.h"
 
 #include "utils/base_utils.h"
 #include "utils/math.h"

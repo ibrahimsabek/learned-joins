@@ -25,6 +25,7 @@
 #include "utils/lock.h" 
 #include "utils/numa_shuffle.h"
 #include "utils/learned_sort_for_sort_merge.h"
+#include "utils/csv.h"
 
 
 #include "techniques/sortmerge_multiway_join_learned_steps.h"
@@ -931,7 +932,7 @@ void * learned_imv_sort_join_thread(void * param)
         }        
     }
 
-    if(args->tid == 0){
+    if(my_tid == 0){
         std::sort(curr_learned_model_timings_in_ms.begin(), curr_learned_model_timings_in_ms.end());
         final_learned_model_timings_in_ms.push_back(curr_learned_model_timings_in_ms[(int)(curr_learned_model_timings_in_ms.size()/2)]);
     }
@@ -1030,7 +1031,7 @@ void * learned_imv_sort_join_thread(void * param)
         } 
     }
 
-    if(args->tid == 0){
+    if(my_tid == 0){
         std::sort(curr_partition_timings_in_ms.begin(), curr_partition_timings_in_ms.end());
         final_partition_timings_in_ms.push_back(curr_partition_timings_in_ms[(int)(curr_partition_timings_in_ms.size()/2)]);
     }
@@ -1088,7 +1089,7 @@ void * learned_imv_sort_join_thread(void * param)
         }
     }
 
-    if(args->tid == 0){
+    if(my_tid == 0){
         std::sort(curr_sorting_timings_in_ms.begin(), curr_sorting_timings_in_ms.end());
         final_sorting_timings_in_ms.push_back(curr_sorting_timings_in_ms[(int)(curr_sorting_timings_in_ms.size()/2)]);
     }
@@ -1128,12 +1129,12 @@ void * learned_imv_sort_join_thread(void * param)
             curr_join_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     }
-    if(args->tid == 0){
+    if(my_tid == 0){
         std::sort(curr_join_timings_in_ms.begin(), curr_join_timings_in_ms.end());
         final_join_timings_in_ms.push_back(curr_join_timings_in_ms[(int)(curr_join_timings_in_ms.size()/2)]);
     }
 
-    if(args->tid == 0){
+    if(my_tid == 0){
         std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
          {{"Learn_model_in_ms", final_learned_model_timings_in_ms},
           {"Partition_in_ms", final_partition_timings_in_ms},
