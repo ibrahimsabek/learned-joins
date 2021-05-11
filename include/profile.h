@@ -91,8 +91,8 @@ struct PerfEvents {
          // Skylake X
          //add("cycles", "cpu/cpu-cycles/");
          add("cycles", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CPU_CYCLES);
-         add("LLC-misses", "cpu/cache-misses/"); //OK
-         //add("LLC-misses", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES); //NOT TESTED
+         //add("LLC-misses", "cpu/cache-misses/"); //OK
+         add("LLC-misses", PERF_TYPE_HARDWARE, PERF_COUNT_HW_CACHE_MISSES); //NOT TESTED
          add("LLC-misses2", "mem_load_retired.l3_miss");
          add("l1-misses", PERF_TYPE_HW_CACHE,
              PERF_COUNT_HW_CACHE_L1D | (PERF_COUNT_HW_CACHE_OP_READ << 8) |
