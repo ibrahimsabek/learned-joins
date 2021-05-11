@@ -1,6 +1,6 @@
 #ifndef PROFILE
 #define PROFILE
-#include "common/Compat.hpp"
+#include "common/Compat.h"
 #include <cstdlib>
 #include <cstring>
 #include <functional>
@@ -69,6 +69,7 @@ struct PerfEvents {
 #ifdef __linux__
       char* cpustr = get_cpu_str();
       std::string cpu(cpustr);
+      cout << "cpu_str: " << cpu << "\n";
       // see https://download.01.org/perfmon/mapfile.csv for cpu strings
       if (cpu == "GenuineIntel-6-57-core") {
          // Knights Landing

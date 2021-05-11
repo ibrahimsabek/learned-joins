@@ -29,6 +29,9 @@
 
 #include "techniques/sortmerge_multiway_join_learned_steps.h"
 
+#include <chrono>
+using namespace chrono;
+
 #ifndef KeyType
 #define KeyType RELATION_KEY_TYPE
 #define PayloadType RELATION_PAYLOAD_TYPE
@@ -859,12 +862,16 @@ void * learned_imv_sort_join_thread(void * param)
     int32_t my_tid = args->my_tid;
     int rv;
     int deltaT = 0; struct timeval t1, t2;
-
+    
+    auto learned_model_t1 = high_resolution_clock::now();
+    auto learned_model_t2 = high_resolution_clock::now();
     /*************************************************************************
     *
     *   Phase.0) Sampling and training RMI models.
     *
     *************************************************************************/
+    vector<uint32_t> curr_learned_model_timings_in_ms;
+    vector<uint32_t> final_learned_model_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(my_tid == 0){
@@ -882,7 +889,8 @@ void * learned_imv_sort_join_thread(void * param)
         BARRIER_ARRIVE(args->barrier, rv);
 
         if(my_tid == 0){
-            gettimeofday(&t1, NULL);
+            //gettimeofday(&t1, NULL);
+            learned_model_t1 = high_resolution_clock::now();
         }
 
         sample_and_train_models_threaded(args);
@@ -890,9 +898,11 @@ void * learned_imv_sort_join_thread(void * param)
         BARRIER_ARRIVE(args->barrier, rv);
 
         if(my_tid == 0){
-            gettimeofday(&t2, NULL);
-
-            deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+            //gettimeofday(&t2, NULL);
+            learned_model_t2 = high_resolution_clock::now();
+            //deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(learned_model_t2 - learned_model_t1).count();
+            curr_learned_model_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
     #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
@@ -921,11 +931,20 @@ void * learned_imv_sort_join_thread(void * param)
         }        
     }
 
+    if(args->tid == 0){
+        std::sort(curr_learned_model_timings_in_ms.begin(), curr_learned_model_timings_in_ms.end());
+        final_learned_model_timings_in_ms.push_back(curr_learned_model_timings_in_ms[(int)(curr_learned_model_timings_in_ms.size()/2)]);
+    }
+
     /*************************************************************************
     *
     *   Phase.1) global partitioning across different threads (i.e., major buckets)
     *
     *************************************************************************/
+    auto partition_t1 = high_resolution_clock::now();
+    auto partition_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_partition_timings_in_ms;
+    vector<uint32_t> final_partition_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         //DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
@@ -935,7 +954,8 @@ void * learned_imv_sort_join_thread(void * param)
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->start_time, NULL);
+            //gettimeofday(&args->start_time, NULL);
+            partition_t1 = high_resolution_clock::now();
         }
          
         if(my_tid == 0)
@@ -991,10 +1011,12 @@ void * learned_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->partition_end_time, NULL);
-
-            deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
+            //gettimeofday(&args->partition_end_time, NULL);
+            partition_t2 = high_resolution_clock::now();
+            //deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(partition_t2 - partition_t1).count();
             printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            curr_partition_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -1007,6 +1029,12 @@ void * learned_imv_sort_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
         } 
     }
+
+    if(args->tid == 0){
+        std::sort(curr_partition_timings_in_ms.begin(), curr_partition_timings_in_ms.end());
+        final_partition_timings_in_ms.push_back(curr_partition_timings_in_ms[(int)(curr_partition_timings_in_ms.size()/2)]);
+    }
+
 
     args->numR = r_partition_sizes_for_threads[my_tid] + r_total_repeated_keys_sizes_for_threads[my_tid];
     args->numS = s_partition_sizes_for_threads[my_tid] + s_total_repeated_keys_sizes_for_threads[my_tid];
@@ -1022,13 +1050,18 @@ void * learned_imv_sort_join_thread(void * param)
     *   Phase.2) NUMA-local sorting of cache-sized chunks
     *
     *************************************************************************/
+    auto sorting_t1 = high_resolution_clock::now();
+    auto sorting_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_sorting_timings_in_ms;
+    vector<uint32_t> final_sorting_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->partition_end_time, NULL);
+            //gettimeofday(&args->partition_end_time, NULL);
+            sorting_t1 = high_resolution_clock::now();
         }
 
         join_steps.sorting_phase(0, 0, args);
@@ -1037,10 +1070,12 @@ void * learned_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->sort_end_time, NULL);
-
-            deltaT = (args->sort_end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->sort_end_time.tv_usec - args->partition_end_time.tv_usec;
+            //gettimeofday(&args->sort_end_time, NULL);
+            sorting_t2 = high_resolution_clock::now();
+            //deltaT = (args->sort_end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->sort_end_time.tv_usec - args->partition_end_time.tv_usec;
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(sorting_t2 - sorting_t1).count();
             printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            curr_sorting_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -1053,6 +1088,12 @@ void * learned_imv_sort_join_thread(void * param)
         }
     }
 
+    if(args->tid == 0){
+        std::sort(curr_sorting_timings_in_ms.begin(), curr_sorting_timings_in_ms.end());
+        final_sorting_timings_in_ms.push_back(curr_sorting_timings_in_ms[(int)(curr_sorting_timings_in_ms.size()/2)]);
+    }
+
+
     BARRIER_ARRIVE(args->barrier, rv);
 
     /*************************************************************************
@@ -1060,13 +1101,18 @@ void * learned_imv_sort_join_thread(void * param)
      *   Phase.4) NUMA-local merge-join on local sorted runs.
      *
      *************************************************************************/
+    auto join_t1 = high_resolution_clock::now();
+    auto join_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_join_timings_in_ms;
+    vector<uint32_t> final_join_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->tmp_mergejoin_end_time, NULL);
+            //gettimeofday(&args->tmp_mergejoin_end_time, NULL);
+            join_t1 = high_resolution_clock::now();
         }
 
         join_steps.mergejoin_phase(0, 0, 0, 0, args);
@@ -1075,13 +1121,26 @@ void * learned_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->mergejoin_end_time, NULL);
-
+            //gettimeofday(&args->mergejoin_end_time, NULL);
+            join_t2 = high_resolution_clock::now();
             deltaT = (args->mergejoin_end_time.tv_sec - args->tmp_mergejoin_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->tmp_mergejoin_end_time.tv_usec;
             printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            curr_join_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     }
+    if(args->tid == 0){
+        std::sort(curr_join_timings_in_ms.begin(), curr_join_timings_in_ms.end());
+        final_join_timings_in_ms.push_back(curr_join_timings_in_ms[(int)(curr_join_timings_in_ms.size()/2)]);
+    }
 
+    if(args->tid == 0){
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+         {{"Learn_model_in_ms", final_learned_model_timings_in_ms},
+          {"Partition_in_ms", final_partition_timings_in_ms},
+          {"Sort_in_ms", final_sorting_timings_in_ms},
+          {"Join_in_ms", final_join_timings_in_ms}};
+        write_csv(BENCHMARK_RESULTS_PATH, final_results);
+    }
     return 0;
 }
 

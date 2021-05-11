@@ -25,6 +25,9 @@
 
 #include "techniques/sortmerge_multiway_join_eth_steps.h"
 
+#include <chrono>
+using namespace chrono;
+
 #ifndef KeyType
 #define KeyType RELATION_KEY_TYPE
 #define PayloadType RELATION_PAYLOAD_TYPE
@@ -120,7 +123,11 @@ void * non_learned_non_imv_sort_join_thread(void * param)
     *************************************************************************/
     Relation<KeyType, PayloadType> ** partsR = NULL;
     Relation<KeyType, PayloadType> ** partsS = NULL;
-
+    
+    auto partition_t1 = high_resolution_clock::now();
+    auto partition_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_partition_timings_in_ms;
+    vector<uint32_t> final_partition_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         //DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
@@ -130,7 +137,8 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->start_time, NULL);
+            //gettimeofday(&args->start_time, NULL);
+            partition_t1 = high_resolution_clock::now();
         }
         
         join_steps.partition_phase(&partsR, &partsS, args);
@@ -141,10 +149,12 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->partition_end_time, NULL);
-
-            deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
+            //gettimeofday(&args->partition_end_time, NULL);
+            partition_t2 = high_resolution_clock::now();
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(partition_t2 - partition_t1).count();
+            //deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
             printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Non-learned sort join", deltaT * 1.0 / 1000);
+            curr_partition_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -158,6 +168,11 @@ void * non_learned_non_imv_sort_join_thread(void * param)
         } 
     }
 
+    if(args->tid == 0){
+        std::sort(curr_partition_timings_in_ms.begin(), curr_partition_timings_in_ms.end());
+        final_partition_timings_in_ms.push_back(curr_partition_timings_in_ms[(int)(curr_partition_timings_in_ms.size()/2)]);
+    }
+
     BARRIER_ARRIVE(args->barrier, rv);
 
     /*************************************************************************
@@ -165,13 +180,18 @@ void * non_learned_non_imv_sort_join_thread(void * param)
     *   Phase.2) NUMA-local sorting of cache-sized chunks
     *
     *************************************************************************/
+    auto sorting_t1 = high_resolution_clock::now();
+    auto sorting_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_sorting_timings_in_ms;
+    vector<uint32_t> final_sorting_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->partition_end_time, NULL);
+            //gettimeofday(&args->partition_end_time, NULL);
+            sorting_t1 = high_resolution_clock::now();
         }
 
         join_steps.sorting_phase(partsR, partsS, args);
@@ -180,10 +200,12 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->sort_end_time, NULL);
-
-            deltaT = (args->sort_end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->sort_end_time.tv_usec - args->partition_end_time.tv_usec;
+            //gettimeofday(&args->sort_end_time, NULL);
+            sorting_t2 = high_resolution_clock::now();
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(sorting_t2 - sorting_t1).count();
+            //deltaT = (args->sort_end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->sort_end_time.tv_usec - args->partition_end_time.tv_usec;
             printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Non-learned sort join", deltaT * 1.0 / 1000);
+            curr_sorting_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -195,6 +217,11 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
             BARRIER_ARRIVE(args->barrier, rv);
         }
+    }
+
+    if(args->tid == 0){
+        std::sort(curr_sorting_timings_in_ms.begin(), curr_sorting_timings_in_ms.end());
+        final_sorting_timings_in_ms.push_back(curr_sorting_timings_in_ms[(int)(curr_sorting_timings_in_ms.size()/2)]);
     }
 
     /**
@@ -241,14 +268,18 @@ void * non_learned_non_imv_sort_join_thread(void * param)
      *************************************************************************/
     Relation<KeyType, PayloadType> mergedRelR;
     Relation<KeyType, PayloadType> mergedRelS;
-    
+    auto merging_t1 = high_resolution_clock::now();
+    auto merging_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_merging_timings_in_ms;
+    vector<uint32_t> final_merging_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->sort_end_time, NULL);
+            //gettimeofday(&args->sort_end_time, NULL);
+            merging_t1 = high_resolution_clock::now();
         }
 
         join_steps.multiwaymerge_phase(numaregionid, partsR, partsS, args,
@@ -258,10 +289,12 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->multiwaymerge_end_time, NULL);
-
-            deltaT = (args->multiwaymerge_end_time.tv_sec - args->sort_end_time.tv_sec) * 1000000 + args->multiwaymerge_end_time.tv_usec - args->sort_end_time.tv_usec;
+            //gettimeofday(&args->multiwaymerge_end_time, NULL);
+            merging_t2 = high_resolution_clock::now();
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(merging_t2 - merging_t1).count();
+            //deltaT = (args->multiwaymerge_end_time.tv_sec - args->sort_end_time.tv_sec) * 1000000 + args->multiwaymerge_end_time.tv_usec - args->sort_end_time.tv_usec;
             printf("---- %5s merging costs time (ms) = %10.4lf\n", "Non-learned sort join", deltaT * 1.0 / 1000);
+            curr_merging_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -273,6 +306,11 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
             BARRIER_ARRIVE(args->barrier, rv);
         }
+    }
+
+    if(args->tid == 0){
+        std::sort(curr_merging_timings_in_ms.begin(), curr_merging_timings_in_ms.end());
+        final_merging_timings_in_ms.push_back(curr_merging_timings_in_ms[(int)(curr_merging_timings_in_ms.size()/2)]);
     }
 
     /* the thread that allocated the merge buffer releases it. */
@@ -293,13 +331,18 @@ void * non_learned_non_imv_sort_join_thread(void * param)
      *   Phase.4) NUMA-local merge-join on local sorted runs.
      *
      *************************************************************************/
+    auto join_t1 = high_resolution_clock::now();
+    auto join_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_join_timings_in_ms;
+    vector<uint32_t> final_join_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
-            gettimeofday(&args->multiwaymerge_end_time, NULL);
+            //gettimeofday(&args->multiwaymerge_end_time, NULL);
+            join_t1 = high_resolution_clock::now();
         }
 
         join_steps.mergejoin_phase(partsR, partsS, &mergedRelR, &mergedRelS, args);
@@ -308,10 +351,13 @@ void * non_learned_non_imv_sort_join_thread(void * param)
 
         // partition phase finished, thread-0 checkpoints the time
         if(my_tid == 0){
-            gettimeofday(&args->mergejoin_end_time, NULL);
+            //gettimeofday(&args->mergejoin_end_time, NULL);
+            join_t2 = high_resolution_clock::now();
 
-            deltaT = (args->mergejoin_end_time.tv_sec - args->multiwaymerge_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->multiwaymerge_end_time.tv_usec;
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(join_t2 - join_t1).count();
+            //deltaT = (args->mergejoin_end_time.tv_sec - args->multiwaymerge_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->multiwaymerge_end_time.tv_usec;
             printf("---- %5s joining costs time (ms) = %10.4lf\n", "Non-learned sort join", deltaT * 1.0 / 1000);
+            curr_join_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -324,6 +370,20 @@ void * non_learned_non_imv_sort_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
         }
 
+    }
+
+    if(args->tid == 0){
+        std::sort(curr_join_timings_in_ms.begin(), curr_join_timings_in_ms.end());
+        final_join_timings_in_ms.push_back(curr_join_timings_in_ms[(int)(curr_join_timings_in_ms.size()/2)]);
+    }
+
+    if(args->tid == 0){
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+         {{"Partition_in_ms", final_partition_timings_in_ms},
+          {"Sort_in_ms", final_sorting_timings_in_ms},
+          {"Merge_in_ms", final_merging_timings_in_ms},
+          {"Join_in_ms", final_join_timings_in_ms}};
+        write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
 
     /* clean-up */

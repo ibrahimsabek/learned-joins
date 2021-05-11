@@ -22,6 +22,7 @@
 #include "utils/memory.h"
 #include "utils/lock.h" 
 #include "utils/learned_sort_for_sort_merge.h"
+#include "profile.h"
 
 #include <chrono>
 using namespace chrono;
@@ -694,6 +695,8 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
 
 int main(int argc, char **argv) 
 {
+    PerfEvents e;
+    
     Relation<KeyType, PayloadType> rel_r;
     Relation<KeyType, PayloadType> rel_s;
     
@@ -929,12 +932,12 @@ int main(int argc, char **argv)
                                 #endif
                                     sorted_relation_r_keys_only,
                                 #ifdef INLJ_WITH_LEARNED_INDEX                                    
-                                    /*&rmi, rmi_params,
-                                    SAMPLE_SZ_R, SAMPLE_SZ_S,
-                                    tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
-                                    r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
-                                    &training_data, sample_count, sample_count_R, sample_count_S,
-                                    slopes, intercepts,*/
+                                    //&rmi, rmi_params,
+                                    //SAMPLE_SZ_R, SAMPLE_SZ_S,
+                                    //tmp_training_sample_in, sorted_training_sample_in, r_tmp_training_sample_in,
+                                    //r_sorted_training_sample_in, s_tmp_training_sample_in, s_sorted_training_sample_in,
+                                    //&training_data, sample_count, sample_count_R, sample_count_S,
+                                    //slopes, intercepts,
                                 #endif
                                 #ifdef INLJ_WITH_CSS_TREE_INDEX
                                     tree,

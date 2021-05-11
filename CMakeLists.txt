@@ -127,18 +127,25 @@ ELSE(DATADIR)
     ADD_DEFINITIONS(-DDATADIR="${PROJECT_SOURCE_DIR}/data")
 ENDIF(DATADIR)
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/3rdparty/")
-#find_package(TBB)
-#include_directories(${TBB_INCLUDE_DIRS})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/3rdparty/")
+find_package(TBB)
+include_directories(${TBB_INCLUDE_DIRS})
 
 
-#IF(LINUX)
-#  add_subdirectory(3rdparty/jevents)
-#  set(JEVENTSLIB "jevents")
-#ELSE(LINUX)
-#  set(JEVENTSLIB "")
-#ENDIF(LINUX)
+IF(LINUX)
+  add_subdirectory(3rdparty/jevents)
+  set(JEVENTSLIB "jevents")
+ELSE(LINUX)
+  set(JEVENTSLIB "")
+ENDIF(LINUX)
 
+add_library(common
+  src/common/runtime/profile.cpp
+  )
+target_include_directories(common PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+    PRIVATE src)
 
 # Enable tests
 enable_testing()
@@ -157,28 +164,33 @@ target_include_directories(non_partition_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
+  target_link_libraries(non_partition_join_runner common)
+
 
 add_executable(partition_join_runner src/benchmark_runners/partition_join_runner.cpp)
 target_include_directories(partition_join_runner PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 PRIVATE src)
+target_link_libraries(partition_join_runner common)
 
 add_executable(non_learned_non_imv_sort_join_runner src/benchmark_runners/non_learned_non_imv_sort_join_runner.cpp)
 target_include_directories(non_learned_non_imv_sort_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
+  target_link_libraries(non_learned_non_imv_sort_join_runner common)
 
 add_executable(learned_imv_sort_join_runner src/benchmark_runners/learned_imv_sort_join_runner.cpp)
 target_include_directories(learned_imv_sort_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
+  target_link_libraries(learned_imv_sort_join_runner common)
 
 add_executable(non_imv_indexed_nested_loop_join_runner src/benchmark_runners/non_imv_indexed_nested_loop_join_runner.cpp)
 target_include_directories(non_imv_indexed_nested_loop_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)  
-  target_link_libraries(non_imv_indexed_nested_loop_join_runner rmi_lib)
+  target_link_libraries(non_imv_indexed_nested_loop_join_runner common rmi_lib)

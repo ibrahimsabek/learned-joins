@@ -22,6 +22,9 @@
 #include "utils/lock.h" 
 #include "utils/learned_sort_for_sort_merge.h"
 
+#include <chrono>
+using namespace chrono;
+
 #ifndef KeyType
 #define KeyType RELATION_KEY_TYPE
 #define PayloadType RELATION_PAYLOAD_TYPE
@@ -1953,7 +1956,12 @@ void * npj_join_thread(void * param)
 {
     ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> * args   = (ETHNonPartitionJoinThread<KeyType, PayloadType, TaskType> *) param;
     int rv;   int deltaT = 0; struct timeval t1, t2;
+    
 #ifdef RUN_LEARNED_TECHNIQUES        
+    auto learn_model_t1 = high_resolution_clock::now();
+    auto learn_model_t2 = high_resolution_clock::now();
+    vector<uint32_t> curr_learn_model_timings_in_ms;
+    vector<uint32_t> final_learn_model_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->tid == 0)
@@ -1962,7 +1970,8 @@ void * npj_join_thread(void * param)
 
         BARRIER_ARRIVE(args->barrier, rv);
         if(args->tid == 0){
-            gettimeofday(&t1, NULL);
+            learn_model_t1 = high_resolution_clock::now();
+            //gettimeofday(&t1, NULL);
         }
 
         sample_and_train_models_threaded(args);
@@ -1970,10 +1979,12 @@ void * npj_join_thread(void * param)
         BARRIER_ARRIVE(args->barrier, rv);
 
         if(args->tid == 0){
-            gettimeofday(&t2, NULL);
-
-            deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+            learn_model_t2 = high_resolution_clock::now();
+            //gettimeofday(&t2, NULL);
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(learn_model_t2 - learn_model_t1).count();
+            //deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+            curr_learn_model_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
 
 #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
@@ -1986,6 +1997,10 @@ void * npj_join_thread(void * param)
             } 
 #endif            
         }        
+    }
+    if(args->tid == 0){
+        std::sort(curr_learn_model_timings_in_ms.begin(), curr_learn_model_timings_in_ms.end());
+        final_learn_model_timings_in_ms.push_back(curr_learn_model_timings_in_ms[(int)(curr_learn_model_timings_in_ms.size()/2)]);
     }
 #endif
     BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
@@ -2030,10 +2045,14 @@ void * npj_join_thread(void * param)
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
-    
+    auto build_t1 = high_resolution_clock::now();
+    auto build_t2 = high_resolution_clock::now();
     ETHNonPartitionJoinBuild<KeyType, PayloadType> build_data; 
+    
+    vector<uint32_t> final_build_timings_in_ms;
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
+        vector<uint32_t> curr_build_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             init_bucket_buffer(&overflowbuf);
@@ -2059,7 +2078,8 @@ void * npj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
 
             if(args->tid == 0){
-                gettimeofday(&args->start_time, NULL);
+                build_t1 = high_resolution_clock::now();
+                //gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
                 //args->e_start_to_partition.startCounters();
             #endif
@@ -2092,14 +2112,17 @@ void * npj_join_thread(void * param)
         #endif
 
             if(args->tid == 0){
-                gettimeofday(&args->partition_end_time, NULL);
+                build_t2 = high_resolution_clock::now();
+                //gettimeofday(&args->partition_end_time, NULL);
 
             #ifndef DEVELOPMENT_MODE
                 //args->e_start_to_partition.stopCounters();
                 //args->e_partition_to_end.startCounters();
             #endif
-                deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
+                //deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
+                deltaT = std::chrono::duration_cast<std::chrono::microseconds>(build_t2 - build_t1).count();
                 printf("---- %5s Build costs time (ms) = %10.4lf\n", npj_pfun[fid].fun_name, deltaT * 1.0 / 1000);
+                curr_build_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
                 npj_total_num = 0;
                 npj_global_curse = 0;
             }
@@ -2113,19 +2136,30 @@ void * npj_join_thread(void * param)
                 BARRIER_ARRIVE(args->barrier, rv);
             } 
         }
+
+        if(args->tid == 0){
+            std::sort(curr_build_timings_in_ms.begin(), curr_build_timings_in_ms.end());
+            final_build_timings_in_ms.push_back(curr_build_timings_in_ms[(int)(curr_build_timings_in_ms.size()/2)]);
+        }
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
     
     //Probe phase
+    auto probe_t1 = high_resolution_clock::now();
+    auto probe_t2 = high_resolution_clock::now();
+
+    vector<uint32_t> final_probe_timings_in_ms;
     for (int fid = 0; fid < npj_pf_num; ++fid) 
     {
+        vector<uint32_t> curr_probe_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             BARRIER_ARRIVE(args->barrier, rv);
 
             if(args->tid == 0){
-                gettimeofday(&args->partition_end_time, NULL);
+                probe_t1 = high_resolution_clock::now();
+                //gettimeofday(&args->partition_end_time, NULL);
             }
 
             #if NPJ_MORSE_SIZE
@@ -2137,12 +2171,27 @@ void * npj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
             // probe phase finished, thread-0 checkpoints the time
             if(args->tid == 0){
-                gettimeofday(&args->end_time, NULL);
-
-                deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+                //gettimeofday(&args->end_time, NULL);
+                probe_t2 = high_resolution_clock::now();
+                deltaT = std::chrono::duration_cast<std::chrono::microseconds>(probe_t2 - probe_t1).count();
+                //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 printf("---- %5s Probe costs time (ms) = %10.4lf\n", npj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
+                curr_probe_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             }
         }
+
+        if(args->tid == 0){
+            std::sort(curr_probe_timings_in_ms.begin(), curr_probe_timings_in_ms.end());
+            final_probe_timings_in_ms.push_back(curr_probe_timings_in_ms[(int)(curr_probe_timings_in_ms.size()/2)]);
+        }
+    }
+
+    if(args->tid == 0){
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+         {{"Learn_model_in_ms", final_learn_model_timings_in_ms},
+          {"Build_in_ms", final_build_timings_in_ms},
+          {"Probe_in_ms", final_probe_timings_in_ms}};
+        write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
 
     return 0;

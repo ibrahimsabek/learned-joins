@@ -22,6 +22,9 @@
 #include "utils/lock.h" 
 #include "utils/learned_sort_for_sort_merge.h"
 
+#include <chrono>
+using namespace chrono;
+
 #ifndef KeyType
 #define KeyType RELATION_KEY_TYPE
 #define PayloadType RELATION_PAYLOAD_TYPE
@@ -885,7 +888,11 @@ void * pj_join_thread(void * param)
     args->parts_processed = 0;
 
 
-#ifdef RUN_LEARNED_TECHNIQUES        
+#ifdef RUN_LEARNED_TECHNIQUES    
+    auto learn_model_t1 = high_resolution_clock::now();   
+    auto learn_model_t2 = high_resolution_clock::now();    
+    vector<uint32_t> curr_learn_model_timings_in_ms; 
+    vector<uint32_t> final_learn_model_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->my_tid == 0)
@@ -894,7 +901,8 @@ void * pj_join_thread(void * param)
 
         BARRIER_ARRIVE(args->barrier, rv);
         if(args->my_tid == 0){
-            gettimeofday(&t1, NULL);
+            learn_model_t1 = high_resolution_clock::now();
+            //gettimeofday(&t1, NULL);
         }
 
         sample_and_train_models_threaded(args);
@@ -902,10 +910,12 @@ void * pj_join_thread(void * param)
         BARRIER_ARRIVE(args->barrier, rv);
 
         if(args->my_tid == 0){
-            gettimeofday(&t2, NULL);
-
-            deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
+            //gettimeofday(&t2, NULL);
+            learn_model_t2 = high_resolution_clock::now();
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(learn_model_t2 - learn_model_t1).count();
+            //deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+            curr_learn_model_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
 
 #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
@@ -919,6 +929,10 @@ void * pj_join_thread(void * param)
 #endif            
         }        
     }
+    if(args->tid == 0){
+        std::sort(curr_learn_model_timings_in_ms.begin(), curr_learn_model_timings_in_ms.end());
+        final_learn_model_timings_in_ms.push_back(curr_learn_model_timings_in_ms[(int)(curr_learn_model_timings_in_ms.size()/2)]);
+    }    
 #endif
 
 
@@ -973,13 +987,17 @@ void * pj_join_thread(void * param)
 
 
     ETHPartition<KeyType, PayloadType, TaskType, ETHRadixJoinThread<KeyType, PayloadType, TaskType>> part;
-
+    auto partition_t1 = high_resolution_clock::now();
+    auto partition_t2 = high_resolution_clock::now();
+    vector<uint32_t> final_partition_timings_in_ms;
     for (int fid = 0; fid < pj_partition_pf_num; ++fid) 
     {
+        vector<uint32_t> curr_partition_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             if(args->my_tid == 0){
-                gettimeofday(&args->start_time, NULL);
+                partition_t1 = high_resolution_clock::now();
+                //gettimeofday(&args->start_time, NULL);
             #ifndef DEVELOPMENT_MODE
                 //args->e_start_to_partition.startCounters();
             #endif
@@ -1233,17 +1251,20 @@ void * pj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
 
             if(args->my_tid == 0){
-                gettimeofday(&args->partition_end_time, NULL);
+                partition_t2 = high_resolution_clock::now();
+                //gettimeofday(&args->partition_end_time, NULL);
 
             #ifndef DEVELOPMENT_MODE
                 //args->e_start_to_partition.stopCounters();
                 //args->e_partition_to_end.startCounters();
             #endif
-                deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
+                deltaT = std::chrono::duration_cast<std::chrono::microseconds>(partition_t2 - partition_t1).count();
+                //deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
                 printf("---- %5s Partition costs time (ms) = %10.4lf\n", pj_partition_pfun[fid].fun_name, deltaT * 1.0 / 1000);
+                curr_partition_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             }
 
-        
+
             if(!((fid == (pj_partition_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
 
                 //free(outputR);
@@ -1262,6 +1283,11 @@ void * pj_join_thread(void * param)
             } 
 
         }
+
+        if(args->tid == 0){
+            std::sort(curr_partition_timings_in_ms.begin(), curr_partition_timings_in_ms.end());
+            final_partition_timings_in_ms.push_back(curr_partition_timings_in_ms[(int)(curr_partition_timings_in_ms.size()/2)]);
+        }
     }
 
     BARRIER_ARRIVE(args->barrier, rv);
@@ -1270,15 +1296,20 @@ void * pj_join_thread(void * param)
 
     //Join phase
     uint32_t numR_from_build = 0;
+    auto join_t1 = high_resolution_clock::now();
+    auto join_t2 = high_resolution_clock::now();
 
+    vector<uint32_t> final_join_timings_in_ms;
     for (int fid = 0; fid < pj_build_pf_num; ++fid) 
     {
+        vector<uint32_t> curr_join_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             BARRIER_ARRIVE(args->barrier, rv);
 
             if(args->my_tid == 0){
-                gettimeofday(&args->partition_end_time, NULL);
+                join_t1 = high_resolution_clock::now();
+                //gettimeofday(&args->partition_end_time, NULL);
             }
 
             while((task = task_queue_get_atomic<KeyType, PayloadType, TaskType>(join_queue))){
@@ -1297,16 +1328,31 @@ void * pj_join_thread(void * param)
 
             args->result = results;
 
-
             BARRIER_ARRIVE(args->barrier, rv);
             // probe phase finished, thread-0 checkpoints the time
             if(args->my_tid == 0){
-                gettimeofday(&args->end_time, NULL);
-
-                deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+                //gettimeofday(&args->end_time, NULL);
+                join_t2 = high_resolution_clock::now();
+                //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
+                deltaT = std::chrono::duration_cast<std::chrono::microseconds>(join_t2 - join_t1).count();
                 printf("---- %5s Join costs time (ms) = %10.4lf\n", pj_probe_pfun[fid].fun_name, deltaT * 1.0 / 1000);
+                curr_join_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             }
         }
+
+        if(args->tid == 0){
+            std::sort(curr_join_timings_in_ms.begin(), curr_join_timings_in_ms.end());
+            final_join_timings_in_ms.push_back(curr_join_timings_in_ms[(int)(curr_join_timings_in_ms.size()/2)]);
+        }
+    }
+
+
+    if(args->tid == 0){
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+         {{"Learn_model_in_ms", final_learn_model_timings_in_ms},
+          {"Partition_in_ms", final_partition_timings_in_ms},
+          {"Join_in_ms", final_join_timings_in_ms}};
+        write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
 
     return 0;
