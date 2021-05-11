@@ -2188,10 +2188,16 @@ void * npj_join_thread(void * param)
     }
 
     if(args->tid == 0){
+#ifdef RUN_LEARNED_TECHNIQUES        
         std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
          {{"Learn_model_in_ms", final_learn_model_timings_in_ms},
           {"Build_in_ms", final_build_timings_in_ms},
           {"Probe_in_ms", final_probe_timings_in_ms}};
+#else
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+         {{"Build_in_ms", final_build_timings_in_ms},
+          {"Probe_in_ms", final_probe_timings_in_ms}};
+#endif
         write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
 
