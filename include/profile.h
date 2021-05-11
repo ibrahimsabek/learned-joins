@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <unordered_map>
 #include <vector>
+#include <chrono>
 
 #ifdef __linux__
 #include <asm/unistd.h>
@@ -23,7 +24,14 @@ extern "C" {
 }
 #endif
 
-#define GLOBAL 1
+#include "config.h"            /* autoconf header */
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
+
+using namespace std;
+using namespace chrono;
+
+#define GLOBAL 0
 
 extern bool writeHeader;
 
@@ -64,7 +72,7 @@ struct PerfEvents {
       if (GLOBAL)
          counters = 1;
       else {
-         counters = std::thread::hardware_concurrency();
+         counters = NUM_THREADS_FOR_EVALUATION;
       }
 #ifdef __linux__
       char* cpustr = get_cpu_str();
@@ -82,13 +90,13 @@ struct PerfEvents {
       } else if (cpu == "GenuineIntel-6-55-core") {
          // Skylake X
          add("cycles", "cpu/cpu-cycles/");
-         add("LLC-misses", "cpu/cache-misses/");
+         add("LLC-misses", "cpu/cache-misses/"); //OK
          add("LLC-misses2", "mem_load_retired.l3_miss");
          add("l1-misses", PERF_TYPE_HW_CACHE,
              PERF_COUNT_HW_CACHE_L1D | (PERF_COUNT_HW_CACHE_OP_READ << 8) |
-                 (PERF_COUNT_HW_CACHE_RESULT_MISS << 16));
-         add("instr.", "instructions");
-         add("br. misses", "cpu/branch-misses/");
+                 (PERF_COUNT_HW_CACHE_RESULT_MISS << 16)); //OK
+         add("instr.", "instructions"); //OK
+         add("br. misses", "cpu/branch-misses/"); //OK
          add("all_rd", "offcore_requests.all_data_rd");
          add("br. misses", "cpu/branch-misses/");
          add("stores", "mem_inst_retired.all_stores");
@@ -188,7 +196,7 @@ struct PerfEvents {
       }
    }
 
-   void startAll() {
+   inline void startAll() {
       for (auto& ev : events) {
          for (auto& event : ev.second) {
 #ifdef __linux__
@@ -213,7 +221,7 @@ struct PerfEvents {
 #endif
    }
 
-   void readAll() {
+   inline void readAll() {
       for (auto& ev : events)
          for (auto& event : ev.second) {
 #ifdef __linux__
@@ -227,12 +235,12 @@ struct PerfEvents {
          }
    }
 
-   void printHeader(std::ostream& out) {
+   inline void printHeader(std::ostream& out) {
       for (auto& name : ordered_names)
          out << std::setw(printFieldWidth) << name << ",";
    }
 
-   void printAll(std::ostream& out, double n) {
+   inline void printAll(std::ostream& out, double n) {
       for (auto& name : ordered_names) {
          double aggr = 0;
          for (auto& event : events[name]) aggr += event.readCounter();
@@ -246,7 +254,12 @@ struct PerfEvents {
       return aggr;
    };
 
+   void printProfile(std::string s, uint64_t count, uint32_t runtime_in_ms);
+
    void timeAndProfile(std::string s, uint64_t count, std::function<void()> fn,
+                       uint64_t repetitions = 1, bool mem = false);
+
+   void timeAndProfile_deprecated(std::string s, uint64_t count, std::function<void()> fn,
                        uint64_t repetitions = 1, bool mem = false);
 };
 
@@ -269,10 +282,116 @@ inline size_t getCurrentRSS() {
    return (size_t)rss * (size_t)sysconf(_SC_PAGESIZE);
 }
 
+inline void PerfEvents::printProfile(std::string s, uint64_t count, uint32_t runtime_in_ms) 
+{
+   std::cout.precision(3);
+   std::cout.setf(std::ios::fixed, std::ios::floatfield);
+   if (writeHeader) {
+      std::cout << setw(20) << "name"
+                << "," << setw(printFieldWidth) << " time (ms)"
+                //<< "," << setw(printFieldWidth) << " CPUs"
+                //<< "," << setw(printFieldWidth) << " IPC"
+                //<< "," << setw(printFieldWidth) << " GHz"
+                //<< "," << setw(printFieldWidth) << " Bandwidth"
+                << ",";
+      printHeader(std::cout);
+      std::cout << std::endl;
+   }
+
+   std::cout << setw(20) << s << "," << setw(printFieldWidth)
+             << (runtime_in_ms) << ",";
+#ifdef __linux__
+   if (!getenv("EXTERNALPROFILE")) {
+      //std::cout << setw(printFieldWidth)
+                //<< ((*this)["task-clock"] / (runtime_in_ms * 1e3 * 1e9)) << ",";
+      //std::cout << setw(printFieldWidth)
+                //<< ((*this)["instr."] / (*this)["cycles"]) << ",";
+      //std::cout << setw(printFieldWidth)
+      //          << ((*this)["cycles"] /
+      //              (this->events["cycles"][0].data.time_enabled -
+      //               this->events["cycles"][0].prev.time_enabled))
+      //          << ",";
+      //std::cout << setw(printFieldWidth)
+      //          << ((((*this)["all_rd"] * 64.0) / (1024 * 1024)) /
+      //              (end - start))
+      //          << ",";
+   }
+#endif
+   // std::cout <<
+   // (((e["all_requests"]*64.0)/(1024*1024))/(e.events["cycles"][0].data.time_enabled/1e9))
+   // << " allMB/s,";
+
+   printAll(std::cout, count);
+   std::cout << std::endl;
+   writeHeader = false;
+}
+
 inline void PerfEvents::timeAndProfile(std::string s, uint64_t count,
                                 std::function<void()> fn, uint64_t repetitions,
                                 bool mem) {
-   using namespace std;
+
+   uint64_t memStart = 0;
+   if (mem) memStart = getCurrentRSS();
+
+   startAll();
+   auto start = high_resolution_clock::now();
+
+   size_t performedRep = 0;
+   for (; performedRep < repetitions; ++performedRep) {
+      fn();
+   }
+   auto end = high_resolution_clock::now();
+   readAll();
+
+   double runtime = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+   runtime = (runtime * 1.0) / (1000 * performedRep);
+
+   std::cout.precision(3);
+   std::cout.setf(std::ios::fixed, std::ios::floatfield);
+   if (writeHeader) {
+      std::cout << setw(20) << "name"
+                << "," << setw(printFieldWidth) << " time (ms)"
+                << "," << setw(printFieldWidth) << " CPUs"
+                << "," << setw(printFieldWidth) << " IPC"
+                //<< "," << setw(printFieldWidth) << " GHz"
+                //<< "," << setw(printFieldWidth) << " Bandwidth"
+                << ",";
+      printHeader(std::cout);
+      std::cout << std::endl;
+   }
+
+   std::cout << setw(20) << s << "," << setw(printFieldWidth)
+             << (runtime) << ",";
+#ifdef __linux__
+   if (!getenv("EXTERNALPROFILE")) {
+      std::cout << setw(printFieldWidth)
+                << ((*this)["task-clock"] / (runtime * 1e3 * 1e9)) << ",";
+      std::cout << setw(printFieldWidth)
+                << ((*this)["instr."] / (*this)["cycles"]) << ",";
+      //std::cout << setw(printFieldWidth)
+      //          << ((*this)["cycles"] /
+      //              (this->events["cycles"][0].data.time_enabled -
+      //               this->events["cycles"][0].prev.time_enabled))
+      //          << ",";
+      //std::cout << setw(printFieldWidth)
+      //          << ((((*this)["all_rd"] * 64.0) / (1024 * 1024)) /
+      //              (end - start))
+      //          << ",";
+   }
+#endif
+   // std::cout <<
+   // (((e["all_requests"]*64.0)/(1024*1024))/(e.events["cycles"][0].data.time_enabled/1e9))
+   // << " allMB/s,";
+
+   printAll(std::cout, count * performedRep);
+   if (mem) std::cout << (getCurrentRSS() - memStart) / (1024.0 * 1024) << "MB";
+   std::cout << std::endl;
+   writeHeader = false;
+}
+
+inline void PerfEvents::timeAndProfile_deprecated(std::string s, uint64_t count,
+                                std::function<void()> fn, uint64_t repetitions,
+                                bool mem) {
    // warmup round
    double warumupStart = gettime();
    while (gettime() - warumupStart < 0.15) fn();

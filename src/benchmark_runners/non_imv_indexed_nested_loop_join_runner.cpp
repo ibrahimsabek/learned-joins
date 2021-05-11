@@ -67,8 +67,7 @@ struct StateSIMDForHashINLJ {
 
 volatile static char inlj_g_lock = 0, inlj_g_lock_morse = 0;
 volatile static uint64_t inlj_total_num = 0, inlj_global_curse = 0, inlj_global_morse_size;
-
-
+PerfEvents perf_event;
 
 typedef void (*INLJBuildFun)(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r);
 volatile static struct Fun {
@@ -558,6 +557,7 @@ void * inlj_join_thread(void * param)
             BARRIER_ARRIVE(args->barrier, rv);
 
             if(args->tid == 0){
+                perf_event.startAll();
                 //gettimeofday(&args->partition_end_time, NULL);
                 partition_end_time = high_resolution_clock::now();
             }
@@ -573,10 +573,12 @@ void * inlj_join_thread(void * param)
             if(args->tid == 0){
                 //gettimeofday(&args->end_time, NULL);
                 end_time = high_resolution_clock::now();
-                
+                perf_event.readAll();
+
                 //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 deltaT = std::chrono::duration_cast<std::chrono::microseconds>(end_time - partition_end_time).count();
-                printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
+                perf_event.printProfile(inlj_pfun1[fid].fun_name, NUM_THREADS, (uint32_t)(deltaT * 1.0 / 1000));
+                //printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
                 curr_probe_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             }
         }
@@ -694,9 +696,7 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
 
 
 int main(int argc, char **argv) 
-{
-    PerfEvents e;
-    
+{    
     Relation<KeyType, PayloadType> rel_r;
     Relation<KeyType, PayloadType> rel_s;
     
