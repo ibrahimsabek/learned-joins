@@ -31,7 +31,7 @@ extern "C" {
 using namespace std;
 using namespace chrono;
 
-#define GLOBAL 0
+#define GLOBAL 1
 
 extern bool writeHeader;
 
