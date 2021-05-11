@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
-
+#cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8...3.20.2)
 # Compiler flags for the different targets
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-sign-compare -Wno-unused-result -Wno-unused-parameter")
 
