@@ -56,11 +56,11 @@ process_non_imv_indexed_nested_loop_join()
                 curr_output_file=$output_folder_path'non_imv_inlj_with_hash_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_hts_'$curr_input_hash_table_size'.csv'
                 
                 sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 1 \
-												-INLJ_WITH_LEARNED_INDEX 0 \
- 												-INLJ_WITH_CSS_TREE_INDEX 0 \
- 												-INLJ_WITH_ART32_TREE_INDEX 0 \
-												-PREFETCH_INLJ 0 \
-												-RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
+                                                -INLJ_WITH_LEARNED_INDEX 0 \
+                                                -INLJ_WITH_CSS_TREE_INDEX 0 \
+                                                -INLJ_WITH_ART32_TREE_INDEX 0 \
+                                                -PREFETCH_INLJ 0 \
+                                                -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
                                                 -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                                 -RELATION_R_PATH $curr_r_dataset \
                                                 -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
@@ -74,12 +74,12 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
                                                 -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
                                                 -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
-												-BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
-												-RUN_NUMS ${run_nums} \
+                                                -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
+                                                -RUN_NUMS ${run_nums} \
                                                 -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                 -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"' \ 
-												-LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
-												-PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation}
+                                                -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                                -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation}
 
                 sh $(dirname "$0")/eth_configs_maker.sh   -BUCKET_SIZE 1 \
                                                 -PREFETCH_DISTANCE 128 \
@@ -193,9 +193,9 @@ process_non_imv_indexed_nested_loop_join()
                     curr_output_file=$output_folder_path'non_imv_inlj_with_csstree_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_f_'$curr_fanout'.csv'
 
                     sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 0 \
-												-INLJ_WITH_LEARNED_INDEX 0 \
- 												-INLJ_WITH_CSS_TREE_INDEX 1 \
- 												-INLJ_WITH_ART32_TREE_INDEX 0 \
+                                                -INLJ_WITH_LEARNED_INDEX 0 \
+                                                -INLJ_WITH_CSS_TREE_INDEX 1 \
+                                                -INLJ_WITH_ART32_TREE_INDEX 0 \
                                                 -INLJ_CSS_TREE_FANOUT $curr_fanout \
                                                 -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                                 -RELATION_R_PATH $curr_r_dataset \
@@ -210,12 +210,12 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
                                                 -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
                                                 -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
-												-BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
-												-RUN_NUMS ${run_nums} \
+                                                -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
+                                                -RUN_NUMS ${run_nums} \
                                                 -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                 -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"' \ 
-												-LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
-												-PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation}
+                                                -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                                -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation}
 
                     cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
 
