@@ -577,7 +577,7 @@ void * inlj_join_thread(void * param)
 
                 //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 deltaT = std::chrono::duration_cast<std::chrono::microseconds>(end_time - partition_end_time).count();
-                perf_event.printProfile(new std::string(inlj_pfun1[fid].fun_name), NUM_THREADS, (uint32_t)(deltaT * 1.0 / 1000));
+                perf_event.printProfile("RMI probes ", NUM_THREADS, (uint32_t)(deltaT * 1.0 / 1000));
                 //printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
                 curr_probe_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
             }
