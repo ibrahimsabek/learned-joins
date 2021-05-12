@@ -250,8 +250,8 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, in
     }
   
     //random_unique_gen<KeyType, PayloadType>(relation);
-    //random_uniq_unif_gen<KeyType, PayloadType>(relation);
-    random_seq_holes_gen<KeyType, PayloadType>(relation);
+    random_uniq_unif_gen<KeyType, PayloadType>(relation);
+    //random_seq_holes_gen<KeyType, PayloadType>(relation);
 
     return 0;
 }
