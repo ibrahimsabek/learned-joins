@@ -257,6 +257,9 @@ struct PerfEvents {
       return aggr;
    };
 
+   void fillProfileVectors(uint64_t count, vector<uint64_t>* cycles_vec, vector<uint64_t>* llc_misses_vec, vector<uint64_t>* l1_misses_vec, 
+                           vector<uint64_t>* instructions_vec, vector<uint64_t>* branch_misses_vec, vector<uint64_t>* task_clock_vec);
+
    void printProfile(std::string s, uint64_t count, uint32_t runtime_in_ms);
 
    void timeAndProfile(std::string s, uint64_t count, std::function<void()> fn,
@@ -283,6 +286,74 @@ inline size_t getCurrentRSS() {
    }
    fclose(fp);
    return (size_t)rss * (size_t)sysconf(_SC_PAGESIZE);
+}
+
+inline void PerfEvents::fillProfileVectors(uint64_t count, vector<uint64_t>* cycles_vec, vector<uint64_t>* llc_misses_vec, vector<uint64_t>* l1_misses_vec, 
+                           vector<uint64_t>* instructions_vec, vector<uint64_t>* branch_misses_vec, vector<uint64_t>* task_clock_vec) 
+{
+   for (auto& name : ordered_names) {
+      double aggr = 0;
+      for (auto& event : events[name]) 
+         aggr += event.readCounter();
+
+      if(name == "cycles")
+         cycles_vec->push_back((uint64_t)(aggr / count));
+      else if(name == "LLC-misses")
+         llc_misses_vec->push_back((uint64_t)(aggr / count));
+      else if(name == "l1-misses")
+         l1_misses_vec->push_back((uint64_t)(aggr / count));
+      else if(name == "instr.")
+         instructions_vec->push_back((uint64_t)(aggr / count));
+      else if(name == "br. misses")
+         branch_misses_vec->push_back((uint64_t)(aggr / count));
+      else if(name == "task-clock")
+         task_clock_vec->push_back((uint64_t)(aggr / count));
+   }
+
+//TODO: to be done
+/*   
+   std::cout.precision(3);
+   std::cout.setf(std::ios::fixed, std::ios::floatfield);
+   if (writeHeader) {
+      std::cout << setw(20) << "name"
+                << "," << setw(printFieldWidth) << " time (ms)"
+                //<< "," << setw(printFieldWidth) << " CPUs"
+                //<< "," << setw(printFieldWidth) << " IPC"
+                //<< "," << setw(printFieldWidth) << " GHz"
+                //<< "," << setw(printFieldWidth) << " Bandwidth"
+                << ",";
+      printHeader(std::cout);
+      std::cout << std::endl;
+   }
+
+   std::cout << setw(20) << s << "," << setw(printFieldWidth)
+             << (runtime_in_ms) << ",";
+#ifdef __linux__
+   if (!getenv("EXTERNALPROFILE")) {
+      //std::cout << setw(printFieldWidth)
+                //<< ((*this)["task-clock"] / (runtime_in_ms * 1e3 * 1e9)) << ",";
+      //std::cout << setw(printFieldWidth)
+                //<< ((*this)["instr."] / (*this)["cycles"]) << ",";
+      //std::cout << setw(printFieldWidth)
+      //          << ((*this)["cycles"] /
+      //              (this->events["cycles"][0].data.time_enabled -
+      //               this->events["cycles"][0].prev.time_enabled))
+      //          << ",";
+      //std::cout << setw(printFieldWidth)
+      //          << ((((*this)["all_rd"] * 64.0) / (1024 * 1024)) /
+      //              (end - start))
+      //          << ",";
+   }
+#endif
+   // std::cout <<
+   // (((e["all_requests"]*64.0)/(1024*1024))/(e.events["cycles"][0].data.time_enabled/1e9))
+   // << " allMB/s,";
+
+   printAll(std::cout, count);
+   std::cout << std::endl;
+   writeHeader = false;
+*/
+
 }
 
 inline void PerfEvents::printProfile(std::string s, uint64_t count, uint32_t runtime_in_ms) 

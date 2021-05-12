@@ -25,6 +25,8 @@
 #include "profile.h"
 
 #include <chrono>
+#include <bits/stdc++.h>
+
 using namespace chrono;
 
 #ifndef KeyType
@@ -55,6 +57,7 @@ using namespace INLJ_RMI_NAMESPACE;
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
+typedef pair<uint64_t, int> pi;
 
 /*typedef struct StateSIMDForHashINLJ StateSIMDForHashINLJ;
 struct StateSIMDForHashINLJ {
@@ -547,11 +550,23 @@ void * inlj_join_thread(void * param)
     auto partition_end_time = high_resolution_clock::now();
 
     //Probe phase
-    vector<uint32_t> final_probe_timings_in_ms;
-    vector<uint32_t> final_probe_throughputs_mtuples_per_sec;
+    vector<uint64_t> final_probe_timings_in_ms;
+    vector<uint64_t> final_probe_throughputs_mtuples_per_sec;
+    vector<uint64_t> final_probe_cycles_vec;
+    vector<uint64_t> final_probe_llc_misses_vec;
+    vector<uint64_t> final_probe_l1_misses_vec;
+    vector<uint64_t> final_probe_instructions_vec;
+    vector<uint64_t> final_probe_branch_misses_vec;
+    vector<uint64_t> final_probe_task_clock_vec;
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
-        vector<uint32_t> curr_probe_timings_in_ms;
+        priority_queue<pi, vector<pi>, greater<pi> > curr_probe_timings_in_ms;
+        vector<uint64_t> curr_probe_cycles_vec;
+        vector<uint64_t> curr_probe_llc_misses_vec;
+        vector<uint64_t> curr_probe_l1_misses_vec;
+        vector<uint64_t> curr_probe_instructions_vec;
+        vector<uint64_t> curr_probe_branch_misses_vec;
+        vector<uint64_t> curr_probe_task_clock_vec;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             BARRIER_ARRIVE(args->barrier, rv);
@@ -577,20 +592,41 @@ void * inlj_join_thread(void * param)
 
                 //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 deltaT = std::chrono::duration_cast<std::chrono::microseconds>(end_time - partition_end_time).count();
-                perf_event.printProfile("RMI probes ", NUM_THREADS, (uint32_t)(deltaT * 1.0 / 1000));
+                perf_event.fillProfileVectors(NUM_THREADS, &curr_probe_cycles_vec, &curr_probe_llc_misses_vec, &curr_probe_l1_misses_vec,
+                                                           &curr_probe_instructions_vec, &curr_probe_branch_misses_vec, &curr_probe_task_clock_vec);
+                //perf_event.printProfile("RMI probes ", NUM_THREADS, (uint32_t)(deltaT * 1.0 / 1000));
                 //printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
-                curr_probe_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
+                curr_probe_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
             }
         }
         if(args->tid == 0){
-            std::sort(curr_probe_timings_in_ms.begin(), curr_probe_timings_in_ms.end());
-            final_probe_timings_in_ms.push_back(curr_probe_timings_in_ms[(int)(curr_probe_timings_in_ms.size()/2)]);
-            final_probe_throughputs_mtuples_per_sec.push_back((uint32_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * curr_probe_timings_in_ms[(int)(curr_probe_timings_in_ms.size()/2)])));
+            pi top;
+            for(int rp = 0; rp < RUN_NUMS/2; ++rp)
+                top = curr_probe_timings_in_ms.top();
+            //std::sort(curr_probe_timings_in_ms.begin(), curr_probe_timings_in_ms.end());
+            final_probe_timings_in_ms.push_back(top.first);
+            final_probe_throughputs_mtuples_per_sec.push_back(
+                (uint64_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * top.first)));
+            final_probe_cycles_vec.push_back(curr_probe_cycles_vec[top.second]);
+            final_probe_llc_misses_vec.push_back(curr_probe_llc_misses_vec[top.second]);
+            final_probe_l1_misses_vec.push_back(curr_probe_l1_misses_vec[top.second]);
+            final_probe_instructions_vec.push_back(curr_probe_instructions_vec[top.second]);
+            final_probe_branch_misses_vec.push_back(curr_probe_branch_misses_vec[top.second]);
+            final_probe_task_clock_vec.push_back(curr_probe_task_clock_vec[top.second]);
         }
     }
 
     if(args->tid == 0){
-        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results = {{"Join_in_ms", final_probe_timings_in_ms}, {"Throughput_in_mtuples_per_sec", final_probe_throughputs_mtuples_per_sec}};
+        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results = 
+            {{"Join_in_ms", final_probe_timings_in_ms}, 
+             {"Throughput_in_mtuples_per_sec", final_probe_throughputs_mtuples_per_sec},
+             {"Cycles", final_probe_cycles_vec},
+             {"LLC_misses", final_probe_llc_misses_vec},
+             {"L1_misses", final_probe_l1_misses_vec},
+             {"Instructions", final_probe_instructions_vec},
+             {"Branch_misses", final_probe_branch_misses_vec},
+             {"Task_clock", final_probe_task_clock_vec},
+            };
         write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
 
