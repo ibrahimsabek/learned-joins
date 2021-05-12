@@ -617,7 +617,7 @@ void * inlj_join_thread(void * param)
     }
 
     if(args->tid == 0){
-        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results = 
+        std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results = 
             {{"Join_in_ms", final_probe_timings_in_ms}, 
              {"Throughput_in_mtuples_per_sec", final_probe_throughputs_mtuples_per_sec},
              {"Cycles", final_probe_cycles_vec},
