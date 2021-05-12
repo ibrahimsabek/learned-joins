@@ -892,8 +892,8 @@ void * pj_join_thread(void * param)
 #ifdef RUN_LEARNED_TECHNIQUES    
     auto learn_model_t1 = high_resolution_clock::now();   
     auto learn_model_t2 = high_resolution_clock::now();    
-    vector<uint32_t> curr_learn_model_timings_in_ms; 
-    vector<uint32_t> final_learn_model_timings_in_ms;
+    vector<uint64_t> curr_learn_model_timings_in_ms; 
+    vector<uint64_t> final_learn_model_timings_in_ms;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(args->my_tid == 0)
@@ -916,7 +916,7 @@ void * pj_join_thread(void * param)
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(learn_model_t2 - learn_model_t1).count();
             //deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             printf("---- Sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
-            curr_learn_model_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
+            curr_learn_model_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
 
 #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
@@ -990,10 +990,10 @@ void * pj_join_thread(void * param)
     ETHPartition<KeyType, PayloadType, TaskType, ETHRadixJoinThread<KeyType, PayloadType, TaskType>> part;
     auto partition_t1 = high_resolution_clock::now();
     auto partition_t2 = high_resolution_clock::now();
-    vector<uint32_t> final_partition_timings_in_ms;
+    vector<uint64_t> final_partition_timings_in_ms;
     for (int fid = 0; fid < pj_partition_pf_num; ++fid) 
     {
-        vector<uint32_t> curr_partition_timings_in_ms;
+        vector<uint64_t> curr_partition_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             if(args->my_tid == 0){
@@ -1262,7 +1262,7 @@ void * pj_join_thread(void * param)
                 deltaT = std::chrono::duration_cast<std::chrono::microseconds>(partition_t2 - partition_t1).count();
                 //deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
                 printf("---- %5s Partition costs time (ms) = %10.4lf\n", pj_partition_pfun[fid].fun_name, deltaT * 1.0 / 1000);
-                curr_partition_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
+                curr_partition_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             }
 
 
@@ -1300,10 +1300,10 @@ void * pj_join_thread(void * param)
     auto join_t1 = high_resolution_clock::now();
     auto join_t2 = high_resolution_clock::now();
 
-    vector<uint32_t> final_join_timings_in_ms;
+    vector<uint64_t> final_join_timings_in_ms;
     for (int fid = 0; fid < pj_build_pf_num; ++fid) 
     {
-        vector<uint32_t> curr_join_timings_in_ms;
+        vector<uint64_t> curr_join_timings_in_ms;
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
             BARRIER_ARRIVE(args->barrier, rv);
@@ -1337,7 +1337,7 @@ void * pj_join_thread(void * param)
                 //deltaT = (args->end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->end_time.tv_usec - args->partition_end_time.tv_usec;
                 deltaT = std::chrono::duration_cast<std::chrono::microseconds>(join_t2 - join_t1).count();
                 printf("---- %5s Join costs time (ms) = %10.4lf\n", pj_probe_pfun[fid].fun_name, deltaT * 1.0 / 1000);
-                curr_join_timings_in_ms.push_back((uint32_t)(deltaT * 1.0 / 1000)); //ms
+                curr_join_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             }
         }
 
@@ -1350,12 +1350,12 @@ void * pj_join_thread(void * param)
 
     if(my_tid == 0){
 #ifdef RUN_LEARNED_TECHNIQUES    
-        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+        std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results =
          {{"Learn_model_in_ms", final_learn_model_timings_in_ms},
           {"Partition_in_ms", final_partition_timings_in_ms},
           {"Join_in_ms", final_join_timings_in_ms}};
 #else
-        std::vector<std::pair<std::string, std::vector<uint32_t>>> final_results =
+        std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results =
          {{"Partition_in_ms", final_partition_timings_in_ms},
           {"Join_in_ms", final_join_timings_in_ms}};
 #endif

@@ -9,7 +9,7 @@
 #include <stdexcept> // std::runtime_error
 #include <sstream> // std::stringstream
 
-void write_csv(std::string filename, std::vector<std::pair<std::string, std::vector<uint32_t>>> dataset){
+void write_csv(std::string filename, std::vector<std::pair<std::string, std::vector<uint64_t>>> dataset){
     // Make a CSV file with one or more columns of integer values
     // Each column of data is represented by the pair <column name, column data>
     //   as std::pair<std::string, std::vector<int>>
@@ -42,12 +42,12 @@ void write_csv(std::string filename, std::vector<std::pair<std::string, std::vec
     myFile.close();
 }
 
-std::vector<std::pair<std::string, std::vector<uint32_t>>> read_csv(std::string filename){
+std::vector<std::pair<std::string, std::vector<uint64_t>>> read_csv(std::string filename){
     // Reads a CSV file into a vector of <string, vector<int>> pairs where
     // each pair represents <column name, column values>
 
     // Create a vector of <string, int vector> pairs to store the result
-    std::vector<std::pair<std::string, std::vector<uint32_t>>> result;
+    std::vector<std::pair<std::string, std::vector<uint64_t>>> result;
 
     // Create an input filestream
     std::ifstream myFile(filename);
@@ -72,7 +72,7 @@ std::vector<std::pair<std::string, std::vector<uint32_t>>> read_csv(std::string 
         while(std::getline(ss, colname, ',')){
             
             // Initialize and add <colname, int vector> pairs to result
-            result.push_back({colname, std::vector<uint32_t> {}});
+            result.push_back({colname, std::vector<uint64_t> {}});
         }
     }
 
