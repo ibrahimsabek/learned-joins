@@ -15,6 +15,8 @@
 #include "utils/barrier.h"
 #include "utils/cpu_mapping.h"
 
+#include <set>
+
 #define ZERO_PAYLOAD
 
 using namespace std;
@@ -117,6 +119,105 @@ void knuth_shuffle(Relation<KeyType, PayloadType> * relation)
 
 //based on the ETH implementation 
 template<class KeyType, class PayloadType>
+void random_seq_holes_gen(Relation<KeyType, PayloadType> * rel) 
+{
+    uint64_t i;
+    double hole_frac=0.1;
+
+    set<uint32_t> set_uniq;
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_real_distribution<> distribution(0.0, 1.0);
+
+    //cout<<"set started: "<<endl;
+
+    for(uint64_t itr=0;itr<(hole_frac+1.0)*rel->num_tuples;itr++)
+    {
+      set_uniq.insert(itr);
+    }
+
+    //cout<<"set created: "<<endl;
+
+    uint64_t count=set_uniq.size();
+
+    while(count>rel->num_tuples)
+    {
+      uint32_t temp_val=distribution(generator)*(hole_frac+1.0)*rel->num_tuples;
+      if(set_uniq.find(temp_val)!=set_uniq.end())
+      {
+        set_uniq.erase(temp_val);
+        count--;
+      }
+    }
+    //cout<<"set extracted: "<<endl;
+
+    std::set<uint32_t>::iterator it=set_uniq.begin();
+
+    for (i = 0; i < rel->num_tuples; i++) {
+        rel->tuples[i].key = (KeyType)(*it+1);
+
+#ifdef ZERO_PAYLOAD
+        rel->tuples[i].payload = (PayloadType) 0; 
+#else
+        rel->tuples[i].payload = (PayloadType)(*it+1);
+#endif
+        it++;
+    }
+
+    /* randomly shuffle elements */
+    knuth_shuffle<KeyType, PayloadType>(rel);
+}
+
+//based on the ETH implementation 
+template<class KeyType, class PayloadType>
+void random_uniq_unif_gen(Relation<KeyType, PayloadType> * rel) 
+{
+    uint64_t i;
+
+    set<uint32_t> set_uniq;
+    random_device rd;
+    mt19937 generator(rd());
+    uniform_real_distribution<> distribution(0.0, 1.0);
+
+    uint64_t count=0;
+
+    //cout<<"unif started"<<endl;
+
+    while(count<rel->num_tuples)
+    {
+      uint32_t temp_val=distribution(generator)*UINT32_MAX;
+      if(set_uniq.find(temp_val)==set_uniq.end())
+      {
+        set_uniq.insert(temp_val);
+        count++;
+      }
+    }
+
+    //cout<<"unif generation done"<<endl;
+
+    std::set<uint32_t>::iterator it=set_uniq.begin();
+
+    for (i = 0; i < rel->num_tuples; i++) {
+        rel->tuples[i].key = (KeyType)(*it+1);
+
+#ifdef ZERO_PAYLOAD
+        rel->tuples[i].payload = (PayloadType) 0; 
+#else
+        rel->tuples[i].payload = (PayloadType)(*it+1);
+#endif
+
+        it++;
+    }
+
+    //cout<<"unif copying done"<<endl;
+
+    /* randomly shuffle elements */
+    knuth_shuffle<KeyType, PayloadType>(rel);
+}
+
+
+//based on the ETH implementation 
+template<class KeyType, class PayloadType>
 void random_unique_gen(Relation<KeyType, PayloadType> * rel) 
 {
     uint64_t i;
@@ -149,6 +250,8 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, in
     }
   
     random_unique_gen<KeyType, PayloadType>(relation);
+    //random_uniq_unif_gen<KeyType, PayloadType>(relation);
+    //random_seq_holes_gen<KeyType, PayloadType>(relation);
 
     return 0;
 }
