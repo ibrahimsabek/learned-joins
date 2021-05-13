@@ -290,9 +290,9 @@ process_non_imv_indexed_nested_loop_join()
     fi
 }
 
-run_nums=1
-load_relations_for_evaluation=0
-persist_relations_for_evaluation=1
+run_nums=10
+load_relations_for_evaluation=1
+persist_relations_for_evaluation=0
 
 #unique datasets
 ################
