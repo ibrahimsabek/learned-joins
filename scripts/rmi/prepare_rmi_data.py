@@ -109,8 +109,8 @@ def prepare_binary_format(input_file_path, key_type_str, payload_type_str, shoul
 #prepare_binary_format("/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000_key_uint32")
 
 
-prepare_binary_format("/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32")
-prepare_binary_format("/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32")
+#prepare_binary_format("/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32")
+#prepare_binary_format("/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32")
 
 prepare_binary_format("/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v2_uint32_uint32_32000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v2_uint32_uint32_32000000_key_uint32")
 prepare_binary_format("/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v2_uint32_uint32_32000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v2_uint32_uint32_32000000_key_uint32")
@@ -125,8 +125,8 @@ prepare_binary_format("/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v8_uint3
 prepare_binary_format("/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v8_uint32_uint32_1664000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v8_uint32_uint32_1664000000_key_uint32")
 
 
-prepare_binary_format("/spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000_key_uint32")
-prepare_binary_format("/spinning/sabek/learned_join_datasets/s_UNIFORM_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v1_uint32_uint32_16000000_key_uint32")
+#prepare_binary_format("/spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000_key_uint32")
+#prepare_binary_format("/spinning/sabek/learned_join_datasets/s_UNIFORM_v1_uint32_uint32_16000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v1_uint32_uint32_16000000_key_uint32")
 
 prepare_binary_format("/spinning/sabek/learned_join_datasets/r_UNIFORM_v2_uint32_uint32_32000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v2_uint32_uint32_32000000_key_uint32")
 prepare_binary_format("/spinning/sabek/learned_join_datasets/s_UNIFORM_v2_uint32_uint32_32000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v2_uint32_uint32_32000000_key_uint32")

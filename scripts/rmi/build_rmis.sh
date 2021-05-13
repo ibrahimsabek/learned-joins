@@ -68,8 +68,8 @@ cd $(dirname "$0")/../../RMI && cargo build --release && cd ../build/release
 #optimize_rmis r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
 #build_rmi_set r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000 /spinning/sabek/learned_join_datasets/r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
-optimize_rmis r_SEQ_HOLE_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
-build_rmi_set r_SEQ_HOLE_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+#optimize_rmis r_SEQ_HOLE_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
+#build_rmi_set r_SEQ_HOLE_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 optimize_rmis r_SEQ_HOLE_v2_uint32_uint32_32000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v2_uint32_uint32_32000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
 build_rmi_set r_SEQ_HOLE_v2_uint32_uint32_32000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v2_uint32_uint32_32000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
@@ -84,8 +84,8 @@ optimize_rmis r_SEQ_HOLE_v8_uint32_uint32_1664000000 /spinning/sabek/learned_joi
 build_rmi_set r_SEQ_HOLE_v8_uint32_uint32_1664000000 /spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v8_uint32_uint32_1664000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 
-optimize_rmis r_UNIFORM_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
-build_rmi_set r_UNIFORM_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+#optimize_rmis r_UNIFORM_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
+#build_rmi_set r_UNIFORM_v1_uint32_uint32_16000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 optimize_rmis r_UNIFORM_v2_uint32_uint32_32000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v2_uint32_uint32_32000000_key_uint32 $(dirname "$0")/../../include/rmi_specs 32
 build_rmi_set r_UNIFORM_v2_uint32_uint32_32000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v2_uint32_uint32_32000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
