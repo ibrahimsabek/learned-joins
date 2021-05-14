@@ -50,9 +50,13 @@ public:
 		}
 		numNode=(int)((pow((double)fanout,(double)level)-1)/(fanout-1));
 		numKey=numNode*blockSize;
-		ntree=new KeyType[numKey];
-		vStart=new int[level];
-		vG=new int[level];
+		//ntree=new KeyType[numKey];
+        ntree= (KeyType *) malloc(sizeof(KeyType) * numKey);
+		//vStart=new int[level];
+        vStart= (int *) malloc(sizeof(int) * level);        
+		//vG=new int[level];
+        vG= (int *) malloc(sizeof(int) * level);
+
 //#ifdef DEBUG
 //		cout<<numLeaf<<","<<level<<", "<<numNode<<endl;
 //#endif
