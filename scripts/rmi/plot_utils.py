@@ -119,8 +119,50 @@ plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v5_uint32_ui
 plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000_hist.png")
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000_hist.png")    
 
+#UNIQUE
+############
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v1_uint32_uint32_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIQUE_v1_uint32_uint32_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v2_uint32_uint32_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIQUE_v2_uint32_uint32_32000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v3_uint32_uint32_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIQUE_v3_uint32_uint32_128000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v5_uint32_uint32_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIQUE_v5_uint32_uint32_640000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIQUE_v8_uint32_uint32_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIQUE_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIQUE_v9_uint32_uint32_1920000000_hist.png")    
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v1_uint32_uint32_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIQUE_v1_uint32_uint32_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v2_uint32_uint32_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIQUE_v2_uint32_uint32_32000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v3_uint32_uint32_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIQUE_v3_uint32_uint32_128000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v5_uint32_uint32_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIQUE_v5_uint32_uint32_640000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIQUE_v8_uint32_uint32_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIQUE_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIQUE_v9_uint32_uint32_1920000000_hist.png")    
 
+#SEQ_HOLE
+############
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v1_uint32_uint32_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_SEQ_HOLE_v1_uint32_uint32_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v2_uint32_uint32_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_SEQ_HOLE_v2_uint32_uint32_32000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v3_uint32_uint32_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_SEQ_HOLE_v3_uint32_uint32_128000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v5_uint32_uint32_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_SEQ_HOLE_v5_uint32_uint32_640000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_SEQ_HOLE_v8_uint32_uint32_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_SEQ_HOLE_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_SEQ_HOLE_v9_uint32_uint32_1920000000_hist.png")    
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v1_uint32_uint32_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_SEQ_HOLE_v1_uint32_uint32_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v2_uint32_uint32_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_SEQ_HOLE_v2_uint32_uint32_32000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v3_uint32_uint32_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_SEQ_HOLE_v3_uint32_uint32_128000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v5_uint32_uint32_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_SEQ_HOLE_v5_uint32_uint32_640000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_SEQ_HOLE_v8_uint32_uint32_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_SEQ_HOLE_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_SEQ_HOLE_v9_uint32_uint32_1920000000_hist.png")    
 
+#UNIFORM
+############
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v1_uint32_uint32_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIFORM_v1_uint32_uint32_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v2_uint32_uint32_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIFORM_v2_uint32_uint32_32000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v3_uint32_uint32_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIFORM_v3_uint32_uint32_128000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v5_uint32_uint32_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIFORM_v5_uint32_uint32_640000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIFORM_v8_uint32_uint32_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_UNIFORM_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_UNIFORM_v9_uint32_uint32_1920000000_hist.png")    
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v1_uint32_uint32_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v1_uint32_uint32_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v2_uint32_uint32_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v2_uint32_uint32_32000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v3_uint32_uint32_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v3_uint32_uint32_128000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v5_uint32_uint32_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v5_uint32_uint32_640000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v8_uint32_uint32_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v9_uint32_uint32_1920000000_hist.png")    
 
 
 
