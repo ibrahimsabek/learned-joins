@@ -38,8 +38,8 @@ mkdir -p $(dirname "$0")/../../include/rmi_specs
 mkdir -p $(dirname "$0")/../../include/rmi
 
 #rm -r $(dirname "$0")/../../include/rmi/*
-rm -r /spinning/sabek/include/rmi_data/*
-rm -r $(dirname "$0")/../../include/rmi_specs/*
+#rm -r /spinning/sabek/include/rmi_data/*
+#rm -r $(dirname "$0")/../../include/rmi_specs/*
 
 cd $(dirname "$0")/../../RMI && cargo build --release && cd ../build/release
 
