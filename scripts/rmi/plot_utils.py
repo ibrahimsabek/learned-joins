@@ -104,13 +104,28 @@ def plt_histogram(is_cdf_plot, input_file_path, key_type_str, is_rmi_keys_only, 
 
     print(" Finished the plotting process")
 
-#plt_histogram(1, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000_cdf.png")
+#LOGNORMAL
+############
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000_hist.png")
-#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_uint32_uint32_segma_1_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v2_uint32_uint32_segma_1_32000000_hist.png")
-#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v3_uint32_uint32_segma_1_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v3_uint32_uint32_segma_1_128000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v2_uint32_uint32_segma_1_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v2_uint32_uint32_segma_1_32000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v3_uint32_uint32_segma_1_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v3_uint32_uint32_segma_1_128000000_hist.png")
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000_hist.png")
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000_hist.png")
-plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000_hist.png")    
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000_hist.png")    
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v1_uint32_uint32_segma_1_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v1_uint32_uint32_segma_1_16000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v2_uint32_uint32_segma_1_32000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v2_uint32_uint32_segma_1_32000000_hist.png")
+plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v3_uint32_uint32_segma_1_128000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v3_uint32_uint32_segma_1_128000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000_hist.png")
+#plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000_hist.png")    
+
+
+
+
+
+
+
+
 
 #plt_histogram(0, "../learned_join_data/r_LOGNORMAL_v1_int_int_1000000_key_uint32", 'uint32', 1, "../learned_join_plots/", "r_LOGNORMAL_v1_int_int_1000000_key_uint32_hist.png")
 #plt_histogram(0, "../learned_join_data/r_LOGNORMAL_v1_int_int_1000000.txt", 'uint32', 0, "../learned_join_plots/", "r_LOGNORMAL_v1_int_int_1000000_hist.png")
@@ -119,6 +134,7 @@ plt_histogram(0, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v9_uint32_ui
 #plt_histogram(0, "../learned_join_data/r_LOGNORMAL_v2_int_int_100000000_key_uint32", 'uint32', 1, "../learned_join_plots/", "r_LOGNORMAL_v2_int_int_100000000_key_uint32_hist.png")
 #plt_histogram(0, "../learned_join_data/r_LOGNORMAL_v2_int_int_100000000.txt", 'uint32', 0, "../learned_join_plots/", "r_LOGNORMAL_v2_int_int_100000000_hist.png")
 #plt_histogram(0, "../learned_join_data/s_LOGNORMAL_v2_int_int_100000000.txt", 'uint32', 0, "../learned_join_plots/", "s_LOGNORMAL_v2_int_int_100000000_hist.png")
+#plt_histogram(1, "/spinning/sabek/learned_join_datasets/r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000_cdf.png")
 #plt_histogram(1, "../learned_join_data/r_LOGNORMAL_v2_int_int_100000000_key_uint32", 'uint32', 1, "../learned_join_plots/", "r_LOGNORMAL_v2_int_int_100000000_key_uint32_cdf.png")
 #plt_histogram(1, "../learned_join_data/r_LOGNORMAL_v2_int_int_100000000.txt", 'uint32', 0, "../learned_join_plots/", "r_LOGNORMAL_v2_int_int_100000000_cdf.png")
 #plt_histogram(1, "../learned_join_data/s_LOGNORMAL_v2_int_int_100000000.txt", 'uint32', 0, "../learned_join_plots/", "s_LOGNORMAL_v2_int_int_100000000_cdf.png")
