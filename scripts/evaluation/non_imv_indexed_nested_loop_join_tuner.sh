@@ -8,7 +8,7 @@ process_non_imv_indexed_nested_loop_join()
 
     dataset_folder_path=/spinning/sabek/learned_join_datasets/
 
-    r_datasets=$1
+    local -n r_datasets=$1
     r_datasets_sizes=$2
     r_datasets_file_num_partitions=$3
     r_datasets_file_extension='"'.txt'"'
