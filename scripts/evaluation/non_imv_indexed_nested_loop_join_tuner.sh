@@ -35,12 +35,6 @@ process_non_imv_indexed_nested_loop_join()
     if [ ${run_inlj_with_hash_index} == 1 ]
     then
         echo "Running INLJ with hash index ..."
-        echo "${#r_datasets[@]}"
-        echo "${!r_datasets[@]}"
-        for ds in ${!r_datasets[@]}
-        do
-            echo "${r_datasets[$ds]}"
-        done
         
         for ds in ${!r_datasets[@]}
         do
