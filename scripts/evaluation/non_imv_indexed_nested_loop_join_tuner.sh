@@ -35,7 +35,13 @@ process_non_imv_indexed_nested_loop_join()
     if [ ${run_inlj_with_hash_index} == 1 ]
     then
         echo "Running INLJ with hash index ..."
-
+        echo "${#r_datasets[@]}"
+        echo "${!r_datasets[@]}"
+        for ds in ${!r_datasets[@]}
+        do
+            echo "${r_datasets[$ds]}"
+        done
+        
         for ds in ${!r_datasets[@]}
         do
             curr_r_dataset='"'$dataset_folder_path${r_datasets[$ds]}.txt'"'
@@ -307,12 +313,12 @@ input_hash_table_size=(16777216 16777216 16777216) #(16777216(for_16E6) 33554432
 
 output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
-process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_unique/
-process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_unique/
-process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
+#process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_unique/
+#process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_unique/
+#process_non_imv_indexed_nested_loop_join $r_unique_datasets $r_unique_datasets_sizes $r_unique_datasets_file_num_partitions $s_unique_datasets $s_unique_datasets_sizes $s_unique_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
 r_unique_datasets=(r_UNIQUE_v2_uint32_uint32_32000000) #(r_UNIQUE_v1_uint32_uint32_16000000 r_UNIQUE_v2_uint32_uint32_32000000 r_UNIQUE_v3_uint32_uint32_128000000 r_UNIQUE_v4_uint32_uint32_384000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v6_uint32_uint32_896000000 r_UNIQUE_v7_uint32_uint32_1152000000 r_UNIQUE_v8_uint32_uint32_1664000000 r_UNIQUE_v9_uint32_uint32_1920000000)
 s_unique_datasets=(s_UNIQUE_v2_uint32_uint32_32000000) #(s_UNIQUE_v1_uint32_uint32_16000000 s_UNIQUE_v2_uint32_uint32_32000000 s_UNIQUE_v3_uint32_uint32_128000000 s_UNIQUE_v4_uint32_uint32_384000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v6_uint32_uint32_896000000 s_UNIQUE_v7_uint32_uint32_1152000000 s_UNIQUE_v8_uint32_uint32_1664000000 s_UNIQUE_v9_uint32_uint32_1920000000)
