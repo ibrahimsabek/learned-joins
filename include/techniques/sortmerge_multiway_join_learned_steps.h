@@ -95,7 +95,8 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
 #ifdef USE_LEARNED_SORT_AVX
         learned_sort::sort_avx(inputR, inputR + args->numR);
 #else
-        learned_sort::sort(inputR, inputR + args->numR, my_tid, 0);
+        //learned_sort::sort(inputR, inputR + args->numR, my_tid, 0);
+        std::sort(inputR, inputR + args->numR);
 #endif
         inptrR = (Tuple<KeyType, PayloadType> *)(outputR);
         outptrR = (Tuple<KeyType, PayloadType> *)(inputR);
@@ -127,7 +128,8 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
 #ifdef USE_LEARNED_SORT_AVX
         learned_sort::sort_avx(inputS, inputS + args->numS);
 #else
-        learned_sort::sort(inputS, inputS + args->numS, my_tid, 0);
+        //learned_sort::sort(inputS, inputS + args->numS, my_tid, 0);
+        std::sort(inputS, inputS + args->numS);
 #endif
         inptrS = (Tuple<KeyType, PayloadType> *)(outputS);
         outptrS = (Tuple<KeyType, PayloadType> *)(inputS);

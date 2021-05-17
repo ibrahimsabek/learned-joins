@@ -94,6 +94,7 @@ process_learned_sort_merge_join()
                                                 sh $(dirname "$0")/base_configs_maker.sh -USE_LEARNED_SORT 1 \
                                                                                         -USE_LEARNED_SORT_FOR_SORT_MERGE 1 \
                                                                                         -USE_AVXSORT_AS_STD_SORT 1 \
+                                                                                        -USE_LEARNED_SORT_AVX 1 \
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_INPUT_FOR_MINOR_BCKTS 1 \
                                                                                         -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                                                                         -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 0 \
@@ -148,7 +149,119 @@ process_learned_sort_merge_join()
             done
         done
 
-    fi    
+    fi   
+
+    if [ ${run_mpsm} == 1 ]
+    then
+        echo "Running SJ with mpsm ..."
+        
+        for ds in ${!r_datasets[@]}
+        do
+            curr_r_dataset='"'$dataset_folder_path${r_datasets[$ds]}.txt'"'
+            curr_r_dataset_size=${r_datasets_sizes[$ds]}
+            curr_r_dataset_file_num_partitions=${r_datasets_file_num_partitions[$ds]}
+            curr_s_dataset='"'$dataset_folder_path${s_datasets[$ds]}.txt'"'
+            curr_s_dataset_size=${s_datasets_sizes[$ds]}
+            curr_s_dataset_file_num_partitions=${s_datasets_file_num_partitions[$ds]}
+
+            echo 'Joining '$curr_r_dataset' '$curr_r_dataset_size' '$curr_s_dataset' '$curr_s_dataset_size'... \n'
+            
+            for th in ${!threads[@]}
+            do
+                curr_threads=${threads[$th]}
+
+                for avxmb in ${!use_avxsort_for_sorting_minor_bckts[@]}
+                do
+                    curr_use_avxsort_for_sorting_minor_bckts=${use_avxsort_for_sorting_minor_bckts[$avxmb]}
+                    for lsdt in ${!ls_default_threshold[@]}
+                    do
+                        curr_ls_default_threshold=${ls_default_threshold[$lsdt]}
+
+                        for lsda in ${!ls_default_arch[@]}
+                        do
+                            curr_ls_default_arch=${ls_default_arch[$lsda]}
+
+                            for lsimv in ${!ls_imv_avx[@]}
+                            do
+                                curr_ls_imv_avx=${ls_imv_avx[$lsimv]}
+
+                                for lsps in ${!ls_prefetch_minor_bckt_sizes_off[@]}
+                                do
+                                    curr_ls_prefetch_minor_bckt_sizes_off=${ls_prefetch_minor_bckt_sizes_off[$lsps]}
+
+                                    for lspsi in ${!ls_prefetch_slopes_intercepts_minor_bckts[@]}
+                                    do
+                                        curr_ls_prefetch_slopes_intercepts_minor_bckts=${ls_prefetch_slopes_intercepts_minor_bckts[$lspsi]}
+
+                                        for lsss in ${!ls_simdstate[@]}
+                                        do
+                                            curr_ls_simdstate=${ls_simdstate[$lsss]}
+                                            for lspdis in ${!ls_pdis[@]}
+                                            do
+                                                curr_ls_pdis=${ls_pdis[$lspdis]}
+
+                                                curr_output_file=$output_folder_path'sj_with_mpsm_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_avxmb_'$curr_use_avxsort_for_sorting_minor_bckts'_lsdt_'$curr_ls_default_threshold'_lsda_'$curr_ls_default_arch'_lsimv_'$curr_ls_imv_avx'_lsps_'$curr_ls_prefetch_minor_bckt_sizes_off'_lspsi_'$curr_ls_prefetch_slopes_intercepts_minor_bckts'_lsss_'$curr_ls_simdstate'_lspdis_'$curr_ls_pdis'.csv'
+
+                                                sh $(dirname "$0")/base_configs_maker.sh -USE_LEARNED_SORT 1 \
+                                                                                        -USE_LEARNED_SORT_FOR_SORT_MERGE 1 \
+                                                                                        -USE_LEARNED_SORT_AVX 0 \
+                                                                                        -USE_AVXSORT_AS_STD_SORT 1 \
+                                                                                        -LS_FOR_SORT_MERGE_PREFETCH_INPUT_FOR_MINOR_BCKTS 1 \
+                                                                                        -NUM_THREADS_FOR_EVALUATION $curr_threads \
+                                                                                        -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 0 \
+                                                                                        -BUILD_RMI_FROM_TWO_DATASETS 1 \
+                                                                                        -RELATION_R_PATH $curr_r_dataset \
+                                                                                        -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
+                                                                                        -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
+                                                                                        -RELATION_R_FILE_EXTENSION ${r_datasets_file_extension} \
+                                                                                        -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
+                                                                                        -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
+                                                                                        -RELATION_S_PATH $curr_s_dataset \
+                                                                                        -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
+                                                                                        -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
+                                                                                        -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
+                                                                                        -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
+                                                                                        -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
+                                                                                        -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
+                                                                                        -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                                                                        -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
+                                                                                        -USE_AVXSORT_FOR_SORTING_MINOR_BCKTS $curr_use_avxsort_for_sorting_minor_bckts \
+                                                                                        -LS_FOR_SORT_MERGE_DEFAULT_THRESHOLD $curr_ls_default_threshold \
+                                                                                        -LS_FOR_SORT_MERGE_DEFAULT_FANOUT $curr_ls_default_threshold \
+                                                                                        -LS_FOR_SORT_MERGE_DEFAULT_ARCH_SECOND_LEVEL $curr_ls_default_arch \
+                                                                                        -LS_FOR_SORT_MERGE_IMV_AVX $curr_ls_imv_avx \
+                                                                                        -LS_FOR_SORT_MERGE_IMV_AVX_MINOR_BCKTS $curr_ls_imv_avx \
+                                                                                        -LS_FOR_SORT_MERGE_PREFETCH_MINOR_BCKT_SIZES_OFF $curr_ls_prefetch_minor_bckt_sizes_off \
+                                                                                        -LS_FOR_SORT_MERGE_PREFETCH_SLOPES_AND_INTERCEPTS_MINOR_BCKTS $curr_ls_prefetch_slopes_intercepts_minor_bckts \
+                                                                                        -LS_FOR_SORT_MERGE_SIMDStateSize $curr_ls_simdstate \
+                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis \
+                                                                                        -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
+                                                                                        -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
+
+
+                                                    cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
+
+                                                    cd $(dirname "$0")/../../build/release
+
+                                                    make > /dev/null
+
+                                                    ./learned_imv_sort_join_runner
+
+                                                    cd ../../scripts/evaluation/
+                                            done 
+                                        done
+                                    done
+                                done
+                    
+                            done
+                        done    
+                    done
+                done   
+            done
+        done
+
+    fi   
+
 }
 
 run_nums=10
@@ -206,10 +319,10 @@ s_datasets_sizes=(16E6 32E6 128E6 640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 115
 r_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_lognormal/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_lognormal/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_lognormal/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_lognormal/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 
 #seq_hole datasets
 ################
@@ -234,10 +347,10 @@ s_datasets_sizes=(16E6 32E6 128E6 640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 115
 r_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_seq_hole/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_seq_hole/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_seq_hole/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_seq_hole/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 
 
 #uniform datasets
@@ -263,7 +376,7 @@ s_datasets_sizes=(16E6 32E6 128E6 640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 115
 r_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_uniform/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_uniform/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_uniform/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_uniform/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
