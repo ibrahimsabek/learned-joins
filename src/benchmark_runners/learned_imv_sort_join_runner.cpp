@@ -1200,7 +1200,8 @@ void * learned_imv_sort_join_thread(void * param)
             //gettimeofday(&args->mergejoin_end_time, NULL);
             join_t2 = high_resolution_clock::now();
             perf_event.readAll();
-            deltaT = (args->mergejoin_end_time.tv_sec - args->tmp_mergejoin_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->tmp_mergejoin_end_time.tv_usec;
+            //deltaT = (args->mergejoin_end_time.tv_sec - args->tmp_mergejoin_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->tmp_mergejoin_end_time.tv_usec;
+            deltaT = std::chrono::duration_cast<std::chrono::microseconds>(join_t2 - join_t1).count();
             perf_event.fillProfileVectors(NUM_THREADS, &curr_join_cycles_vec, &curr_join_llc_misses_vec, &curr_join_l1_misses_vec,
                                                         &curr_join_instructions_vec, &curr_join_branch_misses_vec, &curr_join_task_clock_vec);
             //printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
