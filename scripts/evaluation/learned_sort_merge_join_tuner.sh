@@ -94,7 +94,6 @@ process_learned_sort_merge_join()
                                                 sh $(dirname "$0")/base_configs_maker.sh -USE_LEARNED_SORT 1 \
                                                                                         -USE_LEARNED_SORT_FOR_SORT_MERGE 1 \
                                                                                         -USE_AVXSORT_AS_STD_SORT 1 \
-                                                                                        -USE_LEARNED_SORT_AVX 1 \
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_INPUT_FOR_MINOR_BCKTS 1 \
                                                                                         -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                                                                         -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 0 \
