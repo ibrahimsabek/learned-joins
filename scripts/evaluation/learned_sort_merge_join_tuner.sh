@@ -151,7 +151,7 @@ process_learned_sort_merge_join()
     fi    
 }
 
-run_nums=1
+run_nums=10
 load_relations_for_evaluation=1
 persist_relations_for_evaluation=0
 
