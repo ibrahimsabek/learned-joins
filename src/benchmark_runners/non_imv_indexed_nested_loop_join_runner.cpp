@@ -560,7 +560,7 @@ void * inlj_join_thread(void * param)
     vector<uint64_t> final_probe_task_clock_vec;
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
-        priority_queue<pi, vector<pi>, greater<pi> > curr_probe_timings_in_ms;
+        priority_queue<pi, vector<pi>, greater<pi>> curr_probe_timings_in_ms;
         vector<uint64_t> curr_probe_cycles_vec;
         vector<uint64_t> curr_probe_llc_misses_vec;
         vector<uint64_t> curr_probe_l1_misses_vec;

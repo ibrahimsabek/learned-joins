@@ -26,6 +26,7 @@
 #include "utils/numa_shuffle.h"
 #include "utils/learned_sort_for_sort_merge.h"
 #include "utils/csv.h"
+#include "profile.h"
 
 
 #include "techniques/sortmerge_multiway_join_learned_steps.h"
@@ -46,6 +47,7 @@ using namespace chrono;
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
+typedef pair<uint64_t, int> pi;
 
 
 LearnedSortMergeMultiwayJoinSteps<KeyType, PayloadType, 
@@ -111,6 +113,8 @@ taskqueue_t ** ptrs_to_taskqueues;
 pthread_mutex_t* ptrs_to_taskqueues_locks;
 int* ptrs_to_is_numa_taskqueues_created;
 #endif
+
+PerfEvents perf_event;
 
 
 
@@ -871,8 +875,22 @@ void * learned_imv_sort_join_thread(void * param)
     *   Phase.0) Sampling and training RMI models.
     *
     *************************************************************************/
-    vector<uint64_t> curr_learned_model_timings_in_ms;
+   
+    priority_queue<pi, vector<pi>, greater<pi>> curr_learned_model_timings_in_ms;
+    vector<uint64_t> curr_learned_model_cycles_vec;
+    vector<uint64_t> curr_learned_model_llc_misses_vec;
+    vector<uint64_t> curr_learned_model_l1_misses_vec;
+    vector<uint64_t> curr_learned_model_instructions_vec;
+    vector<uint64_t> curr_learned_model_branch_misses_vec;
+    vector<uint64_t> curr_learned_model_task_clock_vec;
     vector<uint64_t> final_learned_model_timings_in_ms;
+    vector<uint64_t> final_learned_model_throughputs_mtuples_per_sec;
+    vector<uint64_t> final_learned_model_cycles_vec;
+    vector<uint64_t> final_learned_model_llc_misses_vec;
+    vector<uint64_t> final_learned_model_l1_misses_vec;
+    vector<uint64_t> final_learned_model_instructions_vec;
+    vector<uint64_t> final_learned_model_branch_misses_vec;
+    vector<uint64_t> final_learned_model_task_clock_vec;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         if(my_tid == 0){
@@ -890,6 +908,7 @@ void * learned_imv_sort_join_thread(void * param)
         BARRIER_ARRIVE(args->barrier, rv);
 
         if(my_tid == 0){
+            perf_event.startAll();
             //gettimeofday(&t1, NULL);
             learned_model_t1 = high_resolution_clock::now();
         }
@@ -901,10 +920,14 @@ void * learned_imv_sort_join_thread(void * param)
         if(my_tid == 0){
             //gettimeofday(&t2, NULL);
             learned_model_t2 = high_resolution_clock::now();
+            perf_event.readAll();
             //deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(learned_model_t2 - learned_model_t1).count();
-            curr_learned_model_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
-            printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+            perf_event.fillProfileVectors(NUM_THREADS, &curr_learned_model_cycles_vec, &curr_learned_model_llc_misses_vec, &curr_learned_model_l1_misses_vec,
+                                                           &curr_learned_model_instructions_vec, &curr_learned_model_branch_misses_vec, &curr_learned_model_task_clock_vec);
+            //curr_learned_model_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            curr_learned_model_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
+            //printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
     #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
@@ -932,10 +955,10 @@ void * learned_imv_sort_join_thread(void * param)
         }        
     }
 
-    if(my_tid == 0){
-        std::sort(curr_learned_model_timings_in_ms.begin(), curr_learned_model_timings_in_ms.end());
-        final_learned_model_timings_in_ms.push_back(curr_learned_model_timings_in_ms[(int)(curr_learned_model_timings_in_ms.size()/2)]);
-    }
+    //if(my_tid == 0){
+    //    std::sort(curr_learned_model_timings_in_ms.begin(), curr_learned_model_timings_in_ms.end());
+    //    final_learned_model_timings_in_ms.push_back(curr_learned_model_timings_in_ms[(int)(curr_learned_model_timings_in_ms.size()/2)]);
+    //}
 
     /*************************************************************************
     *
@@ -944,8 +967,21 @@ void * learned_imv_sort_join_thread(void * param)
     *************************************************************************/
     auto partition_t1 = high_resolution_clock::now();
     auto partition_t2 = high_resolution_clock::now();
-    vector<uint64_t> curr_partition_timings_in_ms;
+    priority_queue<pi, vector<pi>, greater<pi>> curr_partition_timings_in_ms;
+    vector<uint64_t> curr_partition_cycles_vec;
+    vector<uint64_t> curr_partition_llc_misses_vec;
+    vector<uint64_t> curr_partition_l1_misses_vec;
+    vector<uint64_t> curr_partition_instructions_vec;
+    vector<uint64_t> curr_partition_branch_misses_vec;
+    vector<uint64_t> curr_partition_task_clock_vec;
     vector<uint64_t> final_partition_timings_in_ms;
+    vector<uint64_t> final_partition_throughputs_mtuples_per_sec;
+    vector<uint64_t> final_partition_cycles_vec;
+    vector<uint64_t> final_partition_llc_misses_vec;
+    vector<uint64_t> final_partition_l1_misses_vec;
+    vector<uint64_t> final_partition_instructions_vec;
+    vector<uint64_t> final_partition_branch_misses_vec;
+    vector<uint64_t> final_partition_task_clock_vec;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         //DEBUGMSG(1, "Thread-%d started running ... \n", my_tid);
@@ -955,6 +991,7 @@ void * learned_imv_sort_join_thread(void * param)
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
+            perf_event.startAll();
             //gettimeofday(&args->start_time, NULL);
             partition_t1 = high_resolution_clock::now();
         }
@@ -1014,10 +1051,14 @@ void * learned_imv_sort_join_thread(void * param)
         if(my_tid == 0){
             //gettimeofday(&args->partition_end_time, NULL);
             partition_t2 = high_resolution_clock::now();
+            perf_event.readAll();
             //deltaT = (args->partition_end_time.tv_sec - args->start_time.tv_sec) * 1000000 + args->partition_end_time.tv_usec - args->start_time.tv_usec;
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(partition_t2 - partition_t1).count();
-            printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
-            curr_partition_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            perf_event.fillProfileVectors(NUM_THREADS, &curr_partition_cycles_vec, &curr_partition_llc_misses_vec, &curr_partition_l1_misses_vec,
+                                                           &curr_partition_instructions_vec, &curr_partition_branch_misses_vec, &curr_partition_task_clock_vec);
+            //printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            //curr_partition_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            curr_partition_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -1031,10 +1072,10 @@ void * learned_imv_sort_join_thread(void * param)
         } 
     }
 
-    if(my_tid == 0){
-        std::sort(curr_partition_timings_in_ms.begin(), curr_partition_timings_in_ms.end());
-        final_partition_timings_in_ms.push_back(curr_partition_timings_in_ms[(int)(curr_partition_timings_in_ms.size()/2)]);
-    }
+    //if(my_tid == 0){
+    //    std::sort(curr_partition_timings_in_ms.begin(), curr_partition_timings_in_ms.end());
+    //    final_partition_timings_in_ms.push_back(curr_partition_timings_in_ms[(int)(curr_partition_timings_in_ms.size()/2)]);
+    //}
 
 
     args->numR = r_partition_sizes_for_threads[my_tid] + r_total_repeated_keys_sizes_for_threads[my_tid];
@@ -1053,14 +1094,28 @@ void * learned_imv_sort_join_thread(void * param)
     *************************************************************************/
     auto sorting_t1 = high_resolution_clock::now();
     auto sorting_t2 = high_resolution_clock::now();
-    vector<uint64_t> curr_sorting_timings_in_ms;
+    priority_queue<pi, vector<pi>, greater<pi>> curr_sorting_timings_in_ms;
+    vector<uint64_t> curr_sorting_cycles_vec;
+    vector<uint64_t> curr_sorting_llc_misses_vec;
+    vector<uint64_t> curr_sorting_l1_misses_vec;
+    vector<uint64_t> curr_sorting_instructions_vec;
+    vector<uint64_t> curr_sorting_branch_misses_vec;
+    vector<uint64_t> curr_sorting_task_clock_vec;
     vector<uint64_t> final_sorting_timings_in_ms;
+    vector<uint64_t> final_sorting_throughputs_mtuples_per_sec;
+    vector<uint64_t> final_sorting_cycles_vec;
+    vector<uint64_t> final_sorting_llc_misses_vec;
+    vector<uint64_t> final_sorting_l1_misses_vec;
+    vector<uint64_t> final_sorting_instructions_vec;
+    vector<uint64_t> final_sorting_branch_misses_vec;
+    vector<uint64_t> final_sorting_task_clock_vec;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
+            perf_event.startAll();
             //gettimeofday(&args->partition_end_time, NULL);
             sorting_t1 = high_resolution_clock::now();
         }
@@ -1073,10 +1128,14 @@ void * learned_imv_sort_join_thread(void * param)
         if(my_tid == 0){
             //gettimeofday(&args->sort_end_time, NULL);
             sorting_t2 = high_resolution_clock::now();
+            perf_event.readAll();
             //deltaT = (args->sort_end_time.tv_sec - args->partition_end_time.tv_sec) * 1000000 + args->sort_end_time.tv_usec - args->partition_end_time.tv_usec;
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(sorting_t2 - sorting_t1).count();
-            printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
-            curr_sorting_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            perf_event.fillProfileVectors(NUM_THREADS, &curr_sorting_cycles_vec, &curr_sorting_llc_misses_vec, &curr_sorting_l1_misses_vec,
+                                                           &curr_sorting_instructions_vec, &curr_sorting_branch_misses_vec, &curr_sorting_task_clock_vec);
+            //printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            //curr_sorting_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            curr_sorting_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
         }
     
         if(!(rp == (RUN_NUMS - 1))){
@@ -1089,10 +1148,10 @@ void * learned_imv_sort_join_thread(void * param)
         }
     }
 
-    if(my_tid == 0){
-        std::sort(curr_sorting_timings_in_ms.begin(), curr_sorting_timings_in_ms.end());
-        final_sorting_timings_in_ms.push_back(curr_sorting_timings_in_ms[(int)(curr_sorting_timings_in_ms.size()/2)]);
-    }
+    //if(my_tid == 0){
+    //    std::sort(curr_sorting_timings_in_ms.begin(), curr_sorting_timings_in_ms.end());
+    //    final_sorting_timings_in_ms.push_back(curr_sorting_timings_in_ms[(int)(curr_sorting_timings_in_ms.size()/2)]);
+    //}
 
 
     BARRIER_ARRIVE(args->barrier, rv);
@@ -1104,14 +1163,28 @@ void * learned_imv_sort_join_thread(void * param)
      *************************************************************************/
     auto join_t1 = high_resolution_clock::now();
     auto join_t2 = high_resolution_clock::now();
-    vector<uint64_t> curr_join_timings_in_ms;
+    priority_queue<pi, vector<pi>, greater<pi>> curr_join_timings_in_ms;
+    vector<uint64_t> curr_join_cycles_vec;
+    vector<uint64_t> curr_join_llc_misses_vec;
+    vector<uint64_t> curr_join_l1_misses_vec;
+    vector<uint64_t> curr_join_instructions_vec;
+    vector<uint64_t> curr_join_branch_misses_vec;
+    vector<uint64_t> curr_join_task_clock_vec;
     vector<uint64_t> final_join_timings_in_ms;
+    vector<uint64_t> final_join_throughputs_mtuples_per_sec;
+    vector<uint64_t> final_join_cycles_vec;
+    vector<uint64_t> final_join_llc_misses_vec;
+    vector<uint64_t> final_join_l1_misses_vec;
+    vector<uint64_t> final_join_instructions_vec;
+    vector<uint64_t> final_join_branch_misses_vec;
+    vector<uint64_t> final_join_task_clock_vec;
     for (int rp = 0; rp < RUN_NUMS; ++rp) 
     {
         BARRIER_ARRIVE(args->barrier, rv);
 
         // the first thread checkpoints the start time
         if(my_tid == 0){ 
+            perf_event.startAll();
             //gettimeofday(&args->tmp_mergejoin_end_time, NULL);
             join_t1 = high_resolution_clock::now();
         }
@@ -1124,22 +1197,114 @@ void * learned_imv_sort_join_thread(void * param)
         if(my_tid == 0){
             //gettimeofday(&args->mergejoin_end_time, NULL);
             join_t2 = high_resolution_clock::now();
+            perf_event.readAll();
             deltaT = (args->mergejoin_end_time.tv_sec - args->tmp_mergejoin_end_time.tv_sec) * 1000000 + args->mergejoin_end_time.tv_usec - args->tmp_mergejoin_end_time.tv_usec;
-            printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
-            curr_join_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            perf_event.fillProfileVectors(NUM_THREADS, &curr_join_cycles_vec, &curr_join_llc_misses_vec, &curr_join_l1_misses_vec,
+                                                        &curr_join_instructions_vec, &curr_join_branch_misses_vec, &curr_join_task_clock_vec);
+            //printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            //curr_join_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
+            curr_join_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
         }
     }
+    //if(my_tid == 0){
+    //    std::sort(curr_join_timings_in_ms.begin(), curr_join_timings_in_ms.end());
+    //    final_join_timings_in_ms.push_back(curr_join_timings_in_ms[(int)(curr_join_timings_in_ms.size()/2)]);
+    //}
     if(my_tid == 0){
-        std::sort(curr_join_timings_in_ms.begin(), curr_join_timings_in_ms.end());
-        final_join_timings_in_ms.push_back(curr_join_timings_in_ms[(int)(curr_join_timings_in_ms.size()/2)]);
+        pi top_learned_model;
+        for(int rp = 0; rp < RUN_NUMS/2; ++rp)
+            top_learned_model = curr_learned_model_timings_in_ms.top();
+        pi top_partition;
+        for(int rp = 0; rp < RUN_NUMS/2; ++rp)
+            top_partition = curr_partition_timings_in_ms.top();
+        pi top_sorting;
+        for(int rp = 0; rp < RUN_NUMS/2; ++rp)
+            top_sorting = curr_sorting_timings_in_ms.top();
+        pi top_join;
+        for(int rp = 0; rp < RUN_NUMS/2; ++rp)
+            top_join = curr_join_timings_in_ms.top();
+
+        final_learned_model_timings_in_ms.push_back(top_learned_model.first);
+        final_learned_model_throughputs_mtuples_per_sec.push_back(
+            (uint64_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * top_learned_model.first)));
+        final_learned_model_cycles_vec.push_back(curr_learned_model_cycles_vec[top_learned_model.second]);
+        final_learned_model_llc_misses_vec.push_back(curr_learned_model_llc_misses_vec[top_learned_model.second]);
+        final_learned_model_l1_misses_vec.push_back(curr_learned_model_l1_misses_vec[top_learned_model.second]);
+        final_learned_model_instructions_vec.push_back(curr_learned_model_instructions_vec[top_learned_model.second]);
+        final_learned_model_branch_misses_vec.push_back(curr_learned_model_branch_misses_vec[top_learned_model.second]);
+        final_learned_model_task_clock_vec.push_back(curr_learned_model_task_clock_vec[top_learned_model.second]);
+
+        final_partition_timings_in_ms.push_back(top_partition.first);
+        final_partition_throughputs_mtuples_per_sec.push_back(
+            (uint64_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * top_partition.first)));
+        final_partition_cycles_vec.push_back(curr_partition_cycles_vec[top_partition.second]);
+        final_partition_llc_misses_vec.push_back(curr_partition_llc_misses_vec[top_partition.second]);
+        final_partition_l1_misses_vec.push_back(curr_partition_l1_misses_vec[top_partition.second]);
+        final_partition_instructions_vec.push_back(curr_partition_instructions_vec[top_partition.second]);
+        final_partition_branch_misses_vec.push_back(curr_partition_branch_misses_vec[top_partition.second]);
+        final_partition_task_clock_vec.push_back(curr_partition_task_clock_vec[top_partition.second]);
+
+        final_sorting_timings_in_ms.push_back(top_sorting.first);
+        final_sorting_throughputs_mtuples_per_sec.push_back(
+            (uint64_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * top_sorting.first)));
+        final_sorting_cycles_vec.push_back(curr_sorting_cycles_vec[top_sorting.second]);
+        final_sorting_llc_misses_vec.push_back(curr_sorting_llc_misses_vec[top_sorting.second]);
+        final_sorting_l1_misses_vec.push_back(curr_sorting_l1_misses_vec[top_sorting.second]);
+        final_sorting_instructions_vec.push_back(curr_sorting_instructions_vec[top_sorting.second]);
+        final_sorting_branch_misses_vec.push_back(curr_sorting_branch_misses_vec[top_sorting.second]);
+        final_sorting_task_clock_vec.push_back(curr_sorting_task_clock_vec[top_sorting.second]);
+
+        final_join_timings_in_ms.push_back(top_join.first);
+        final_join_throughputs_mtuples_per_sec.push_back(
+            (uint64_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * top_join.first)));
+        final_join_cycles_vec.push_back(curr_join_cycles_vec[top_join.second]);
+        final_join_llc_misses_vec.push_back(curr_join_llc_misses_vec[top_join.second]);
+        final_join_l1_misses_vec.push_back(curr_join_l1_misses_vec[top_join.second]);
+        final_join_instructions_vec.push_back(curr_join_instructions_vec[top_join.second]);
+        final_join_branch_misses_vec.push_back(curr_join_branch_misses_vec[top_join.second]);
+        final_join_task_clock_vec.push_back(curr_join_task_clock_vec[top_join.second]);
     }
 
     if(my_tid == 0){
-        std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results =
-         {{"Learn_model_in_ms", final_learned_model_timings_in_ms},
-          {"Partition_in_ms", final_partition_timings_in_ms},
-          {"Sort_in_ms", final_sorting_timings_in_ms},
-          {"Join_in_ms", final_join_timings_in_ms}};
+        std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results = 
+            {{"learned_model_in_ms", final_learned_model_timings_in_ms}, 
+            {{"partition_in_ms", final_partition_timings_in_ms}, 
+            {{"sorting_in_ms", final_sorting_timings_in_ms}, 
+            {{"join_in_ms", final_join_timings_in_ms}, 
+
+             {"learned_model_Throughput_in_mtuples_per_sec", final_learned_model_throughputs_mtuples_per_sec},
+             {"learned_model_Cycles", final_learned_model_cycles_vec},
+             {"learned_model_LLC_misses", final_learned_model_llc_misses_vec},
+             {"learned_model_L1_misses", final_learned_model_l1_misses_vec},
+             {"learned_model_Instructions", final_learned_model_instructions_vec},
+             {"learned_model_Branch_misses", final_learned_model_branch_misses_vec},
+             {"learned_model_Task_clock", final_learned_model_task_clock_vec},
+
+             {"partition_Throughput_in_mtuples_per_sec", final_partition_throughputs_mtuples_per_sec},
+             {"partition_Cycles", final_partition_cycles_vec},
+             {"partition_LLC_misses", final_partition_llc_misses_vec},
+             {"partition_L1_misses", final_partition_l1_misses_vec},
+             {"partition_Instructions", final_partition_instructions_vec},
+             {"partition_Branch_misses", final_partition_branch_misses_vec},
+             {"partition_Task_clock", final_partition_task_clock_vec},
+
+             {"sorting_Throughput_in_mtuples_per_sec", final_sorting_throughputs_mtuples_per_sec},
+             {"sorting_Cycles", final_sorting_cycles_vec},
+             {"sorting_LLC_misses", final_sorting_llc_misses_vec},
+             {"sorting_L1_misses", final_sorting_l1_misses_vec},
+             {"sorting_Instructions", final_sorting_instructions_vec},
+             {"sorting_Branch_misses", final_sorting_branch_misses_vec},
+             {"sorting_Task_clock", final_sorting_task_clock_vec},
+
+             {"join_Throughput_in_mtuples_per_sec", final_join_throughputs_mtuples_per_sec},
+             {"join_Cycles", final_join_cycles_vec},
+             {"join_LLC_misses", final_join_llc_misses_vec},
+             {"join_L1_misses", final_join_l1_misses_vec},
+             {"join_Instructions", final_join_instructions_vec},
+             {"join_Branch_misses", final_join_branch_misses_vec},
+             {"join_Task_clock", final_join_task_clock_vec}
+            };
+
         write_csv(BENCHMARK_RESULTS_PATH, final_results);
     }
     return 0;
@@ -1167,6 +1332,7 @@ int main(int argc, char **argv)
 
     load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
     load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);
+
 #else
 
     string curr_rel_r_path = RELATION_R_PATH;
@@ -1181,7 +1347,13 @@ int main(int argc, char **argv)
     string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
     string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
 
-    // creating new datasets on-the-flay 
+    // creating new datasets on-the-fly 
+    //synthetic_workload_distr_t data_distn_type = LOGNORMAL;
+    //DataDistnParams data_distn_params;
+    //data_distn_params.lognormal_stddev = 1.00;
+    //data_distn_params.lognormal_scale = curr_num_tuples_r;
+    //result = create_synthetic_workload_relation_fk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, data_distn_type, &data_distn_params, 0);
+
     result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_r, curr_num_tuples_r, 0);
     //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
@@ -1189,11 +1361,16 @@ int main(int argc, char **argv)
     write_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str());
     #endif
     
+    //data_distn_type = LOGNORMAL;
+    //data_distn_params.lognormal_stddev = 1.00;
+    //data_distn_params.lognormal_scale = curr_num_tuples_s;
+    //result = create_synthetic_workload_relation_fk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, data_distn_type, &data_distn_params, 0);
+
     result = create_eth_workload_relation_pk<KeyType, PayloadType>(&rel_s, curr_num_tuples_s, 0);
     //ASSERT_EQ(result, 0);
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str());
-    write_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str());    
+    write_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str());
     #endif
 #endif
 
