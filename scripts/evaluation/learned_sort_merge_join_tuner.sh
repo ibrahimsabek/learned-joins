@@ -97,7 +97,7 @@ process_learned_sort_merge_join()
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_INPUT_FOR_MINOR_BCKTS 1 \
                                                                                         -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                                                                         -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 0 \
-                                                                                        -BUILD_RMI_FROM_TWO_DATASETS 1 \
+                                                                                        -BUILD_RMI_FROM_TWO_DATASETS 0 \
                                                                                         -RELATION_R_PATH $curr_r_dataset \
                                                                                         -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                                                         -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
