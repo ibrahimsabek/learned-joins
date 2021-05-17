@@ -319,10 +319,10 @@ s_datasets_sizes=(16E6 32E6 128E6 640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 115
 r_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 
-output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_lognormal/
-process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
-output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_lognormal/
-process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_lognormal/
+#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_lognormal/
+#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 
 #seq_hole datasets
 ################
