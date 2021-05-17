@@ -112,7 +112,7 @@ process_learned_sort_merge_join()
                                                                                         -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
                                                                                         -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
                                                                                         -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
-                                                                                        -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \ 
+                                                                                        -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
                                                                                         -USE_AVXSORT_FOR_SORTING_MINOR_BCKTS $curr_use_avxsort_for_sorting_minor_bckts \
                                                                                         -LS_FOR_SORT_MERGE_DEFAULT_THRESHOLD $curr_ls_default_threshold \
                                                                                         -LS_FOR_SORT_MERGE_DEFAULT_ARCH_SECOND_LEVEL $curr_ls_default_arch \
