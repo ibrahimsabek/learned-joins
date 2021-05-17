@@ -929,7 +929,7 @@ void * learned_imv_sort_join_thread(void * param)
                                                            &curr_learned_model_instructions_vec, &curr_learned_model_branch_misses_vec, &curr_learned_model_task_clock_vec);
             //curr_learned_model_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             curr_learned_model_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
-            //printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
+            printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
 
     #ifndef RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY
             if(rp == RUN_NUMS - 1)
@@ -1058,7 +1058,7 @@ void * learned_imv_sort_join_thread(void * param)
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(partition_t2 - partition_t1).count();
             perf_event.fillProfileVectors(NUM_THREADS, &curr_partition_cycles_vec, &curr_partition_llc_misses_vec, &curr_partition_l1_misses_vec,
                                                            &curr_partition_instructions_vec, &curr_partition_branch_misses_vec, &curr_partition_task_clock_vec);
-            //printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            printf("---- %5s partitioning costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
             //curr_partition_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             curr_partition_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
         }
@@ -1135,7 +1135,7 @@ void * learned_imv_sort_join_thread(void * param)
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(sorting_t2 - sorting_t1).count();
             perf_event.fillProfileVectors(NUM_THREADS, &curr_sorting_cycles_vec, &curr_sorting_llc_misses_vec, &curr_sorting_l1_misses_vec,
                                                            &curr_sorting_instructions_vec, &curr_sorting_branch_misses_vec, &curr_sorting_task_clock_vec);
-            //printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            printf("---- %5s sorting costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
             //curr_sorting_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             curr_sorting_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
         }
@@ -1204,7 +1204,7 @@ void * learned_imv_sort_join_thread(void * param)
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(join_t2 - join_t1).count();
             perf_event.fillProfileVectors(NUM_THREADS, &curr_join_cycles_vec, &curr_join_llc_misses_vec, &curr_join_l1_misses_vec,
                                                         &curr_join_instructions_vec, &curr_join_branch_misses_vec, &curr_join_task_clock_vec);
-            //printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
+            printf("---- %5s joining costs time (ms) = %10.4lf\n", "Learned sort join", deltaT * 1.0 / 1000);
             //curr_join_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             curr_join_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
         }
