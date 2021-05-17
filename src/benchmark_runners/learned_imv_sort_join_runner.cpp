@@ -1556,11 +1556,11 @@ int main(int argc, char **argv)
         total_r_initial_partition_sizes_for_threads += r_initial_partition_sizes_for_threads[i];
         total_s_initial_partition_sizes_for_threads += s_initial_partition_sizes_for_threads[i];
     }
-    for(i=0; i<NUM_THREADS; i++)
-    {
-        printf("R partition for thread %d has %d elements\n", i, r_initial_partition_sizes_for_threads[i]);
-        printf("S partition for thread %d has %d elements\n", i, s_initial_partition_sizes_for_threads[i]);
-    } 
+    //for(i=0; i<NUM_THREADS; i++)
+    //{
+    //    printf("R partition for thread %d has %d elements\n", i, r_initial_partition_sizes_for_threads[i]);
+    //    printf("S partition for thread %d has %d elements\n", i, s_initial_partition_sizes_for_threads[i]);
+    //} 
 
     r_NUM_MINOR_BCKT_PER_MAJOR_BCKT = (unsigned int *) calloc(NUM_THREADS, sizeof(unsigned int));
     s_NUM_MINOR_BCKT_PER_MAJOR_BCKT = (unsigned int *) calloc(NUM_THREADS, sizeof(unsigned int));
