@@ -1270,9 +1270,9 @@ void * learned_imv_sort_join_thread(void * param)
     if(my_tid == 0){
         std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results = 
             {{"learned_model_in_ms", final_learned_model_timings_in_ms}, 
-            {{"partition_in_ms", final_partition_timings_in_ms}, 
-            {{"sorting_in_ms", final_sorting_timings_in_ms}, 
-            {{"join_in_ms", final_join_timings_in_ms}, 
+             {"partition_in_ms", final_partition_timings_in_ms}, 
+             {"sorting_in_ms", final_sorting_timings_in_ms}, 
+             {"join_in_ms", final_join_timings_in_ms}, 
 
              {"learned_model_Throughput_in_mtuples_per_sec", final_learned_model_throughputs_mtuples_per_sec},
              {"learned_model_Cycles", final_learned_model_cycles_vec},
