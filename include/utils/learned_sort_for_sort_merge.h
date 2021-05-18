@@ -1221,8 +1221,13 @@ printf("thread_id %d here 3 \n", thread_id);
       pred_model_idx = static_cast<int>(
           std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
+
+      printf("before: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
+
       (curr_out_partitions[pred_model_idx])[curr_out_partitions_hist[pred_model_idx]] = *cur_key;
       ++curr_out_partitions_hist[pred_model_idx];
+
+      printf("after: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
     }
   }
   else
