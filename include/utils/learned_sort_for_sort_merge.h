@@ -2352,7 +2352,7 @@ void learned_sort_for_sort_merge::sort_avx_from_seperate_partitions(Tuple<KeyTyp
 
 uint64_t all_major_bckt_size = 0;
 
-for(int p = 0; p < NUM_THREADS; p++)
+for(int p = 0; p < NUM_THREADS_FOR_EVALUATION; p++)
 {
   bckt_start_offset = 0;
   all_major_bckt_size += major_bckt_size[p];
@@ -3181,7 +3181,7 @@ for(int p = 0; p < NUM_THREADS; p++)
   //----------------------------------------------------------//
   vector<Tuple<KeyType, PayloadType>> linear_vals; vector<int64_t> linear_count;
   int64_t all_repeated_keys = 0;
-  for(int p = 0; p < NUM_THREADS; p++)
+  for(int p = 0; p < NUM_THREADS_FOR_EVALUATION; p++)
   {
     for (int64_t exc_elm_idx = 0; exc_elm_idx < total_repeated_keys[p]; ++exc_elm_idx) {
       linear_vals.push_back(
