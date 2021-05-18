@@ -1646,9 +1646,9 @@ int main(int argc, char **argv)
     tmpRelpartS = (Tuple<KeyType, PayloadType>**) alloc_aligned(NUM_THREADS* sizeof(Tuple<KeyType, PayloadType>*));
     for(i = 0; i < NUM_THREADS; i++)
     {
-        tmpRelpartR[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * (total_r_initial_partition_sizes_for_threads/(NUM_THREADS/2)) * sizeof(Tuple<KeyType, PayloadType>)
+        tmpRelpartR[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * (total_r_initial_partition_sizes_for_threads/(NUM_THREADS/4)) * sizeof(Tuple<KeyType, PayloadType>)
                                         + RELATION_PADDING);
-        tmpRelpartS[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * (total_s_initial_partition_sizes_for_threads/(NUM_THREADS/2)) * sizeof(Tuple<KeyType, PayloadType>)
+        tmpRelpartS[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * (total_s_initial_partition_sizes_for_threads/(NUM_THREADS/4)) * sizeof(Tuple<KeyType, PayloadType>)
                                         + RELATION_PADDING);
         //numa_localize_varlen<KeyType, PayloadType>(tmpRelpartR[i], r_initial_partition_sizes_for_threads/NUM_THREADS, NUM_THREADS);
         //numa_localize_varlen<KeyType, PayloadType>(tmpRelpartS[i], s_initial_partition_sizes_for_threads/NUM_THREADS, NUM_THREADS);
@@ -1695,9 +1695,9 @@ int main(int argc, char **argv)
     tmpRepeatedKeysPredictedRanksS = (Tuple<KeyType, PayloadType>**) alloc_aligned(NUM_THREADS * sizeof(Tuple<KeyType, PayloadType>*));
     for(i=0; i<NUM_THREADS; i++)
     {
-        tmpRepeatedKeysPredictedRanksR[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned((total_r_initial_repeated_keys_size/(NUM_THREADS/2)) * sizeof(Tuple<KeyType, PayloadType>)
+        tmpRepeatedKeysPredictedRanksR[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned((total_r_initial_repeated_keys_size/(NUM_THREADS/4)) * sizeof(Tuple<KeyType, PayloadType>)
                                     + RELATION_PADDING);
-        tmpRepeatedKeysPredictedRanksS[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned((total_s_initial_repeated_keys_size/(NUM_THREADS/2)) * sizeof(Tuple<KeyType, PayloadType>)
+        tmpRepeatedKeysPredictedRanksS[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned((total_s_initial_repeated_keys_size/(NUM_THREADS/4)) * sizeof(Tuple<KeyType, PayloadType>)
                                     + RELATION_PADDING);
         //numa_localize_varlen<KeyType, PayloadType>(tmpRepeatedKeysPredictedRanksR, r_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
         //numa_localize_varlen<KeyType, PayloadType>(tmpRepeatedKeysPredictedRanksS, s_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
@@ -1708,9 +1708,9 @@ int main(int argc, char **argv)
     tmpRepeatedKeysCountsS = (int64_t**) alloc_aligned(NUM_THREADS * sizeof(int64_t*));
     for(i=0; i<NUM_THREADS; i++)
     {
-        tmpRepeatedKeysCountsR[i] = (int64_t*) alloc_aligned((total_r_initial_repeated_keys_size/(NUM_THREADS/2)) * sizeof(int64_t)
+        tmpRepeatedKeysCountsR[i] = (int64_t*) alloc_aligned((total_r_initial_repeated_keys_size/(NUM_THREADS/4)) * sizeof(int64_t)
                                         + RELATION_PADDING);
-        tmpRepeatedKeysCountsS[i] = (int64_t*) alloc_aligned((total_s_initial_repeated_keys_size/(NUM_THREADS/2)) * sizeof(int64_t)
+        tmpRepeatedKeysCountsS[i] = (int64_t*) alloc_aligned((total_s_initial_repeated_keys_size/(NUM_THREADS/4)) * sizeof(int64_t)
                                         + RELATION_PADDING);
         //numa_localize_generic_varlen<int64_t>(tmpRepeatedKeysCountsR, r_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
         //numa_localize_generic_varlen<int64_t>(tmpRepeatedKeysCountsS, s_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
