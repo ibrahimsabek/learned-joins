@@ -589,12 +589,18 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
     unsigned int INPUT_SZ_r;
     unsigned int INPUT_SZ_s;
 
+    int64_t tmp_r_partition_offset;
+    int64_t tmp_s_partition_offset;
+    int64_t tmp_r_repeated_keys_offset;
+    int64_t tmp_s_repeated_keys_offset;    
     Tuple<KeyType, PayloadType> ** tmp_partR_arr;
     Tuple<KeyType, PayloadType> ** tmp_partS_arr;
     uint64_t* major_bckt_size_r_arr;
     uint64_t* major_bckt_size_s_arr;
     int64_t* tmp_total_repeatedKeysCountsR_arr;
     int64_t* tmp_total_repeatedKeysCountsS_arr;
+    Tuple<KeyType, PayloadType> * tmp_major_bckts_r;
+    Tuple<KeyType, PayloadType> * tmp_major_bckts_s;
 
     /**** start stuff for learning RMI models ****/
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;

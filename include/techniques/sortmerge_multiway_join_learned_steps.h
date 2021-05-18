@@ -84,10 +84,10 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
     {
 #ifdef USE_LEARNED_SORT_FOR_SORT_MERGE
         learned_sort_for_sort_merge::sort_avx_from_seperate_partitions(outptrR, args->rmi_r, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_r, args->MINOR_BCKTS_OFFSET_r, args->TOT_NUM_MINOR_BCKTS_r, 
-                                    args->INPUT_SZ_r, inptrR, args->major_bckt_size_r_arr,
+                                    args->INPUT_SZ_r, inptrR, args->major_bckt_size_r_arr, args->tmp_r_partition_offset, args->tmp_major_bckts_r,
                                     args->tmp_minor_bckts_r, args->tmp_minor_bckt_sizes_r,
                                     args->tmp_spill_bucket_r, args->sorted_spill_bucket_r,                                     
-                                    args->tmp_total_repeatedKeysCountsR_arr, args->tmp_repeatedKeysPredictedRanksR, 
+                                    args->tmp_total_repeatedKeysCountsR_arr, args->tmp_r_repeated_keys_offset, args->tmp_repeatedKeysPredictedRanksR, 
                                     args->tmp_repeatedKeysPredictedRanksCountsR, args->tmp_repeatedKeysCountsR, my_tid, 0);
 //        learned_sort_for_sort_merge::sort_avx(outptrR, args->rmi_r, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_r, args->MINOR_BCKTS_OFFSET_r, args->TOT_NUM_MINOR_BCKTS_r, 
 //                                    args->INPUT_SZ_r, inptrR, args->numR - args->tmp_total_repeatedKeysCountsR, 
@@ -130,10 +130,10 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
     {
 #ifdef USE_LEARNED_SORT_FOR_SORT_MERGE
         learned_sort_for_sort_merge::sort_avx_from_seperate_partitions(outptrS, args->rmi_s, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_s, args->MINOR_BCKTS_OFFSET_s, args->TOT_NUM_MINOR_BCKTS_s, 
-                                    args->INPUT_SZ_s, inptrS, args->major_bckt_size_s_arr,                                    
+                                    args->INPUT_SZ_s, inptrS, args->major_bckt_size_s_arr, args->tmp_s_partition_offset, args->tmp_major_bckts_s,                                   
                                     args->tmp_minor_bckts_s, args->tmp_minor_bckt_sizes_s,
                                     args->tmp_spill_bucket_s, args->sorted_spill_bucket_s, 
-                                    args->tmp_total_repeatedKeysCountsS_arr, args->tmp_repeatedKeysPredictedRanksS, 
+                                    args->tmp_total_repeatedKeysCountsS_arr, args->tmp_s_repeated_keys_offset, args->tmp_repeatedKeysPredictedRanksS, 
                                     args->tmp_repeatedKeysPredictedRanksCountsS, args->tmp_repeatedKeysCountsS, my_tid, 0);
 //        learned_sort_for_sort_merge::sort_avx(outptrS, args->rmi_s, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_s, args->MINOR_BCKTS_OFFSET_s, args->TOT_NUM_MINOR_BCKTS_s, 
 //                                    args->INPUT_SZ_s, inptrS, args->numS - args->tmp_total_repeatedKeysCountsS, 
