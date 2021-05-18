@@ -1059,11 +1059,11 @@ void * learned_imv_sort_join_thread(void * param)
 
         learned_sort_for_sort_merge::partition_major_buckets_threaded<KeyType, PayloadType>(1, r_rmi_ptr, NUM_THREADS, args->relR, args->numR_to_be_partitioned, 
                                             tmpRelpartR, r_partition_offsets, r_partition_sizes_for_threads, 
-                                            tmpRepeatedKeysPredictedRanksR, tmpRepeatedKeysCountsR, r_repeated_keys_offsets, r_repeated_keys_sizes_for_threads, r_total_repeated_keys_sizes_for_threads, -1, -1);
+                                            tmpRepeatedKeysPredictedRanksR, tmpRepeatedKeysCountsR, r_repeated_keys_offsets, r_repeated_keys_sizes_for_threads, r_total_repeated_keys_sizes_for_threads, my_tid, -1);
 
         learned_sort_for_sort_merge::partition_major_buckets_threaded<KeyType, PayloadType>(0, s_rmi_ptr, NUM_THREADS, args->relS, args->numS_to_be_partitioned, 
                                             tmpRelpartS, s_partition_offsets, s_partition_sizes_for_threads, 
-                                            tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, -1, -1);
+                                            tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, my_tid, -1);
 
 
         // wait at a barrier until each thread completes the partition phase

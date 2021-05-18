@@ -1060,7 +1060,7 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
   int thread_id, int partition_id)
 {
 //if(thread_id == 0)
-printf("thread_id %d here 0 \n", thread_id);
+//printf("thread_id %d here  \n", thread_id);
   // NOTE: partitions_fanout is supposted to be equal to the number of threads
   // Cache runtime parameters
   static const unsigned int FANOUT = partitions_fanout;
@@ -1111,7 +1111,7 @@ printf("thread_id %d here 0 \n", thread_id);
     intercepts.push_back(rmi->models[1][i].intercept);
   }
 //if(thread_id == 0)
-printf("thread_id %d here 1 \n", thread_id);
+//printf("thread_id %d here 1 \n", thread_id);
   //----------------------------------------------------------//
   //       DETECT REPEATED KEYS IN THE TRAINING SAMPLE        //
   //----------------------------------------------------------//
@@ -1155,8 +1155,8 @@ printf("thread_id %d here 1 \n", thread_id);
       repeated_keys.push_back((*(rmi->training_sample_S))[TRAINING_SAMPLE_SZ - 1]);
     }  
   }
-  if(thread_id == 0)
-printf("here 2 \n");
+//  if(thread_id == 0)
+//printf("here 2 \n");
 
 #else
   unsigned int cnt_rep_keys = 1;
