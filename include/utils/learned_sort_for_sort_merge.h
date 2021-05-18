@@ -1059,8 +1059,6 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
   Tuple<KeyType, PayloadType> ** out_repeated_keys, int64_t ** out_repeated_keys_counts, int64_t* out_repeated_keys_offsets, int64_t ** out_repeated_keys_hist, int64_t ** out_total_repeated_keys_hist, 
   int thread_id, int partition_id)
 {
-//if(thread_id == 0)
-//printf("thread_id %d here  \n", thread_id);
   // NOTE: partitions_fanout is supposted to be equal to the number of threads
   // Cache runtime parameters
   static const unsigned int FANOUT = partitions_fanout;
@@ -1110,8 +1108,7 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
     slopes.push_back(rmi->models[1][i].slope);
     intercepts.push_back(rmi->models[1][i].intercept);
   }
-//if(thread_id == 0)
-//printf("thread_id %d here 1 \n", thread_id);
+
   //----------------------------------------------------------//
   //       DETECT REPEATED KEYS IN THE TRAINING SAMPLE        //
   //----------------------------------------------------------//
@@ -1155,8 +1152,6 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
       repeated_keys.push_back((*(rmi->training_sample_S))[TRAINING_SAMPLE_SZ - 1]);
     }  
   }
-//  if(thread_id == 0)
-//printf("here 2 \n");
 
 #else
   unsigned int cnt_rep_keys = 1;
@@ -1198,8 +1193,6 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
     //(curr_out_repeated_keys_counts[pred_model_idx])[curr_out_repeated_keys_hist[pred_model_idx]] = 0;
     ++curr_out_repeated_keys_hist[pred_model_idx];
   }
-//if(thread_id == 0)
-//printf("thread_id %d here 3 \n", thread_id);
 
   Tuple<KeyType, PayloadType>* end = begin + INPUT_SZ;
   if (repeated_keys.size() == 0)
@@ -1221,13 +1214,8 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
       pred_model_idx = static_cast<int>(
           std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
-
-//      printf("before: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
-
       (curr_out_partitions[pred_model_idx])[curr_out_partitions_hist[pred_model_idx]] = *cur_key;
       ++curr_out_partitions_hist[pred_model_idx];
-
-//      printf("after: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
     }
   }
   else
@@ -1292,8 +1280,6 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
       }
     }
   }
-//if(thread_id == 0)
-printf("thread_id %d here 4 \n", thread_id);
 
   for(unsigned int i = 0; i < FANOUT; i++)
   {
@@ -1301,9 +1287,6 @@ printf("thread_id %d here 4 \n", thread_id);
     out_repeated_keys_hist[thread_id][i] = curr_out_repeated_keys_hist[i];
     out_total_repeated_keys_hist[thread_id][i] = curr_out_repeated_keys_hist[i];
   }
-
-// if(thread_id == 0)
-printf("thread_id %d here 5 \n", thread_id);
  
 }
 
