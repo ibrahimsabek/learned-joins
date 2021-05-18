@@ -1059,8 +1059,8 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
   Tuple<KeyType, PayloadType> ** out_repeated_keys, int64_t ** out_repeated_keys_counts, int64_t* out_repeated_keys_offsets, int64_t ** out_repeated_keys_hist, int64_t ** out_total_repeated_keys_hist, 
   int thread_id, int partition_id)
 {
-if(thread_id == 0)
-printf("here 0 \n");
+//if(thread_id == 0)
+printf("thread_id %d here 0 \n", thread_id);
   // NOTE: partitions_fanout is supposted to be equal to the number of threads
   // Cache runtime parameters
   static const unsigned int FANOUT = partitions_fanout;
@@ -1110,8 +1110,8 @@ printf("here 0 \n");
     slopes.push_back(rmi->models[1][i].slope);
     intercepts.push_back(rmi->models[1][i].intercept);
   }
-if(thread_id == 0)
-printf("here 1 \n");
+//if(thread_id == 0)
+printf("thread_id %d here 1 \n", thread_id);
   //----------------------------------------------------------//
   //       DETECT REPEATED KEYS IN THE TRAINING SAMPLE        //
   //----------------------------------------------------------//
