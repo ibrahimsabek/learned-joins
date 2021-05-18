@@ -175,7 +175,6 @@ void sort_avx(Tuple<KeyType, PayloadType> *, RMI<KeyType, PayloadType> *,
               int64_t, Tuple<KeyType, PayloadType> *, 
               int64_t *, int64_t,
               int, int);
-}
 
 template<class KeyType, class PayloadType>
 void sort_avx_from_seperate_partitions(Tuple<KeyType, PayloadType> *, RMI<KeyType, PayloadType> * rmi,
@@ -186,6 +185,7 @@ void sort_avx_from_seperate_partitions(Tuple<KeyType, PayloadType> *, RMI<KeyTyp
                                           int64_t*, Tuple<KeyType, PayloadType> **, 
                                           int64_t **, int64_t,
                                           int, int);
+}
 
 using namespace learned_sort_for_sort_merge;
 
