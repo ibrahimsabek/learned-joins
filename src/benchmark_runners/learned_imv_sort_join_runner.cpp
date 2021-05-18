@@ -196,8 +196,8 @@ void initialize_learned_imv_sort_join_thread_args(Relation<KeyType, PayloadType>
         //(*(args + i)).tmp_repeatedKeysCountsS = s_repeated_keys_sizes_for_threads[i];
         //(*(args + i)).tmp_total_repeatedKeysCountsR = r_total_repeated_keys_sizes_for_threads[i];
         //(*(args + i)).tmp_total_repeatedKeysCountsS = s_total_repeated_keys_sizes_for_threads[i];
-        (*(args + i)).major_bckt_size_r_arr = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
-        (*(args + i)).major_bckt_size_s_arr = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+        (*(args + i)).major_bckt_size_r_arr = (uint64_t*) calloc(NUM_THREADS, sizeof(uint64_t));
+        (*(args + i)).major_bckt_size_s_arr = (uint64_t*) calloc(NUM_THREADS, sizeof(uint64_t));
         (*(args + i)).tmp_total_repeatedKeysCountsR_arr = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
         (*(args + i)).tmp_total_repeatedKeysCountsS_arr = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
 

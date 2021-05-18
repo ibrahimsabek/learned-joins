@@ -591,8 +591,8 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
 
     Tuple<KeyType, PayloadType> ** tmp_partR_arr;
     Tuple<KeyType, PayloadType> ** tmp_partS_arr;
-    int64_t* major_bckt_size_r_arr;
-    int64_t* major_bckt_size_s_arr;
+    uint64_t* major_bckt_size_r_arr;
+    uint64_t* major_bckt_size_s_arr;
     int64_t* tmp_total_repeatedKeysCountsR_arr;
     int64_t* tmp_total_repeatedKeysCountsS_arr;
 
