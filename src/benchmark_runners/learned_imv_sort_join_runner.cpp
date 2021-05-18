@@ -1231,7 +1231,7 @@ void * learned_imv_sort_join_thread(void * param)
             join_t1 = high_resolution_clock::now();
         }
 
-        join_steps.mergejoin_phase(0, 0, 0, 0, args);
+        //join_steps.mergejoin_phase(0, 0, 0, 0, args);
 
         BARRIER_ARRIVE(args->barrier, rv);
 
