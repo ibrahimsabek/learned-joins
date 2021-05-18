@@ -572,10 +572,10 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
     Tuple<KeyType, PayloadType> * sorted_spill_bucket_r;
     Tuple<KeyType, PayloadType> * tmp_spill_bucket_s;
     Tuple<KeyType, PayloadType> * sorted_spill_bucket_s;
-    Tuple<KeyType, PayloadType> * tmp_repeatedKeysPredictedRanksR;
-    Tuple<KeyType, PayloadType> * tmp_repeatedKeysPredictedRanksS;
-    int64_t * tmp_repeatedKeysPredictedRanksCountsR;
-    int64_t * tmp_repeatedKeysPredictedRanksCountsS;
+    Tuple<KeyType, PayloadType> ** tmp_repeatedKeysPredictedRanksR;
+    Tuple<KeyType, PayloadType> ** tmp_repeatedKeysPredictedRanksS;
+    int64_t ** tmp_repeatedKeysPredictedRanksCountsR;
+    int64_t ** tmp_repeatedKeysPredictedRanksCountsS;
     int64_t tmp_repeatedKeysCountsR;
     int64_t tmp_repeatedKeysCountsS;
     int64_t tmp_total_repeatedKeysCountsR;
@@ -588,6 +588,13 @@ struct LearnedSortMergeMultiwayJoinThread : ETHSortMergeMultiwayJoinThread<KeyTy
     unsigned int TOT_NUM_MINOR_BCKTS_s;
     unsigned int INPUT_SZ_r;
     unsigned int INPUT_SZ_s;
+
+    Tuple<KeyType, PayloadType> ** tmp_partR_arr;
+    Tuple<KeyType, PayloadType> ** tmp_partS_arr;
+    int32_t* major_bckt_size_r_arr;
+    int32_t* major_bckt_size_s_arr;
+    int64_t* tmp_total_repeatedKeysCountsR_arr;
+    int64_t* tmp_total_repeatedKeysCountsS_arr;
 
     /**** start stuff for learning RMI models ****/
     learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;

@@ -64,26 +64,26 @@ learned_sort_for_sort_merge::RMI<KeyType, PayloadType>* s_rmi_ptr;
 
 int64_t* r_initial_partition_sizes_for_threads;
 int64_t* s_initial_partition_sizes_for_threads;
-int64_t* r_partition_sizes_for_threads;
-int64_t* s_partition_sizes_for_threads;
+int64_t** r_partition_sizes_for_threads;
+int64_t** s_partition_sizes_for_threads;
 int64_t* r_partition_offsets;
 int64_t* s_partition_offsets;
-Tuple<KeyType, PayloadType> * tmpRelpartR;
-Tuple<KeyType, PayloadType> * tmpRelpartS;
+Tuple<KeyType, PayloadType> ** tmpRelpartR;
+Tuple<KeyType, PayloadType> ** tmpRelpartS;
 
 
 int64_t* r_initial_repeated_keys_sizes_for_threads;
 int64_t* s_initial_repeated_keys_sizes_for_threads;
-int64_t* r_repeated_keys_sizes_for_threads;
-int64_t* s_repeated_keys_sizes_for_threads;
-int64_t* r_total_repeated_keys_sizes_for_threads;
-int64_t* s_total_repeated_keys_sizes_for_threads;    
+int64_t** r_repeated_keys_sizes_for_threads;
+int64_t** s_repeated_keys_sizes_for_threads;
+int64_t** r_total_repeated_keys_sizes_for_threads;
+int64_t** s_total_repeated_keys_sizes_for_threads;    
 int64_t* r_repeated_keys_offsets;
 int64_t* s_repeated_keys_offsets;
-Tuple<KeyType, PayloadType> * tmpRepeatedKeysPredictedRanksR;
-Tuple<KeyType, PayloadType> * tmpRepeatedKeysPredictedRanksS;
-int64_t* tmpRepeatedKeysCountsR;
-int64_t* tmpRepeatedKeysCountsS;
+Tuple<KeyType, PayloadType> ** tmpRepeatedKeysPredictedRanksR;
+Tuple<KeyType, PayloadType> ** tmpRepeatedKeysPredictedRanksS;
+int64_t** tmpRepeatedKeysCountsR;
+int64_t** tmpRepeatedKeysCountsS;
 
 unsigned int * r_NUM_MINOR_BCKT_PER_MAJOR_BCKT;
 unsigned int * s_NUM_MINOR_BCKT_PER_MAJOR_BCKT;
@@ -166,12 +166,19 @@ void initialize_learned_imv_sort_join_thread_args(Relation<KeyType, PayloadType>
             (rel_s->num_tuples - i * numperthr[1]) : numperthr[1];
 
         // temporary relations
-        (*(args + i)).tmp_partR = tmpRelpartR + r_partition_offsets[i];
-        (*(args + i)).tmp_partS = tmpRelpartS + s_partition_offsets[i];
-        (*(args + i)).tmp_repeatedKeysPredictedRanksR = tmpRepeatedKeysPredictedRanksR + r_repeated_keys_offsets[i];
-        (*(args + i)).tmp_repeatedKeysPredictedRanksS = tmpRepeatedKeysPredictedRanksS + s_repeated_keys_offsets[i];
-        (*(args + i)).tmp_repeatedKeysPredictedRanksCountsR = tmpRepeatedKeysCountsR + r_repeated_keys_offsets[i];
-        (*(args + i)).tmp_repeatedKeysPredictedRanksCountsS = tmpRepeatedKeysCountsS + s_repeated_keys_offsets[i];
+        //(*(args + i)).tmp_partR = tmpRelpartR + r_partition_offsets[i];
+        //(*(args + i)).tmp_partS = tmpRelpartS + s_partition_offsets[i];
+        (*(args + i)).tmp_partR_arr = tmpRelpartR;
+        (*(args + i)).tmp_partS_arr = tmpRelpartS;        
+        //(*(args + i)).tmp_repeatedKeysPredictedRanksR = tmpRepeatedKeysPredictedRanksR + r_repeated_keys_offsets[i];
+        //(*(args + i)).tmp_repeatedKeysPredictedRanksS = tmpRepeatedKeysPredictedRanksS + s_repeated_keys_offsets[i];
+        (*(args + i)).tmp_repeatedKeysPredictedRanksR = tmpRepeatedKeysPredictedRanksR;
+        (*(args + i)).tmp_repeatedKeysPredictedRanksS = tmpRepeatedKeysPredictedRanksS;
+        //(*(args + i)).tmp_repeatedKeysPredictedRanksCountsR = tmpRepeatedKeysCountsR + r_repeated_keys_offsets[i];
+        //(*(args + i)).tmp_repeatedKeysPredictedRanksCountsS = tmpRepeatedKeysCountsS + s_repeated_keys_offsets[i];
+        (*(args + i)).tmp_repeatedKeysPredictedRanksCountsR = tmpRepeatedKeysCountsR;
+        (*(args + i)).tmp_repeatedKeysPredictedRanksCountsS = tmpRepeatedKeysCountsS;
+
         (*(args + i)).tmp_sortR = tmpRelsortR + r_partition_offsets[i];
         (*(args + i)).tmp_sortS = tmpRelsortS + s_partition_offsets[i];
         (*(args + i)).tmp_spill_bucket_r = r_tmp_spill_bucket + r_partition_offsets[i];
@@ -183,12 +190,16 @@ void initialize_learned_imv_sort_join_thread_args(Relation<KeyType, PayloadType>
         (*(args + i)).tmp_minor_bckt_sizes_r = r_tmp_minor_bckt_sizes + r_minor_bckt_sizes_offsets[i];            
         (*(args + i)).tmp_minor_bckt_sizes_s = s_tmp_minor_bckt_sizes + s_minor_bckt_sizes_offsets[i];
 
-        (*(args + i)).numR = r_partition_sizes_for_threads[i] + r_total_repeated_keys_sizes_for_threads[i];
-        (*(args + i)).numS = s_partition_sizes_for_threads[i] + s_total_repeated_keys_sizes_for_threads[i];
-        (*(args + i)).tmp_repeatedKeysCountsR = r_repeated_keys_sizes_for_threads[i];
-        (*(args + i)).tmp_repeatedKeysCountsS = s_repeated_keys_sizes_for_threads[i];
-        (*(args + i)).tmp_total_repeatedKeysCountsR = r_total_repeated_keys_sizes_for_threads[i];
-        (*(args + i)).tmp_total_repeatedKeysCountsS = s_total_repeated_keys_sizes_for_threads[i];
+        //(*(args + i)).numR = r_partition_sizes_for_threads[i] + r_total_repeated_keys_sizes_for_threads[i];
+        //(*(args + i)).numS = s_partition_sizes_for_threads[i] + s_total_repeated_keys_sizes_for_threads[i];
+        //(*(args + i)).tmp_repeatedKeysCountsR = r_repeated_keys_sizes_for_threads[i];
+        //(*(args + i)).tmp_repeatedKeysCountsS = s_repeated_keys_sizes_for_threads[i];
+        //(*(args + i)).tmp_total_repeatedKeysCountsR = r_total_repeated_keys_sizes_for_threads[i];
+        //(*(args + i)).tmp_total_repeatedKeysCountsS = s_total_repeated_keys_sizes_for_threads[i];
+        (*(args + i)).major_bckt_size_r_arr = (int32_t*) calloc(NUM_THREADS, sizeof(int32_t));
+        (*(args + i)).major_bckt_size_s_arr = (int32_t*) calloc(NUM_THREADS, sizeof(int32_t));
+        (*(args + i)).tmp_total_repeatedKeysCountsR_arr = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+        (*(args + i)).tmp_total_repeatedKeysCountsS_arr = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
 
         (*(args + i)).NUM_MINOR_BCKT_PER_MAJOR_BCKT_r = r_NUM_MINOR_BCKT_PER_MAJOR_BCKT[i]; 
         (*(args + i)).NUM_MINOR_BCKT_PER_MAJOR_BCKT_s = s_NUM_MINOR_BCKT_PER_MAJOR_BCKT[i];
@@ -998,15 +1009,15 @@ void * learned_imv_sort_join_thread(void * param)
             partition_t1 = high_resolution_clock::now();
         }
          
-        if(my_tid == 0)
-        {
-            learned_sort_for_sort_merge::partition_major_buckets<KeyType, PayloadType>(1, r_rmi_ptr, NUM_THREADS, args->original_relR->tuples, args->original_relR->num_tuples, 
-                                                tmpRelpartR, r_partition_offsets, r_partition_sizes_for_threads, 
-                                                tmpRepeatedKeysPredictedRanksR, tmpRepeatedKeysCountsR, r_repeated_keys_offsets, r_repeated_keys_sizes_for_threads, r_total_repeated_keys_sizes_for_threads, -1, -1);
+        //if(my_tid == 0)
+        //{
+        //    learned_sort_for_sort_merge::partition_major_buckets<KeyType, PayloadType>(1, r_rmi_ptr, NUM_THREADS, args->original_relR->tuples, args->original_relR->num_tuples, 
+        //                                        tmpRelpartR, r_partition_offsets, r_partition_sizes_for_threads, 
+        //                                        tmpRepeatedKeysPredictedRanksR, tmpRepeatedKeysCountsR, r_repeated_keys_offsets, r_repeated_keys_sizes_for_threads, r_total_repeated_keys_sizes_for_threads, -1, -1);
 
-            learned_sort_for_sort_merge::partition_major_buckets<KeyType, PayloadType>(0, s_rmi_ptr, NUM_THREADS, args->original_relS->tuples, args->original_relS->num_tuples, 
-                                                tmpRelpartS, s_partition_offsets, s_partition_sizes_for_threads, 
-                                                tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, -1, -1);
+        //    learned_sort_for_sort_merge::partition_major_buckets<KeyType, PayloadType>(0, s_rmi_ptr, NUM_THREADS, args->original_relS->tuples, args->original_relS->num_tuples, 
+        //                                        tmpRelpartS, s_partition_offsets, s_partition_sizes_for_threads, 
+        //                                        tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, -1, -1);
 
 
 /*          for(int i = 0; i < NUM_THREADS; i++)
@@ -1044,7 +1055,16 @@ void * learned_imv_sort_join_thread(void * param)
                printf("for thread %d: min_key %ld, max_key %ld \n", i, min_key, max_key);
             }
 */
-        }
+        //}
+
+        learned_sort_for_sort_merge::partition_major_buckets_threaded<KeyType, PayloadType>(1, r_rmi_ptr, NUM_THREADS, args->relR, args->numR_to_be_partitioned, 
+                                            tmpRelpartR, r_partition_offsets, r_partition_sizes_for_threads, 
+                                            tmpRepeatedKeysPredictedRanksR, tmpRepeatedKeysCountsR, r_repeated_keys_offsets, r_repeated_keys_sizes_for_threads, r_total_repeated_keys_sizes_for_threads, -1, -1);
+
+        learned_sort_for_sort_merge::partition_major_buckets_threaded<KeyType, PayloadType>(0, s_rmi_ptr, NUM_THREADS, args->relS, args->numS_to_be_partitioned, 
+                                            tmpRelpartS, s_partition_offsets, s_partition_sizes_for_threads, 
+                                            tmpRepeatedKeysPredictedRanksS, tmpRepeatedKeysCountsS, s_repeated_keys_offsets, s_repeated_keys_sizes_for_threads, s_total_repeated_keys_sizes_for_threads, -1, -1);
+
 
         // wait at a barrier until each thread completes the partition phase
         BARRIER_ARRIVE(args->barrier, rv);
@@ -1080,12 +1100,32 @@ void * learned_imv_sort_join_thread(void * param)
     //}
 
 
-    args->numR = r_partition_sizes_for_threads[my_tid] + r_total_repeated_keys_sizes_for_threads[my_tid];
-    args->numS = s_partition_sizes_for_threads[my_tid] + s_total_repeated_keys_sizes_for_threads[my_tid];
-    args->tmp_repeatedKeysCountsR = r_repeated_keys_sizes_for_threads[my_tid];
-    args->tmp_repeatedKeysCountsS = s_repeated_keys_sizes_for_threads[my_tid];
-    args->tmp_total_repeatedKeysCountsR = r_total_repeated_keys_sizes_for_threads[my_tid];
-    args->tmp_total_repeatedKeysCountsS = s_total_repeated_keys_sizes_for_threads[my_tid];    
+    //args->numR = r_partition_sizes_for_threads[my_tid] + r_total_repeated_keys_sizes_for_threads[my_tid];
+    //args->numS = s_partition_sizes_for_threads[my_tid] + s_total_repeated_keys_sizes_for_threads[my_tid];
+    //args->tmp_repeatedKeysCountsR = r_repeated_keys_sizes_for_threads[my_tid];
+    //args->tmp_repeatedKeysCountsS = s_repeated_keys_sizes_for_threads[my_tid];
+    //args->tmp_total_repeatedKeysCountsR = r_total_repeated_keys_sizes_for_threads[my_tid];
+    //args->tmp_total_repeatedKeysCountsS = s_total_repeated_keys_sizes_for_threads[my_tid];    
+    args->numR = 0;
+    args->numS = 0;
+    args->tmp_repeatedKeysCountsR = 0;
+    args->tmp_repeatedKeysCountsS = 0;
+    args->tmp_total_repeatedKeysCountsR = 0;
+    args->tmp_total_repeatedKeysCountsS = 0;        
+    for(int i = 0; i < NUM_THREADS; i++)
+    {
+        args->numR += r_partition_sizes_for_threads[i][my_tid] + r_total_repeated_keys_sizes_for_threads[i][my_tid];
+        args->numS += s_partition_sizes_for_threads[i][my_tid] + s_total_repeated_keys_sizes_for_threads[i][my_tid];
+        args->major_bckt_size_r_arr[i] = r_partition_sizes_for_threads[i][my_tid];
+        args->major_bckt_size_s_arr[i] = s_partition_sizes_for_threads[i][my_tid];
+        args->tmp_total_repeatedKeysCountsR_arr[i] = r_total_repeated_keys_sizes_for_threads[i][my_tid];
+        args->tmp_total_repeatedKeysCountsS_arr[i] = s_total_repeated_keys_sizes_for_threads[i][my_tid];
+        args->tmp_repeatedKeysCountsR += r_repeated_keys_sizes_for_threads[i][my_tid];
+        args->tmp_repeatedKeysCountsS += s_repeated_keys_sizes_for_threads[i][my_tid];
+        args->tmp_total_repeatedKeysCountsR += r_total_repeated_keys_sizes_for_threads[i][my_tid];
+        args->tmp_total_repeatedKeysCountsS += s_total_repeated_keys_sizes_for_threads[i][my_tid];    
+    }
+
 
     BARRIER_ARRIVE(args->barrier, rv);
 
@@ -1602,13 +1642,17 @@ int main(int argc, char **argv)
 
     // allocate temporary space for partitioning and just to make sure that chunks of the temporary memory will be numa local to threads.
     tmpRelpartR = NULL; tmpRelpartS = NULL;
-    tmpRelpartR = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * total_r_initial_partition_sizes_for_threads * sizeof(Tuple<KeyType, PayloadType>)
-                                    + RELATION_PADDING);
-    tmpRelpartS = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * total_s_initial_partition_sizes_for_threads * sizeof(Tuple<KeyType, PayloadType>)
-                                    + RELATION_PADDING);
-
-    numa_localize_varlen<KeyType, PayloadType>(tmpRelpartR, r_initial_partition_sizes_for_threads, NUM_THREADS);
-    numa_localize_varlen<KeyType, PayloadType>(tmpRelpartS, s_initial_partition_sizes_for_threads, NUM_THREADS);
+    tmpRelpartR = (Tuple<KeyType, PayloadType>**) alloc_aligned(NUM_THREADS* sizeof(Tuple<KeyType, PayloadType>*));
+    tmpRelpartS = (Tuple<KeyType, PayloadType>**) alloc_aligned(NUM_THREADS* sizeof(Tuple<KeyType, PayloadType>*));
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        tmpRelpartR[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * (total_r_initial_partition_sizes_for_threads/NUM_THREADS) * sizeof(Tuple<KeyType, PayloadType>)
+                                        + RELATION_PADDING);
+        tmpRelpartS[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * (total_s_initial_partition_sizes_for_threads/NUM_THREADS) * sizeof(Tuple<KeyType, PayloadType>)
+                                        + RELATION_PADDING);
+        //numa_localize_varlen<KeyType, PayloadType>(tmpRelpartR[i], r_initial_partition_sizes_for_threads/NUM_THREADS, NUM_THREADS);
+        //numa_localize_varlen<KeyType, PayloadType>(tmpRelpartS[i], s_initial_partition_sizes_for_threads/NUM_THREADS, NUM_THREADS);
+    }
 
     r_partition_offsets = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
     s_partition_offsets = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
@@ -1620,9 +1664,15 @@ int main(int argc, char **argv)
         r_rel_offset += r_initial_partition_sizes_for_threads[i];
         s_rel_offset += s_initial_partition_sizes_for_threads[i];            
     }
-    r_partition_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
-    s_partition_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
 
+    r_partition_sizes_for_threads = (int64_t**) alloc_aligned(NUM_THREADS* sizeof(int64_t*));
+    s_partition_sizes_for_threads = (int64_t**) alloc_aligned(NUM_THREADS* sizeof(int64_t*));
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        r_partition_sizes_for_threads[i] = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+        s_partition_sizes_for_threads[i] = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+    }
+    
     // allocate temporary space for repeated keys themselves and just to make sure that chunks of the temporary memory will be numa local to threads.
     r_initial_repeated_keys_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
     s_initial_repeated_keys_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
@@ -1639,23 +1689,34 @@ int main(int argc, char **argv)
         r_initial_repeated_keys_sizes_for_threads[i] = r_initial_repeated_keys_sizes_for_threads[i] + CACHELINEPADDING;    
         s_initial_repeated_keys_sizes_for_threads[i] = s_initial_repeated_keys_sizes_for_threads[i] + CACHELINEPADDING;      
     }
-    tmpRepeatedKeysPredictedRanksR = NULL; tmpRepeatedKeysPredictedRanksS = NULL;
-    tmpRepeatedKeysPredictedRanksR = (Tuple<KeyType, PayloadType>*) alloc_aligned(total_r_initial_repeated_keys_size * sizeof(Tuple<KeyType, PayloadType>)
-                                    + RELATION_PADDING);
-    tmpRepeatedKeysPredictedRanksS = (Tuple<KeyType, PayloadType>*) alloc_aligned(total_s_initial_repeated_keys_size * sizeof(Tuple<KeyType, PayloadType>)
-                                    + RELATION_PADDING);
 
-    numa_localize_varlen<KeyType, PayloadType>(tmpRepeatedKeysPredictedRanksR, r_initial_repeated_keys_sizes_for_threads, NUM_THREADS);
-    numa_localize_varlen<KeyType, PayloadType>(tmpRepeatedKeysPredictedRanksS, s_initial_repeated_keys_sizes_for_threads, NUM_THREADS);
+    tmpRepeatedKeysPredictedRanksR = NULL; tmpRepeatedKeysPredictedRanksS = NULL;
+    tmpRepeatedKeysPredictedRanksR = (Tuple<KeyType, PayloadType>**) alloc_aligned(NUM_THREADS * sizeof(Tuple<KeyType, PayloadType>*));
+    tmpRepeatedKeysPredictedRanksS = (Tuple<KeyType, PayloadType>**) alloc_aligned(NUM_THREADS * sizeof(Tuple<KeyType, PayloadType>*));
+    for(i=0; i<NUM_THREADS; i++)
+    {
+        tmpRepeatedKeysPredictedRanksR[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned((total_r_initial_repeated_keys_size/NUM_THREADS) * sizeof(Tuple<KeyType, PayloadType>)
+                                    + RELATION_PADDING);
+        tmpRepeatedKeysPredictedRanksS[i] = (Tuple<KeyType, PayloadType>*) alloc_aligned((total_s_initial_repeated_keys_size/NUM_THREADS) * sizeof(Tuple<KeyType, PayloadType>)
+                                    + RELATION_PADDING);
+        //numa_localize_varlen<KeyType, PayloadType>(tmpRepeatedKeysPredictedRanksR, r_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
+        //numa_localize_varlen<KeyType, PayloadType>(tmpRepeatedKeysPredictedRanksS, s_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
+    }
 
     tmpRepeatedKeysCountsR = NULL; tmpRepeatedKeysCountsS = NULL;
-    tmpRepeatedKeysCountsR = (int64_t*) alloc_aligned(total_r_initial_repeated_keys_size * sizeof(int64_t)
-                                    + RELATION_PADDING);
-    tmpRepeatedKeysCountsS = (int64_t*) alloc_aligned(total_s_initial_repeated_keys_size * sizeof(int64_t)
-                                    + RELATION_PADDING);
+    tmpRepeatedKeysCountsR = (int64_t**) alloc_aligned(NUM_THREADS * sizeof(int64_t*));
+    tmpRepeatedKeysCountsS = (int64_t**) alloc_aligned(NUM_THREADS * sizeof(int64_t*));
+    for(i=0; i<NUM_THREADS; i++)
+    {
+        tmpRepeatedKeysCountsR[i] = (int64_t*) alloc_aligned((total_r_initial_repeated_keys_size/NUM_THREADS) * sizeof(int64_t)
+                                        + RELATION_PADDING);
+        tmpRepeatedKeysCountsS[i] = (int64_t*) alloc_aligned((total_s_initial_repeated_keys_size/NUM_THREADS) * sizeof(int64_t)
+                                        + RELATION_PADDING);
+        //numa_localize_generic_varlen<int64_t>(tmpRepeatedKeysCountsR, r_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
+        //numa_localize_generic_varlen<int64_t>(tmpRepeatedKeysCountsS, s_initial_repeated_keys_sizes_for_threads/NUM_THREADS, NUM_THREADS);
+    }
+    
 
-    numa_localize_generic_varlen<int64_t>(tmpRepeatedKeysCountsR, r_initial_repeated_keys_sizes_for_threads, NUM_THREADS);
-    numa_localize_generic_varlen<int64_t>(tmpRepeatedKeysCountsS, s_initial_repeated_keys_sizes_for_threads, NUM_THREADS);
     
     r_repeated_keys_offsets = (int64_t *) calloc(NUM_THREADS, sizeof(int64_t));
     s_repeated_keys_offsets = (int64_t *) calloc(NUM_THREADS, sizeof(int64_t));
@@ -1667,11 +1728,23 @@ int main(int argc, char **argv)
         r_repeated_keys_offset += r_initial_repeated_keys_sizes_for_threads[i];
         s_repeated_keys_offset += s_initial_repeated_keys_sizes_for_threads[i];            
     }
-    r_repeated_keys_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
-    s_repeated_keys_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
-    r_total_repeated_keys_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
-    s_total_repeated_keys_sizes_for_threads = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
 
+    r_repeated_keys_sizes_for_threads = (int64_t**) calloc(NUM_THREADS, sizeof(int64_t*));
+    s_repeated_keys_sizes_for_threads = (int64_t**) calloc(NUM_THREADS, sizeof(int64_t*));
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        r_repeated_keys_sizes_for_threads[i] = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+        s_repeated_keys_sizes_for_threads[i] = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+    }
+
+    r_total_repeated_keys_sizes_for_threads = (int64_t**) calloc(NUM_THREADS, sizeof(int64_t*));
+    s_total_repeated_keys_sizes_for_threads = (int64_t**) calloc(NUM_THREADS, sizeof(int64_t*));
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        r_total_repeated_keys_sizes_for_threads[i] = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+        s_total_repeated_keys_sizes_for_threads[i] = (int64_t*) calloc(NUM_THREADS, sizeof(int64_t));
+    }
+    
     // allocate temporary space for sorting and just to make sure that chunks of the temporary memory will be numa local to threads.
     tmpRelsortR = NULL; tmpRelsortS = NULL;
     tmpRelsortR = (Tuple<KeyType, PayloadType>*) alloc_aligned(OVERALLOCATION_SIZE_RATIO * total_r_initial_partition_sizes_for_threads * sizeof(Tuple<KeyType, PayloadType>)

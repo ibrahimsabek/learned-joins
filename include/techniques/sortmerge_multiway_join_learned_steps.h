@@ -76,68 +76,93 @@ class LearnedSortMergeMultiwayJoinSteps : public ETHSortMergeMultiwayJoinSteps<K
                                   alloc_aligned(PARTFANOUT * sizeof(RelationPair<KeyType, PayloadType>));
 
     // Sorting R relation
-    Tuple<KeyType, PayloadType> * inptrR  = args->tmp_partR;
+    //Tuple<KeyType, PayloadType> * inptrR  = args->tmp_partR;
+    Tuple<KeyType, PayloadType> ** inptrR  = args->tmp_partR_arr;
     Tuple<KeyType, PayloadType> * outptrR = args->tmp_sortR;
 
     if(learnedsortflag)
     {
 #ifdef USE_LEARNED_SORT_FOR_SORT_MERGE
-        learned_sort_for_sort_merge::sort_avx(outptrR, args->rmi_r, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_r, args->MINOR_BCKTS_OFFSET_r, args->TOT_NUM_MINOR_BCKTS_r, 
-                                    args->INPUT_SZ_r, inptrR, args->numR - args->tmp_total_repeatedKeysCountsR, 
+        learned_sort_for_sort_merge::sort_avx_from_seperate_partitions(outptrR, args->rmi_r, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_r, args->MINOR_BCKTS_OFFSET_r, args->TOT_NUM_MINOR_BCKTS_r, 
+                                    args->INPUT_SZ_r, inptrR, args->major_bckt_size_r_arr,
                                     args->tmp_minor_bckts_r, args->tmp_minor_bckt_sizes_r,
-                                    args->tmp_spill_bucket_r, args->sorted_spill_bucket_r, 
-                                    args->tmp_total_repeatedKeysCountsR, args->tmp_repeatedKeysPredictedRanksR, 
+                                    args->tmp_spill_bucket_r, args->sorted_spill_bucket_r,                                     
+                                    args->tmp_total_repeatedKeysCountsR_arr, args->tmp_repeatedKeysPredictedRanksR, 
                                     args->tmp_repeatedKeysPredictedRanksCountsR, args->tmp_repeatedKeysCountsR, my_tid, 0);
+//        learned_sort_for_sort_merge::sort_avx(outptrR, args->rmi_r, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_r, args->MINOR_BCKTS_OFFSET_r, args->TOT_NUM_MINOR_BCKTS_r, 
+//                                    args->INPUT_SZ_r, inptrR, args->numR - args->tmp_total_repeatedKeysCountsR, 
+//                                    args->tmp_minor_bckts_r, args->tmp_minor_bckt_sizes_r,
+//                                    args->tmp_spill_bucket_r, args->sorted_spill_bucket_r, 
+//                                    args->tmp_total_repeatedKeysCountsR, args->tmp_repeatedKeysPredictedRanksR, 
+//                                    args->tmp_repeatedKeysPredictedRanksCountsR, args->tmp_repeatedKeysCountsR, my_tid, 0);
 #else
-        int64_t * inputR  = (int64_t*)(inptrR);
-        int64_t * outputR = (int64_t*)(outptrR);
+//        int64_t * inputR  = (int64_t*)(inptrR);
+//        int64_t * outputR = (int64_t*)(outptrR);
 
-#ifdef USE_LEARNED_SORT_AVX
-        learned_sort::sort_avx(inputR, inputR + args->numR);
-#else
-        //learned_sort::sort(inputR, inputR + args->numR, my_tid, 0);
-        std::sort(inputR, inputR + args->numR);
-#endif
-        inptrR = (Tuple<KeyType, PayloadType> *)(outputR);
-        outptrR = (Tuple<KeyType, PayloadType> *)(inputR);
+//#ifdef USE_LEARNED_SORT_AVX
+//        learned_sort::sort_avx(inputR, inputR + args->numR);
+//#else
+//        //learned_sort::sort(inputR, inputR + args->numR, my_tid, 0);
+//        std::sort(inputR, inputR + args->numR);
+//#endif
+//        inptrR = (Tuple<KeyType, PayloadType> *)(outputR);
+//        outptrR = (Tuple<KeyType, PayloadType> *)(inputR);
+        printf("[ERROR] Not supported from seperate partitions yet!!\n");
+        exit(EXIT_FAILURE);
 #endif
     }
     else
-        avxsort_tuples<KeyType, PayloadType>(&inptrR, &outptrR, args->numR);
+    {
+//      avxsort_tuples<KeyType, PayloadType>(&inptrR, &outptrR, args->numR);
+        printf("[ERROR] Not supported from seperate partitions yet!!\n");
+        exit(EXIT_FAILURE);
+    }
 
     args->threadrelchunks[my_tid][0].R.tuples     = outptrR;
     args->threadrelchunks[my_tid][0].R.num_tuples = args->numR;
 
     // Sorting S relation
-   Tuple<KeyType, PayloadType> * inptrS  = args->tmp_partS;
+   //Tuple<KeyType, PayloadType> * inptrS  = args->tmp_partS;
+   Tuple<KeyType, PayloadType> ** inptrS  = args->tmp_partS_arr;
    Tuple<KeyType, PayloadType> * outptrS = args->tmp_sortS;
 
     if(learnedsortflag)
     {
 #ifdef USE_LEARNED_SORT_FOR_SORT_MERGE
-        learned_sort_for_sort_merge::sort_avx(outptrS, args->rmi_s, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_s, args->MINOR_BCKTS_OFFSET_s, args->TOT_NUM_MINOR_BCKTS_s, 
-                                    args->INPUT_SZ_s, inptrS, args->numS - args->tmp_total_repeatedKeysCountsS, 
+        learned_sort_for_sort_merge::sort_avx_from_seperate_partitions(outptrS, args->rmi_s, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_s, args->MINOR_BCKTS_OFFSET_s, args->TOT_NUM_MINOR_BCKTS_s, 
+                                    args->INPUT_SZ_s, inptrS, args->major_bckt_size_s_arr,                                    
                                     args->tmp_minor_bckts_s, args->tmp_minor_bckt_sizes_s,
                                     args->tmp_spill_bucket_s, args->sorted_spill_bucket_s, 
-                                    args->tmp_total_repeatedKeysCountsS, args->tmp_repeatedKeysPredictedRanksS, 
+                                    args->tmp_total_repeatedKeysCountsS_arr, args->tmp_repeatedKeysPredictedRanksS, 
                                     args->tmp_repeatedKeysPredictedRanksCountsS, args->tmp_repeatedKeysCountsS, my_tid, 0);
+//        learned_sort_for_sort_merge::sort_avx(outptrS, args->rmi_s, args->NUM_MINOR_BCKT_PER_MAJOR_BCKT_s, args->MINOR_BCKTS_OFFSET_s, args->TOT_NUM_MINOR_BCKTS_s, 
+//                                    args->INPUT_SZ_s, inptrS, args->numS - args->tmp_total_repeatedKeysCountsS, 
+//                                    args->tmp_minor_bckts_s, args->tmp_minor_bckt_sizes_s,
+//                                    args->tmp_spill_bucket_s, args->sorted_spill_bucket_s, 
+//                                    args->tmp_total_repeatedKeysCountsS, args->tmp_repeatedKeysPredictedRanksS, 
+//                                    args->tmp_repeatedKeysPredictedRanksCountsS, args->tmp_repeatedKeysCountsS, my_tid, 0);
 #else
-        int64_t * inputS  = (int64_t*)(inptrS);
-        int64_t * outputS = (int64_t*)(outptrS);
+//        int64_t * inputS  = (int64_t*)(inptrS);
+//        int64_t * outputS = (int64_t*)(outptrS);
 
-#ifdef USE_LEARNED_SORT_AVX
-        learned_sort::sort_avx(inputS, inputS + args->numS);
-#else
-        //learned_sort::sort(inputS, inputS + args->numS, my_tid, 0);
-        std::sort(inputS, inputS + args->numS);
-#endif
-        inptrS = (Tuple<KeyType, PayloadType> *)(outputS);
-        outptrS = (Tuple<KeyType, PayloadType> *)(inputS);
+//#ifdef USE_LEARNED_SORT_AVX
+//        learned_sort::sort_avx(inputS, inputS + args->numS);
+//#else
+//        //learned_sort::sort(inputS, inputS + args->numS, my_tid, 0);
+//        std::sort(inputS, inputS + args->numS);
+//#endif
+//        inptrS = (Tuple<KeyType, PayloadType> *)(outputS);
+//        outptrS = (Tuple<KeyType, PayloadType> *)(inputS);
+        printf("[ERROR] Not supported from seperate partitions yet!!\n");
+        exit(EXIT_FAILURE);
 #endif
     }
     else
-        avxsort_tuples<KeyType, PayloadType>(&inptrS, &outptrS, args->numS);
-
+    {
+//      avxsort_tuples<KeyType, PayloadType>(&inptrS, &outptrS, args->numS);
+        printf("[ERROR] Not supported from seperate partitions yet!!\n");
+        exit(EXIT_FAILURE);
+    }
     args->threadrelchunks[my_tid][0].S.tuples = outptrS;
     args->threadrelchunks[my_tid][0].S.num_tuples = args->numS;
   }

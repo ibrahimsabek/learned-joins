@@ -158,6 +158,15 @@ void partition_major_buckets(int,
   int, int);
 
 template<class KeyType, class PayloadType>
+void partition_major_buckets_threaded(int,
+  RMI<KeyType, PayloadType> *, unsigned int,
+  Tuple<KeyType, PayloadType> *, unsigned int, 
+  Tuple<KeyType, PayloadType> *, int64_t *, int64_t *,
+  Tuple<KeyType, PayloadType> *, int64_t *, int64_t *, int64_t *, int64_t *, 
+  int, int);
+
+
+template<class KeyType, class PayloadType>
 void sort_avx(Tuple<KeyType, PayloadType> *, RMI<KeyType, PayloadType> *,
               unsigned int, unsigned int, unsigned int,
               unsigned int, Tuple<KeyType, PayloadType> *, uint64_t, 
@@ -167,6 +176,16 @@ void sort_avx(Tuple<KeyType, PayloadType> *, RMI<KeyType, PayloadType> *,
               int64_t *, int64_t,
               int, int);
 }
+
+template<class KeyType, class PayloadType>
+void sort_avx_from_seperate_partitions(Tuple<KeyType, PayloadType> *, RMI<KeyType, PayloadType> * rmi,
+                                          unsigned int, unsigned int, unsigned int,
+                                          unsigned int, Tuple<KeyType, PayloadType> **, uint64_t*, 
+                                          Tuple<KeyType, PayloadType> *, int64_t *,
+                                          Tuple<KeyType, PayloadType> *, Tuple<KeyType, PayloadType> *, 
+                                          int64_t*, Tuple<KeyType, PayloadType> **, 
+                                          int64_t **, int64_t,
+                                          int, int);
 
 using namespace learned_sort_for_sort_merge;
 
@@ -1032,6 +1051,244 @@ void learned_sort_for_sort_merge::partition_major_buckets(int is_R_relation,
   }
 }
 
+template<class KeyType, class PayloadType>
+void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_relation, 
+  learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi, unsigned int partitions_fanout,
+  Tuple<KeyType, PayloadType> * begin, unsigned int INPUT_SZ, 
+  Tuple<KeyType, PayloadType> ** out_partitions, int64_t* out_partitions_offsets, int64_t ** out_partitions_hist,  
+  Tuple<KeyType, PayloadType> ** out_repeated_keys, int64_t ** out_repeated_keys_counts, int64_t* out_repeated_keys_offsets, int64_t ** out_repeated_keys_hist, int64_t ** out_total_repeated_keys_hist, 
+  int thread_id, int partition_id)
+{
+
+  // NOTE: partitions_fanout is supposted to be equal to the number of threads
+  // Cache runtime parameters
+  static const unsigned int FANOUT = partitions_fanout;
+
+  // Constants for repeated keys
+  //const unsigned int EXCEPTION_VEC_INIT_CAPACITY = FANOUT;
+  constexpr unsigned int EXC_CNT_THRESHOLD = 60;
+
+#ifdef BUILD_RMI_FROM_TWO_DATASETS
+  size_t TRAINING_SAMPLE_SZ;
+  if(is_R_relation)
+    TRAINING_SAMPLE_SZ = rmi->training_sample_size_R;
+  else
+    TRAINING_SAMPLE_SZ = rmi->training_sample_size_S;
+#else
+  const size_t TRAINING_SAMPLE_SZ = rmi->training_sample_size;
+#endif
+
+  // Initialize the exception lists for handling repeated keys
+  vector<Tuple<KeyType, PayloadType>> repeated_keys;  // Stores the heavily repeated key values
+
+  Tuple<KeyType, PayloadType>* curr_out_partitions[FANOUT];
+  int64_t curr_out_partitions_hist[FANOUT];
+
+  Tuple<KeyType, PayloadType>* curr_out_repeated_keys[FANOUT];
+  int64_t * curr_out_repeated_keys_counts[FANOUT];
+  int64_t curr_out_repeated_keys_hist[FANOUT];
+  int64_t curr_out_total_repeated_keys_hist[FANOUT];
+
+  for(unsigned int i = 0; i < FANOUT; i++)
+  {
+    curr_out_partitions[i] = out_partitions[thread_id] + out_partitions_offsets[i];
+    curr_out_partitions_hist[i] = 0;
+  
+    curr_out_repeated_keys[i] = out_repeated_keys[thread_id] + out_repeated_keys_offsets[i];
+    curr_out_repeated_keys_counts[i] = out_repeated_keys_counts[thread_id] + out_repeated_keys_offsets[i];
+    curr_out_repeated_keys_hist[i] = 0;
+    curr_out_total_repeated_keys_hist[i] = 0;
+  }
+
+  // Cache the model parameters
+  auto root_slope = rmi->models[0][0].slope;
+  auto root_intrcpt = rmi->models[0][0].intercept;
+  unsigned int num_models = rmi->hp.arch[1];
+  vector<double> slopes, intercepts;
+  for (unsigned int i = 0; i < num_models; ++i) {
+    slopes.push_back(rmi->models[1][i].slope);
+    intercepts.push_back(rmi->models[1][i].intercept);
+  }
+
+
+  //----------------------------------------------------------//
+  //       DETECT REPEATED KEYS IN THE TRAINING SAMPLE        //
+  //----------------------------------------------------------//
+
+  // Count the occurrences of equal keys
+#ifdef BUILD_RMI_FROM_TWO_DATASETS
+  unsigned int cnt_rep_keys = 1;
+  if(is_R_relation)
+  {
+    for (size_t i = 1; i < TRAINING_SAMPLE_SZ; i++) {
+      if (((*(rmi->training_sample_R))[i]).key == ((*(rmi->training_sample_R))[i - 1]).key) {
+        ++cnt_rep_keys;
+      } else {  // New values start here. Reset counter. Add value in the
+        // exception_vals if above threshold
+        if (cnt_rep_keys > EXC_CNT_THRESHOLD) {
+          repeated_keys.push_back((*(rmi->training_sample_R))[i - 1]);
+        }
+        cnt_rep_keys = 1;
+      }
+    }
+
+    if (cnt_rep_keys > EXC_CNT_THRESHOLD) {  // Last batch of repeated keys
+      repeated_keys.push_back((*(rmi->training_sample_R))[TRAINING_SAMPLE_SZ - 1]);
+    }  
+  }
+  else
+  {
+    for (size_t i = 1; i < TRAINING_SAMPLE_SZ; i++) {
+      if (((*(rmi->training_sample_S))[i]).key == ((*(rmi->training_sample_S))[i - 1]).key) {
+        ++cnt_rep_keys;
+      } else {  // New values start here. Reset counter. Add value in the
+        // exception_vals if above threshold
+        if (cnt_rep_keys > EXC_CNT_THRESHOLD) {
+          repeated_keys.push_back((*(rmi->training_sample_S))[i - 1]);
+        }
+        cnt_rep_keys = 1;
+      }
+    }
+
+    if (cnt_rep_keys > EXC_CNT_THRESHOLD) {  // Last batch of repeated keys
+      repeated_keys.push_back((*(rmi->training_sample_S))[TRAINING_SAMPLE_SZ - 1]);
+    }  
+  }
+#else
+  unsigned int cnt_rep_keys = 1;
+  for (size_t i = 1; i < TRAINING_SAMPLE_SZ; i++) {
+    if (((*(rmi->training_sample))[i]).key == ((*(rmi->training_sample))[i - 1]).key) {
+      ++cnt_rep_keys;
+    } else {  // New values start here. Reset counter. Add value in the
+      // exception_vals if above threshold
+      if (cnt_rep_keys > EXC_CNT_THRESHOLD) {
+        repeated_keys.push_back((*(rmi->training_sample))[i - 1]);
+      }
+      cnt_rep_keys = 1;
+    }
+  }
+
+  if (cnt_rep_keys > EXC_CNT_THRESHOLD) {  // Last batch of repeated keys
+    repeated_keys.push_back((*(rmi->training_sample))[TRAINING_SAMPLE_SZ - 1]);
+  }
+#endif
+
+  //----------------------------------------------------------//
+  //             SHUFFLE THE KEYS INTO BUCKETS                //
+  //----------------------------------------------------------//
+
+  // For each spike value, predict the bucket.
+  int pred_model_idx = 0;
+  double pred_cdf = 0.;
+  for (size_t i = 0; i < repeated_keys.size(); ++i) {
+    pred_model_idx = static_cast<int>(
+        std::max(0., std::min(num_models - 1.,
+                              root_slope * repeated_keys[i].key + root_intrcpt)));
+    pred_cdf =
+        slopes[pred_model_idx] * repeated_keys[i].key + intercepts[pred_model_idx];
+    pred_model_idx = static_cast<int>(
+        std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
+
+
+    (curr_out_repeated_keys[pred_model_idx])[curr_out_repeated_keys_hist[pred_model_idx]] = repeated_keys[i];
+    //(curr_out_repeated_keys_counts[pred_model_idx])[curr_out_repeated_keys_hist[pred_model_idx]] = 0;
+    ++curr_out_repeated_keys_hist[pred_model_idx];
+  }
+
+  Tuple<KeyType, PayloadType>* end = begin + INPUT_SZ;
+  if (repeated_keys.size() == 0)
+  {// No significantly repeated keys in the sample
+    pred_model_idx = 0;
+
+    // Process each key in order
+    for (auto cur_key = begin; cur_key < end; ++cur_key) {
+      // Predict the model idx in the leaf layer
+      pred_model_idx = static_cast<int>(std::max(
+          0.,
+          std::min(num_models - 1., root_slope * cur_key->key + root_intrcpt)));
+
+      // Predict the CDF
+      pred_cdf =
+          slopes[pred_model_idx] * cur_key->key + intercepts[pred_model_idx];
+
+      // Scale the CDF to the number of buckets
+      pred_model_idx = static_cast<int>(
+          std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
+
+      (curr_out_partitions[pred_model_idx])[curr_out_partitions_hist[pred_model_idx]] = *cur_key;
+      ++curr_out_partitions_hist[pred_model_idx];
+    }
+  }
+  else
+  { // There are many repeated keys in the sample
+
+    // Batch size for exceptions
+    static constexpr unsigned int BATCH_SZ_EXP = 100;
+
+    // Stores the predicted bucket for each input key in the current batch
+    unsigned int pred_idx_in_batch_exc[BATCH_SZ_EXP] = {0};
+
+    // Process elements in batches of size BATCH_SZ_EXP
+    for (auto cur_key = begin; cur_key < end; cur_key += BATCH_SZ_EXP) {
+      // Process each element in the batch and save their predicted indices
+      for (unsigned int elm_idx = 0; elm_idx < BATCH_SZ_EXP; ++elm_idx) {
+        // Predict the leaf model idx
+        pred_idx_in_batch_exc[elm_idx] = static_cast<int>(std::max(
+            0., std::min(num_models - 1.,
+                         root_slope * cur_key[elm_idx].key + root_intrcpt)));
+
+        // Predict the CDF
+        pred_cdf = slopes[pred_idx_in_batch_exc[elm_idx]] * cur_key[elm_idx].key +
+                   intercepts[pred_idx_in_batch_exc[elm_idx]];
+
+        // Extrapolate the CDF to the number of buckets
+        pred_idx_in_batch_exc[elm_idx] = static_cast<unsigned int>(
+            std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
+      }
+
+      // Go over the batch again and place the flagged keys in an exception
+      // list
+      bool exc_found = false;  // If exceptions in the batch, don't insert into
+                               // buckets, but save in an exception list
+      for (unsigned int elm_idx = 0; elm_idx < BATCH_SZ_EXP; ++elm_idx) {
+        exc_found = false;
+        // Iterate over the keys in the exception list corresponding to the
+        // predicted rank for the current key in the batch and the rank of the
+        // exception
+
+        for (unsigned int j = 0;
+             j < curr_out_repeated_keys_hist[pred_idx_in_batch_exc[elm_idx]];
+             ++j) {
+          // If key in exception list, then flag it and update the counts that
+          // will be used later
+          if(((curr_out_repeated_keys[pred_idx_in_batch_exc[elm_idx]])[j]).key == cur_key[elm_idx].key)
+          {
+            ++((curr_out_repeated_keys_counts[pred_idx_in_batch_exc[elm_idx]])[j]); // Increment count of exception value
+
+            exc_found = true;
+            ++curr_out_total_repeated_keys_hist[pred_idx_in_batch_exc[elm_idx]];
+            break;
+          }
+        }
+
+        if (!exc_found)  // If no exception value was found in the batch,
+                         // then proceed to putting them in the predicted
+                         // buckets
+        {
+          (curr_out_partitions[pred_idx_in_batch_exc[elm_idx]])[curr_out_partitions_hist[pred_idx_in_batch_exc[elm_idx]]] = cur_key[elm_idx];
+          ++curr_out_partitions_hist[pred_idx_in_batch_exc[elm_idx]];    
+        }
+      }
+    }
+  }
+
+  for(unsigned int i = 0; i < FANOUT; i++)
+  {
+    out_partitions_hist[thread_id][i] = curr_out_partitions_hist[i];
+    out_repeated_keys_hist[thread_id][i] = curr_out_repeated_keys_hist[i];
+    out_total_repeated_keys_hist[thread_id][i] = curr_out_repeated_keys_hist[i];
+  }
+}
 
 template<class KeyType, class PayloadType>
 void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_output, learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
@@ -2005,5 +2262,20 @@ void learned_sort_for_sort_merge::sort_avx(Tuple<KeyType, PayloadType> * sorted_
   // The input array is now sorted  
 }
 
+
+template<class KeyType, class PayloadType>
+void learned_sort_for_sort_merge::sort_avx_from_seperate_partitions(Tuple<KeyType, PayloadType> * sorted_output, learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
+                                          unsigned int NUM_MINOR_BCKT_PER_MAJOR_BCKT, unsigned int MINOR_BCKTS_OFFSET, unsigned int TOT_NUM_MINOR_BCKTS,
+                                          unsigned int INPUT_SZ, Tuple<KeyType, PayloadType> ** major_bckt, uint64_t* major_bckt_size, 
+                                          Tuple<KeyType, PayloadType> * minor_bckts, int64_t * minor_bckt_sizes,
+                                          Tuple<KeyType, PayloadType> * tmp_spill_bucket, Tuple<KeyType, PayloadType> * sorted_spill_bucket, 
+                                          int64_t* total_repeated_keys, Tuple<KeyType, PayloadType> ** repeated_keys_predicted_ranks, 
+                                          int64_t ** repeated_key_counts, int64_t repeated_keys_predicted_ranks_count,
+                                          int thread_id, int partition_id)
+{
+
+    //TODO: here 
+
+}
 
 #endif  // LEARNED_SORT_FOR_SORT_MERGE_H
