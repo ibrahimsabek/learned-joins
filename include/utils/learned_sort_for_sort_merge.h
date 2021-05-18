@@ -1199,7 +1199,7 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
     ++curr_out_repeated_keys_hist[pred_model_idx];
   }
 //if(thread_id == 0)
-printf("thread_id %d here 3 \n", thread_id);
+//printf("thread_id %d here 3 \n", thread_id);
 
   Tuple<KeyType, PayloadType>* end = begin + INPUT_SZ;
   if (repeated_keys.size() == 0)
@@ -1222,12 +1222,12 @@ printf("thread_id %d here 3 \n", thread_id);
           std::max(0., std::min(FANOUT - 1., pred_cdf * FANOUT)));
 
 
-      printf("before: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
+//      printf("before: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
 
       (curr_out_partitions[pred_model_idx])[curr_out_partitions_hist[pred_model_idx]] = *cur_key;
       ++curr_out_partitions_hist[pred_model_idx];
 
-      printf("after: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
+//      printf("after: thread_id %d key %d pred_model_idx %d pred_cdf %d\n", thread_id, cur_key->key, pred_model_idx, pred_cdf);
     }
   }
   else
