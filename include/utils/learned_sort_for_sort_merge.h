@@ -1109,8 +1109,8 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
     slopes.push_back(rmi->models[1][i].slope);
     intercepts.push_back(rmi->models[1][i].intercept);
   }
-
-
+if(thread_id == 0)
+printf("here 1 \n");
   //----------------------------------------------------------//
   //       DETECT REPEATED KEYS IN THE TRAINING SAMPLE        //
   //----------------------------------------------------------//
@@ -1154,6 +1154,9 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
       repeated_keys.push_back((*(rmi->training_sample_S))[TRAINING_SAMPLE_SZ - 1]);
     }  
   }
+  if(thread_id == 0)
+printf("here 2 \n");
+
 #else
   unsigned int cnt_rep_keys = 1;
   for (size_t i = 1; i < TRAINING_SAMPLE_SZ; i++) {
@@ -1194,6 +1197,8 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
     //(curr_out_repeated_keys_counts[pred_model_idx])[curr_out_repeated_keys_hist[pred_model_idx]] = 0;
     ++curr_out_repeated_keys_hist[pred_model_idx];
   }
+if(thread_id == 0)
+printf("here 3 \n");
 
   Tuple<KeyType, PayloadType>* end = begin + INPUT_SZ;
   if (repeated_keys.size() == 0)
@@ -1281,6 +1286,8 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
       }
     }
   }
+if(thread_id == 0)
+printf("here 4 \n");
 
   for(unsigned int i = 0; i < FANOUT; i++)
   {
@@ -1288,6 +1295,10 @@ void learned_sort_for_sort_merge::partition_major_buckets_threaded(int is_R_rela
     out_repeated_keys_hist[thread_id][i] = curr_out_repeated_keys_hist[i];
     out_total_repeated_keys_hist[thread_id][i] = curr_out_repeated_keys_hist[i];
   }
+
+ if(thread_id == 0)
+printf("here 5 \n");
+ 
 }
 
 template<class KeyType, class PayloadType>
