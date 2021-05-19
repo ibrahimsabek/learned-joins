@@ -22,7 +22,6 @@ class ParsedLearnedSortMergeBenchmarkOutput:
         self.ls_prefetch_slopes_intercepts_minor_bckts = configs_arr[15]
         self.ls_simdstate = configs_arr[17]
         self.ls_pdis = configs_arr[19]
-        print(self.datasets_r, self.datasets_s,  self.ls_simdstate, self.ls_pdis)
 
     def parse_benchmark_output(self):
         keys = []
@@ -42,25 +41,25 @@ class ParsedLearnedSortMergeBenchmarkOutput:
         else:
             for j in range(len(values[0])):
                 if keys[j] == 'learned_model_in_ms':
-                    self.learned_model_in_ms = values[0][j]          
+                    self.learned_model_in_ms = float(values[0][j])          
                 elif keys[j] == 'partition_in_ms':
-                    self.partition_in_ms = values[0][j]
+                    self.partition_in_ms = float(values[0][j])
                 elif keys[j] == 'sorting_in_ms':
-                    self.sorting_in_ms = values[0][j]
+                    self.sorting_in_ms = float(values[0][j])
                 elif keys[j] == 'join_in_ms':
-                    self.join_in_ms = values[0][j]
+                    self.join_in_ms = float(values[0][j])
                 elif keys[j] == 'learned_model_Throughput_in_mtuples_per_sec':
-                    self.learned_model_Throughput_in_mtuples_per_sec = values[0][j]
+                    self.learned_model_Throughput_in_mtuples_per_sec = float(values[0][j])
                 elif keys[j] == 'learned_model_Cycles':
-                    self.learned_model_Cycles = values[0][j]
+                    self.learned_model_Cycles = float(values[0][j])
                 elif keys[j] == 'learned_model_LLC_misses':
-                    self.learned_model_LLC_misses = values[0][j]
+                    self.learned_model_LLC_misses = float(values[0][j])
                 elif keys[j] == 'learned_model_L1_misses':
-                    self.learned_model_L1_misses = values[0][j]
+                    self.learned_model_L1_misses = float(values[0][j])
                 elif keys[j] == 'learned_model_Instructions':
-                    self.learned_model_Instructions = values[0][j]
+                    self.learned_model_Instructions = float(values[0][j])
                 elif keys[j] == 'learned_model_Branch_misses':
-                    self.learned_model_Branch_misses = values[0][j]
+                    self.learned_model_Branch_misses = float(values[0][j])
                 elif keys[j] == 'learned_model_Task_clock':
                     self.learned_model_Task_clock = float(values[0][j])
                 elif keys[j] == 'partition_Throughput_in_mtuples_per_sec':
