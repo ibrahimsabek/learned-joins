@@ -22,7 +22,7 @@ class ParsedLearnedSortMergeBenchmarkOutput:
         self.ls_prefetch_slopes_intercepts_minor_bckts = configs_arr[15]
         self.ls_simdstate = configs_arr[17]
         self.ls_pdis = configs_arr[19]
-        printf(self.datasets_r, self.datasets_s,  self.ls_simdstate, self.ls_pdis)
+        print(self.datasets_r, self.datasets_s,  self.ls_simdstate, self.ls_pdis)
 
     def parse_benchmark_output(self):
         keys = []
