@@ -131,4 +131,4 @@ analyzer = LearnedSortMergeJoinAnalyzer()
 
 
 print(f'sj_with_learned_unique/128E6_128E6')
-analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_unique/128E6_128E6")
+analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_unique/128E6_128E6/")
