@@ -9,7 +9,7 @@ class ParsedLearnedSortMergeBenchmarkOutput:
     def parse_benchmark_parameters(self):
         parts = os.path.split(self.benchmark_output_path)
         file_name = parts[1]
-        configs = file_name[24:-4]
+        configs = file_name[23:-4]
         configs_arr = configs.split("_")
         self.datasets_r = configs_arr[0]
         self.datasets_s = configs_arr[1]
