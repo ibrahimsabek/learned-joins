@@ -130,5 +130,5 @@ analyzer = LearnedSortMergeJoinAnalyzer()
 #analyzer.analyze_datasets_get_min("/spinning/sabek/learned_join_results/learned_sort_merge_join_tuning_lognormal/v8/")
 
 
-print(f'sj_with_learned_unique/128E6_128E6')
-analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_unique/128E6_128E6/")
+print(f'sj_with_learned_unique/640E6_640E6')
+analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_unique/640E6_640E6/")
