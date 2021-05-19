@@ -124,3 +124,4 @@ class LearnedSortMergeJoinAnalyzer:
 #analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/learned_sort_merge_join_tuning_lognormal/v8/")
 
 parsed_obj = ParsedLearnedSortMergeBenchmarkOutput("/spinning/sabek/learned_join_results/sj_with_learned_unique/sj_with_learned_tuning_32E6_32E6_th_32_avxmb_0_lsdt_1000_lsda_10000_lsimv_0_lsps_0_lspsi_0_lsss_5_lspdis_320.csv")
+parsed_obj.parse_benchmark_parameters()
