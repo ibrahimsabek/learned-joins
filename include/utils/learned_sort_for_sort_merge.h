@@ -2379,7 +2379,7 @@ for(int p = 0; p < NUM_THREADS_FOR_EVALUATION; p++)
 
 #ifdef LS_FOR_SORT_MERGE_IMV_AVX_MINOR_BCKTS
 
-  curr_major_bckt_off = (void *)(major_bckt[p][major_bckt_partition_offset]);
+  curr_major_bckt_off = (void *)(&(major_bckt[p][major_bckt_partition_offset]));
 
   // init # of the state
   for (int i = 0; i <= LS_FOR_SORT_MERGE_SIMDStateSize; ++i) {
