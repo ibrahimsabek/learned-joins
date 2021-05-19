@@ -104,6 +104,7 @@ class ParsedLearnedSortMergeBenchmarkOutput:
                     self.join_Branch_misses = float(values[0][j])                
                 elif keys[j] == 'join_Task_clock':
                     self.join_Task_clock = float(values[0][j]) 
+            self.total_algorithm_time_in_ms = self.learned_model_in_ms + self.partition_in_ms + self.sorting_in_ms + self.join_in_ms 
 
 class ParsedETHSortMergeBenchmarkOutput:
     def __init__(self, benchmark_output_path_in, num_parsed_items_in=1):
