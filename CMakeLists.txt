@@ -196,3 +196,11 @@ target_include_directories(non_imv_indexed_nested_loop_join_runner PUBLIC
   $<INSTALL_INTERFACE:include>
   PRIVATE src)  
   target_link_libraries(non_imv_indexed_nested_loop_join_runner common ${JEVENTSLIB} rmi_lib)
+
+add_executable(avx512_benchmarker src/benchmark_runners/avx512_benchmarker.cpp)
+target_include_directories(avx512_benchmarker PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  PRIVATE src)  
+  target_link_libraries(avx512_benchmarker common ${JEVENTSLIB})
+
