@@ -329,7 +329,7 @@ void test_vectorized_hashing_v1(Relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYP
 
         pred_model_idx = _mm512_cvtpd_epi64(general_reg_1_double);
 
-        general_reg_1_double = _mm512_fmadd_pd(general_reg_2_double, slopes_avx, intercepts_avx);
+        general_reg_1_double = _mm512_fmadd_pd(general_reg_1_double, slopes_avx, intercepts_avx);
 
         general_reg_1_double = /*_mm512_floor_pd(*/
                                     _mm512_max_pd(
