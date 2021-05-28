@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
    // run queries
    auto repetitions = atoi(argv[1]);
    size_t nrThreads = std::thread::hardware_concurrency();
-   cout "Number of running threads: " << nrThreads << "\n";
+   cout << "Number of running threads: " << nrThreads << "\n";
    size_t vectorSize = 1024;
    bool clearCaches = false;
    //if (argc > 3) nrThreads = atoi(argv[3]);
