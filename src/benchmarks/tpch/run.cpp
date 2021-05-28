@@ -51,9 +51,10 @@ int main(int argc, char* argv[]) {
    // run queries
    auto repetitions = atoi(argv[1]);
    size_t nrThreads = std::thread::hardware_concurrency();
+   cout "Number of running threads: " << nrThreads << "\n";
    size_t vectorSize = 1024;
    bool clearCaches = false;
-   if (argc > 3) nrThreads = atoi(argv[3]);
+   //if (argc > 3) nrThreads = atoi(argv[3]);
 
    //std::unordered_set<std::string> q = {"1h", "1i", "1r", "1v", "3h", "3v", "5h",  "5v",
    //                                     "6h", "6v", "9h", "9v", "18h", "18v"};

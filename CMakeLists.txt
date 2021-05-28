@@ -196,7 +196,6 @@ target_include_directories(imv PUBLIC
 target_link_libraries(imv common)
 
 
-#file(GLOB TPCHQUERIES ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmarks/tpch/queries/q1.cpp)
 file(GLOB TPCHQUERIES ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmarks/tpch/queries/*.cpp)
 add_library(tpch
   ${TPCHQUERIES}
