@@ -8,7 +8,7 @@
 
 #include "benchmarks/ssb/Queries.hpp"
 #include "common/runtime/Import.hpp"
-#include "profile.hpp"
+#include "profile.h"
 #include "tbb/tbb.h"
 
 using namespace runtime;
