@@ -73,30 +73,30 @@ int main(int argc, char* argv[]) {
    }
 
    tbb::task_scheduler_init scheduler(nrThreads);
-   if (q.count("1h"))
+   /*if (q.count("1h"))
       e.timeAndProfile("q1 hyper     ", nrTuples(tpch, {"lineitem"}),
                        [&]() {
                           if (clearCaches) clearOsCaches();
                           auto result = q1_hyper(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
-   if (q.count("1i"))
+                       repetitions);*/
+   /*if (q.count("1i"))
       e.timeAndProfile("q1 rof       ", nrTuples(tpch, {"lineitem"}),
                        [&]() {
                           if (clearCaches) clearOsCaches();
                           auto result = q1_imv(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
-   if (q.count("1r"))
+                       repetitions);*/
+   /*if (q.count("1r"))
       e.timeAndProfile("q1 rof       ", nrTuples(tpch, {"lineitem"}),
                        [&]() {
                           if (clearCaches) clearOsCaches();
                           auto result = q1_rof(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
+                       repetitions);*/
    if (q.count("1v"))
       e.timeAndProfile("q1 vectorwise", nrTuples(tpch, {"lineitem"}),
                        [&]() {
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
                           escape(&result);
                        },
                        repetitions);
-   if (q.count("3h"))
+   /*if (q.count("3h"))
       e.timeAndProfile("q3 hyper     ",
                        nrTuples(tpch, {"customer", "orders", "lineitem"}),
                        [&]() {
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
                           auto result = q3_hyper(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
+                       repetitions);*/
    if (q.count("3v"))
       e.timeAndProfile(
           "q3 vectorwise", nrTuples(tpch, {"customer", "orders", "lineitem"}),
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
              escape(&result);
           },
           repetitions);
-   if (q.count("5h"))
+   /*if (q.count("5h"))
       e.timeAndProfile("q5 hyper     ",
                        nrTuples(tpch, {"supplier", "region", "nation",
                                        "customer", "orders", "lineitem"}),
@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
                           auto result = q5_hyper(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
+                       repetitions);*/
    if (q.count("5v"))
       e.timeAndProfile("q5 vectorwise",
                        nrTuples(tpch, {"supplier", "region", "nation",
@@ -145,14 +145,14 @@ int main(int argc, char* argv[]) {
                           escape(&result);
                        },
                        repetitions);
-   if (q.count("6h"))
+   /*if (q.count("6h"))
       e.timeAndProfile("q6 hyper     ", tpch["lineitem"].nrTuples,
                        [&]() {
                           if (clearCaches) clearOsCaches();
                           auto result = q6_hyper(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
+                       repetitions);*/
    if (q.count("6v"))
       e.timeAndProfile("q6 vectorwise", tpch["lineitem"].nrTuples,
                        [&]() {
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
                           escape(&result);
                        },
                        repetitions);
-   if (q.count("9h"))
+   /*if (q.count("9h"))
       e.timeAndProfile("q9 hyper     ",
                        nrTuples(tpch, {"nation", "supplier", "part", "partsupp",
                                        "lineitem", "orders"}),
@@ -171,7 +171,7 @@ int main(int argc, char* argv[]) {
                           auto result = q9_hyper(tpch, nrThreads);
                           escape(&result);
                        },
-                       repetitions);
+                       repetitions);*/
    if (q.count("9v"))
       e.timeAndProfile("q9 vectorwise",
                        nrTuples(tpch, {"nation", "supplier", "part", "partsupp",
@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
                           escape(&result);
                        },
                        repetitions);
-   if (q.count("18h"))
+   /*if (q.count("18h"))
       e.timeAndProfile(
           "q18 hyper     ",
           nrTuples(tpch, {"customer", "lineitem", "orders", "lineitem"}),
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
              auto result = q18_hyper(tpch, nrThreads);
              escape(&result);
           },
-          repetitions);
+          repetitions);*/
    if (q.count("18v"))
       e.timeAndProfile(
           "q18 vectorwise",
