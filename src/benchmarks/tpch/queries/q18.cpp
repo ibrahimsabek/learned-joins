@@ -4,8 +4,8 @@
 #include "common/runtime/Query.hpp"
 #include "common/runtime/Stack.hpp"
 #include "common/runtime/Types.hpp"
-#include "hyper/GroupBy.hpp"
-#include "hyper/ParallelHelper.hpp"
+//#include "hyper/GroupBy.hpp"
+//#include "hyper/ParallelHelper.hpp"
 #include "tbb/tbb.h"
 #include "vectorwise/Operations.hpp"
 #include "vectorwise/Operators.hpp"
@@ -49,7 +49,7 @@ using namespace std;
 //   o_orderdate,
 //   o_totalprice
 
-NOVECTORIZE std::unique_ptr<runtime::Query> q18_hyper(Database& db,
+/*NOVECTORIZE std::unique_ptr<runtime::Query> q18_hyper(Database& db,
                                                       size_t nrThreads) {
    using namespace types;
    using namespace std;
@@ -205,7 +205,7 @@ NOVECTORIZE std::unique_ptr<runtime::Query> q18_hyper(Database& db,
 
    leaveQuery(nrThreads);
    return move(resources.query);
-}
+}*/
 
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;

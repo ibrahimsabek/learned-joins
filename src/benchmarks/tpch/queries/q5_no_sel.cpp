@@ -35,7 +35,7 @@ using vectorwise::primitives::hash_t;
 
 using namespace runtime;
 using namespace std;
-NOVECTORIZE Relation q5_no_sel_hyper(Database& db) {
+/*NOVECTORIZE Relation q5_no_sel_hyper(Database& db) {
 
    // --- aggregates
    types::Numeric<12, 4> revenue = 0;
@@ -136,7 +136,7 @@ NOVECTORIZE Relation q5_no_sel_hyper(Database& db) {
    ct.push_back(count);
    result.nrTuples = 1;
    return result;
-}
+}*/
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getNoSelQuery() {
    using namespace vectorwise;

@@ -1,8 +1,8 @@
 #include "benchmarks/tpch/Queries.hpp"
 #include "common/runtime/Hash.hpp"
 #include "common/runtime/Types.hpp"
-#include "hyper/GroupBy.hpp"
-#include "hyper/ParallelHelper.hpp"
+//#include "hyper/GroupBy.hpp"
+//#include "hyper/ParallelHelper.hpp"
 #include "tbb/tbb.h"
 #include "vectorwise/Operations.hpp"
 #include "vectorwise/Operators.hpp"
@@ -36,7 +36,7 @@ using vectorwise::primitives::hash_t;
 //   o_orderdate,
 //   o_shippriority
 
-NOVECTORIZE std::unique_ptr<runtime::Query> q3_hyper(Database& db,
+/*NOVECTORIZE std::unique_ptr<runtime::Query> q3_hyper(Database& db,
                                                      size_t nrThreads) {
 
    // --- aggregates
@@ -173,7 +173,7 @@ NOVECTORIZE std::unique_ptr<runtime::Query> q3_hyper(Database& db,
    leaveQuery(nrThreads);
    return move(resources.query);
 }
-
+*/
 std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();

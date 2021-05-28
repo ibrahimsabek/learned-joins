@@ -2,8 +2,8 @@
 #include "common/runtime/Concurrency.hpp"
 #include "common/runtime/Hash.hpp"
 #include "common/runtime/Types.hpp"
-#include "hyper/GroupBy.hpp"
-#include "hyper/ParallelHelper.hpp"
+//#include "hyper/GroupBy.hpp"
+//#include "hyper/ParallelHelper.hpp"
 #include "tbb/tbb.h"
 #include "vectorwise/Operations.hpp"
 #include "vectorwise/Operators.hpp"
@@ -43,7 +43,7 @@ using vectorwise::primitives::hash_t;
 
 using namespace runtime;
 using namespace std;
-NOVECTORIZE std::unique_ptr<runtime::Query> q5_hyper(Database& db,
+/*NOVECTORIZE std::unique_ptr<runtime::Query> q5_hyper(Database& db,
                                                      size_t nrThreads) {
 
    const size_t morselSize = 10000;
@@ -202,7 +202,7 @@ NOVECTORIZE std::unique_ptr<runtime::Query> q5_hyper(Database& db,
 
    leaveQuery(nrThreads);
    return move(resources.query);
-}
+}*/
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;

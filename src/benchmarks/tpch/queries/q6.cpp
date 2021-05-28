@@ -10,7 +10,7 @@
 
 using namespace runtime;
 using namespace std;
-NOVECTORIZE Relation q6_hyper(Database& db, size_t /*nrThreads*/) {
+/*NOVECTORIZE Relation q6_hyper(Database& db, size_t nrThreads) {
    Relation result;
    result.insert("revenue", make_unique<algebra::Numeric>(12, 4));
 
@@ -61,7 +61,7 @@ NOVECTORIZE Relation q6_hyper(Database& db, size_t /*nrThreads*/) {
    rev.push_back(revenue);
    result.nrTuples = 1;
    return result;
-}
+}*/
 
 unique_ptr<Q6Builder::Q6> Q6Builder::getQuery() {
    using namespace vectorwise;
