@@ -194,9 +194,9 @@ void parseColumns(runtime::Relation& r, std::vector<ColumnConfigOwning>& cols,
    }
 
    bool allColumnsMMaped = true;
-   string cachedir = dir + "/cached/";
-   if (!mkdir((dir + "/cached/").c_str(), 0777))
-      throw runtime_error("Could not create dir 'cached': " + dir + "/cached/");
+   string cachedir = dir + "/cache/";
+   if (!mkdir((dir + "/cache/").c_str(), 0777))
+      throw runtime_error("Could not create dir 'cache': " + dir + "/cache/");
    for (auto& col : colsC)
       if (!std::ifstream(cachedir + fileName + "_" + col.name))
          allColumnsMMaped = false;
