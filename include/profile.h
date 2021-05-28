@@ -1,6 +1,6 @@
 #ifndef PROFILE
 #define PROFILE
-#include "common/Compat.h"
+#include "common/Compat.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <functional>

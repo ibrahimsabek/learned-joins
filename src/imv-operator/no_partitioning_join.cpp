@@ -20,7 +20,7 @@
 
 #include "imv-operator/npj.hpp"
 //#include "tbb/tbb.h"
-//#include "profile.hpp"
+//#include "profile.h"
 
 //using std::__cxx11::string;
 using std::string;
