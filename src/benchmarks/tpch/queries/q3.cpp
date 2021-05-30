@@ -370,9 +370,9 @@ void printResultQ3(BlockRelation* result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
     auto selCust = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selCustAttr));
-    for (size_t i = 0; i < elementsInBlock; ++i) {
+    /*for (size_t i = 0; i < elementsInBlock; ++i) {
       cout << selCust[i] << endl;
-    }
+    }*/
   }
   cout << "total results number = " << found << endl;
 
