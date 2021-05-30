@@ -359,13 +359,13 @@ void printResultQ3(BlockRelation* result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
     selOrder = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selOrderAttr));
-    for (size_t i = 0; i < elementsInBlock; ++i) {
-      cout << selOrder[i] << endl;
-    }
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << selOrder[i] << endl;
+    //}
   }
   cout << "sel_order total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
 }
 
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
