@@ -370,7 +370,7 @@ void printResultQ3(BlockRelation* result) {
 */
 
 //for: select * from customer, orders where c_mktsegment = 'BUILDING' and c_custkey = o_custkey and o_orderdate < date '1995-03-15'
-std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+/*std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -421,6 +421,45 @@ void printResultQ3(BlockRelation* result) {
   cout << "cust_ord total results number = " << found << endl;
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(custOrder, found);   
+}
+*/
+
+// for: select l_orderkey from l_shipdate > date '1995-03-15'
+std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q3>();
+   auto lineitem = Scan("lineitem");
+   Select(Expression().addOp(BF(primitives::sel_greater_Date_col_Date_val), //
+                             Buffer(sel_lineitem, sizeof(pos_t)),           //
+                             Column(lineitem, "l_shipdate"),                //
+                             Value(&r->c3)));
+
+   result.addValue("sel_lineitem", Buffer(sel_lineitem))
+         .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+// for: select l_orderkey from l_shipdate > date '1995-03-15'
+void printResultQ3(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto selLineitemAttr = result->getAttribute("sel_lineitem");
+  uint32_t* selLineitem;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    selLineitem = reinterpret_cast<uint32_t*>(block.data(selLineitemAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << selLineitem[i] << endl;
+    //}
+  }
+  cout << "sel_lineitem total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selLineitem, found);   
 }
 
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
