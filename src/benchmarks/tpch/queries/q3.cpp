@@ -313,10 +313,11 @@ void printResultQ3(BlockRelation* result) {
   using namespace types;  
   size_t found = 0;
   auto selCustAttr = result->getAttribute("sel_cust");
+  uint32_t* selCust;
   for (auto& block : *result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
-    auto selCust = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selCustAttr));
+    selCust = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selCustAttr));
     /*for (size_t i = 0; i < elementsInBlock; ++i) {
       cout << selCust[i] << endl;
     }*/
