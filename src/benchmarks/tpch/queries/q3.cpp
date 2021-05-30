@@ -11,6 +11,9 @@
 #include "vectorwise/VectorAllocator.hpp"
 #include <iostream>
 
+#include "config.h"            /* autoconf header */
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
 #include "utils/io.h"
 
 using namespace runtime;
@@ -324,7 +327,7 @@ void printResultQ3(BlockRelation* result) {
   }
   cout << "total results number = " << found << endl;
 
-  materialize_one_relation(selCust, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selCust, found);   
 }
 
 /*
