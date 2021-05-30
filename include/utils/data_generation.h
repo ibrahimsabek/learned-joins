@@ -73,6 +73,9 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> * relation, i
 template<class KeyType, class PayloadType>
 int create_eth_workload_relation_fk(Relation<KeyType, PayloadType> *relation, int64_t num_tuples, const int64_t maxid, int relation_padding);
 
+template<class KeyType, class PayloadType>
+int create_input_workload_relation(KeyType* input_keys, Relation<KeyType, PayloadType> * relation, int64_t num_tuples, int relation_padding);
+
 //create a synthetic workload relation of foreign keys, where the keys are following a certain data distribution
 template<class KeyType, class PayloadType>
 int create_synthetic_workload_relation_fk(Relation<KeyType, PayloadType> *relation, int64_t num_tuples, synthetic_workload_distr_t data_distn_type, DataDistnParams* data_distn_params, int relation_padding);
@@ -235,6 +238,20 @@ void random_unique_gen(Relation<KeyType, PayloadType> * rel)
     knuth_shuffle<KeyType, PayloadType>(rel);
 }
 
+template<class KeyType, class PayloadType>
+void input_tuples_gen(Relation<KeyType, PayloadType> * rel, KeyType* input_keys) 
+{
+    uint64_t i;
+    for (i = 0; i < rel->num_tuples; i++) {
+        rel->tuples[i].key = (KeyType)(input_keys[i]);
+
+#ifdef ZERO_PAYLOAD
+        rel->tuples[i].payload = (PayloadType) 0; 
+#else
+        rel->tuples[i].payload = (PayloadType)(input_keys[i]);
+#endif
+    }
+}
 
 template<class KeyType, class PayloadType>
 int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, int64_t num_tuples, int relation_padding) 
@@ -252,6 +269,22 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, in
     //random_unique_gen<KeyType, PayloadType>(relation);
     random_uniq_unif_gen<KeyType, PayloadType>(relation);
     //random_seq_holes_gen<KeyType, PayloadType>(relation);
+
+    return 0;
+}
+
+template<class KeyType, class PayloadType>
+int create_input_workload_relation(KeyType* input_keys, Relation<KeyType, PayloadType> * relation, int64_t num_tuples, int relation_padding)
+{
+    relation->num_tuples = num_tuples;
+    relation->tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(num_tuples * sizeof(Tuple<KeyType, PayloadType>) + relation_padding);
+
+    if (!relation->tuples) { 
+        perror("out of memory");
+        return -1; 
+    }
+  
+    input_tuples_gen(relation, input_keys);
 
     return 0;
 }
