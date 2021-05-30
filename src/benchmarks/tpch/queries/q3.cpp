@@ -11,19 +11,7 @@
 #include "vectorwise/VectorAllocator.hpp"
 #include <iostream>
 
-#include "config.h"            /* autoconf header */
-#include "configs/base_configs.h"
-#include "configs/eth_configs.h"
-
-#include "utils/eth_data_structures.h"
-#include "utils/data_generation.h"
 #include "utils/io.h"
-#include "utils/csv.h"
-
-#ifndef KeyType
-#define KeyType RELATION_KEY_TYPE
-#define PayloadType RELATION_PAYLOAD_TYPE
-#endif
 
 using namespace runtime;
 using namespace std;
@@ -320,47 +308,6 @@ std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    return r;
 }
 
-// Materialize the generated results
-void materializeResultQ3(KeyType* input_keys, uint64_t input_keys_len)
-{
-    Relation<KeyType, PayloadType> rel_r;
- 
-    int64_t result = 0;
-    uint64_t curr_num_tuples_r = input_keys_len;
-
-    string curr_rel_r_path = RELATION_R_PATH;
-    string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
-    string curr_rel_r_file_name = RELATION_R_FILE_NAME;
-    string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
-
-    result = create_input_workload_relation<KeyType, PayloadType>(input_keys, &rel_r, curr_num_tuples_r, 0);
-    //ASSERT_EQ(result, 0);
-    #ifdef PERSIST_RELATIONS_FOR_EVALUATION
-    write_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
-    write_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str());
-    #endif
-
-    KeyType * sorted_relation_r_keys_only = (KeyType *) alloc_aligned(rel_r.num_tuples  * sizeof(KeyType));
-    Relation<KeyType, PayloadType> sorted_relation_r;
-
-    for(int j = 0; j < rel_r.num_tuples; j++)
-        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
-
-    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
-
-    sorted_relation_r.num_tuples = rel_r.num_tuples;
-    sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
-
-    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
-        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
-
-    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
-
-    #ifdef PERSIST_RELATIONS_FOR_EVALUATION
-    write_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
-    #endif
-}
-
 
 void printResultQ3(BlockRelation* result) {
   using namespace types;  
@@ -376,7 +323,7 @@ void printResultQ3(BlockRelation* result) {
   }
   cout << "total results number = " << found << endl;
 
-  materializeResultQ3(selCust, found);   
+  materialize_one_relation(selCust, found);   
 }
 
 /*
