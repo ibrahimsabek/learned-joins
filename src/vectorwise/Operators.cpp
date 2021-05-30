@@ -135,7 +135,7 @@ void gather(__m512i& index, int* probe_keys) {
   std::cout<<std::endl;
 }
 pos_t Hashjoin::joinSIMDAMAC() {
-  cout <<"JoinSIMDAMAC "<<"\n";
+  std::cout <<"JoinSIMDAMAC "<<"\n";
   size_t found=0;
   if(imv_cont.k==100) {
     for(int i=0;i<imvNum;++i) {
@@ -219,7 +219,7 @@ pos_t Hashjoin::joinSIMDAMAC() {
 }
 
 pos_t Hashjoin::joinIMV() {
-  cout <<"joinIMV "<<"\n";
+  std::cout <<"joinIMV "<<"\n";
   size_t found = 0;
   if (imv_cont.k == 100) {
     for (int i = 0; i <= imvNum; ++i) {
@@ -354,7 +354,7 @@ pos_t Hashjoin::joinIMV() {
 }
 #define PDISD 128
 pos_t Hashjoin::joinSelIMV() {
-    cout <<"joinSelIMV "<<"\n";
+    std::cout <<"joinSelIMV "<<"\n";
 
   size_t found = 0;
   if (imv_cont.k == 100) {
@@ -495,7 +495,7 @@ pos_t Hashjoin::joinSelIMV() {
 }
 
 pos_t Hashjoin::joinFullSIMD() {
-  cout <<"joinFullSIMD "<<"\n";
+  std::cout <<"joinFullSIMD "<<"\n";
 
   size_t found = 0;
   int* probeKeys = (reinterpret_cast<int*>(((F2_Op *) (probeHash.ops[0].get()))->param1));
@@ -561,7 +561,7 @@ pos_t Hashjoin::joinFullSIMD() {
   return found;
 }
 pos_t Hashjoin::joinAMAC() {
-  cout <<"joinAMAC "<<"\n";
+  std::cout <<"joinAMAC "<<"\n";
 
   size_t found = 0;
   // initialization
@@ -642,7 +642,7 @@ pos_t Hashjoin::joinAMAC() {
 }
 // Note the way to get buildKey and probeKey: multi-joinkey or selective vectors
 pos_t Hashjoin::joinRow() {
-    cout <<"joinRow "<<"\n";
+    std::cout <<"joinRow "<<"\n";
   // std::cout<<"use join row "<<std::endl;
   size_t found = 0;
   do {
@@ -683,7 +683,7 @@ pos_t Hashjoin::joinRow() {
 }
 #define OLD 1
 pos_t Hashjoin::joinAll() {
-      cout <<"joinAll "<<"\n";
+      std::cout <<"joinAll "<<"\n";
 
    size_t found = 0;
    // perform continuation
@@ -739,7 +739,7 @@ pos_t Hashjoin::joinAll() {
 }
 
 pos_t Hashjoin::joinAllParallel() {
-   cout <<"joinAllParallel "<<"\n";
+   std::cout <<"joinAllParallel "<<"\n";
 
    size_t found = 0;
    auto followup = contCon.followup;
@@ -804,7 +804,7 @@ pos_t Hashjoin::joinAllParallel() {
 }
 
 pos_t Hashjoin::joinAllSIMD() {
-     cout <<"joinAllSIMD "<<"\n";
+     std::cout <<"joinAllSIMD "<<"\n";
 
    size_t found = 0;
    auto followup = contCon.followup;
@@ -1000,7 +1000,7 @@ pos_t Hashjoin::joinAllSIMD() {
 }
 
 pos_t Hashjoin::joinSel() {
-       cout <<"joinSel "<<"\n";
+       std::cout <<"joinSel "<<"\n";
 
    size_t found = 0;
    // perform continuation
@@ -1040,7 +1040,7 @@ pos_t Hashjoin::joinSel() {
 }
 
 pos_t Hashjoin::joinSelParallel() {
-    cout <<"joinSelParallel "<<"\n";
+    std::cout <<"joinSelParallel "<<"\n";
 
    size_t found = 0;
    auto followup = contCon.followup;
@@ -1102,7 +1102,7 @@ pos_t Hashjoin::joinSelParallel() {
 }
 
 pos_t Hashjoin::joinSelSIMD() {
-      cout <<"joinSelSIMD "<<"\n";
+      std::cout <<"joinSelSIMD "<<"\n";
 
    size_t found = 0;
    auto followup = contCon.followup;
@@ -1308,7 +1308,7 @@ void INTERPRET_SEPARATE insertAllEntries(T& allocations, HT& ht,
 }
 
 pos_t Hashjoin::joinBoncz() {
-    cout <<"joinBoncz "<<"\n";
+    std::cout <<"joinBoncz "<<"\n";
 
    size_t followupWrite = contCon.followupWrite;
    size_t found = 0;
