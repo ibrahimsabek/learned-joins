@@ -309,10 +309,10 @@ using vectorwise::primitives::hash_t;
 
    r->rootOp = popOperator();
    return r;
-}*/
+}
 
 // for: select c_custkey from customer where  c_mktsegment = 'BUILDING';
-/*void printResultQ3(BlockRelation* result) {
+void printResultQ3(BlockRelation* result) {
   using namespace types;  
   size_t found = 0;
   auto selCustAttr = result->getAttribute("sel_cust");
@@ -331,7 +331,7 @@ using vectorwise::primitives::hash_t;
 }*/
 
 //for: select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
-std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+/*std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -358,7 +358,7 @@ void printResultQ3(BlockRelation* result) {
   for (auto& block : *result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
-    selOrder = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selOrderAttr));
+    selOrder = reinterpret_cast<uint32_t*>(block.data(selOrderAttr));
     //for (size_t i = 0; i < elementsInBlock; ++i) {
     //  cout << selOrder[i] << endl;
     //}
@@ -366,6 +366,61 @@ void printResultQ3(BlockRelation* result) {
   cout << "sel_order total results number = " << found << endl;
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
+}
+*/
+
+//for: select * from customer, orders where c_mktsegment = 'BUILDING' and c_custkey = o_custkey and o_orderdate < date '1995-03-15'
+std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q3>();
+   auto customer = Scan("customer");
+   Select(Expression().addOp(
+       BF(primitives::sel_equal_to_Char_10_col_Char_10_val), //
+       Buffer(sel_cust, sizeof(pos_t)),                      //
+       Column(customer, "c_mktsegment"),                     //
+       Value(&r->c1)));                                      //
+   auto order = Scan("orders");
+   Select(Expression().addOp(BF(primitives::sel_less_Date_col_Date_val), //
+                             Buffer(sel_order, sizeof(pos_t)),           //
+                             Column(order, "o_orderdate"),               //
+                             Value(&r->c2)));
+   HashJoin(Buffer(cust_ord, sizeof(pos_t)), conf.joinAll())
+       .setProbeSelVector(Buffer(sel_order), conf.joinSel())
+       .addBuildKey(Column(customer, "c_custkey"),       //
+                    Buffer(sel_cust),                    //
+                    conf.hash_sel_int32_t_col(),         //
+                    primitives::scatter_sel_int32_t_col) //
+       .addProbeKey(Column(order, "o_custkey"),          //
+                    Buffer(sel_order),                   //
+                    conf.hash_sel_int32_t_col(),         //
+                    primitives::keys_equal_int32_t_col);
+
+   result.addValue("cust_ord", Buffer(cust_ord))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+//for: select * from customer, orders where c_mktsegment = 'BUILDING' and c_custkey = o_custkey and o_orderdate < date '1995-03-15'
+void printResultQ3(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto custOrderAttr = result->getAttribute("cust_ord");
+  uint32_t* custOrder;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    custOrder = reinterpret_cast<uint32_t*>(block.data(custOrderAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << custOrder[i] << endl;
+    //}
+  }
+  cout << "cust_ord total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(custOrder, found);   
 }
 
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
