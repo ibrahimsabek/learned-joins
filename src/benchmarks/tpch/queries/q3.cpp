@@ -459,7 +459,7 @@ void printResultQ3(BlockRelation* result) {
   }
   cout << "sel_lineitem total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selLineitem, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selLineitem, found);   
 }
 
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
