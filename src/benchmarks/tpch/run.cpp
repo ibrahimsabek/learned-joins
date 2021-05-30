@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 
    //std::unordered_set<std::string> q = {"1h", "1i", "1r", "1v", "3h", "3v", "5h",  "5v",
    //                                     "6h", "6v", "9h", "9v", "18h", "18v"};
-   std::unordered_set<std::string> q = {"9v"};
+   std::unordered_set<std::string> q = {"3v"};
    if (auto v = std::getenv("vectorSize")) vectorSize = atoi(v);
    if (auto v = std::getenv("SIMDhash")) conf.useSimdHash = atoi(v);
    if (auto v = std::getenv("SIMDjoin")) conf.useSimdJoin = atoi(v);
