@@ -325,7 +325,7 @@ using vectorwise::primitives::hash_t;
     //  cout << selCust[i] << endl;
     //}
   }
-  cout << "total results number = " << found << endl;
+  cout << "sel_cust total results number = " << found << endl;
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selCust, found);   
 }*/
@@ -363,7 +363,7 @@ void printResultQ3(BlockRelation* result) {
       cout << selOrder[i] << endl;
     }
   }
-  cout << "total results number = " << found << endl;
+  cout << "sel_order total results number = " << found << endl;
 
   //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
 }
