@@ -291,8 +291,8 @@ using vectorwise::primitives::hash_t;
 }
 */
 
-//select c_custkey from customer where  c_mktsegment = 'BUILDING';
-std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+// for: select c_custkey from customer where  c_mktsegment = 'BUILDING';
+/*std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -309,10 +309,10 @@ std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
 
    r->rootOp = popOperator();
    return r;
-}
+}*/
 
-
-void printResultQ3(BlockRelation* result) {
+// for: select c_custkey from customer where  c_mktsegment = 'BUILDING';
+/*void printResultQ3(BlockRelation* result) {
   using namespace types;  
   size_t found = 0;
   auto selCustAttr = result->getAttribute("sel_cust");
@@ -320,128 +320,53 @@ void printResultQ3(BlockRelation* result) {
   for (auto& block : *result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
-    selCust = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selCustAttr));
-    /*for (size_t i = 0; i < elementsInBlock; ++i) {
-      cout << selCust[i] << endl;
-    }*/
+    selCust = reinterpret_cast<uint32_t*>(block.data(selCustAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << selCust[i] << endl;
+    //}
   }
   cout << "total results number = " << found << endl;
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selCust, found);   
-}
+}*/
 
-/*
-//TODO: select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
+//for: select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
 std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
    auto r = make_unique<Q3>();
-   auto customer = Scan("customer");
-   Select(Expression().addOp(
-       BF(primitives::sel_equal_to_Char_10_col_Char_10_val), //
-       Buffer(sel_cust, sizeof(pos_t)),                      //
-       Column(customer, "c_mktsegment"),                     //
-       Value(&r->c1)));                                      //
    auto order = Scan("orders");
    Select(Expression().addOp(BF(primitives::sel_less_Date_col_Date_val), //
                              Buffer(sel_order, sizeof(pos_t)),           //
                              Column(order, "o_orderdate"),               //
                              Value(&r->c2)));
-   HashJoin(Buffer(cust_ord, sizeof(pos_t)), conf.joinAll())
-       .setProbeSelVector(Buffer(sel_order), conf.joinSel())
-       .addBuildKey(Column(customer, "c_custkey"),       //
-                    Buffer(sel_cust),                    //
-                    conf.hash_sel_int32_t_col(),         //
-                    primitives::scatter_sel_int32_t_col) //
-       .addProbeKey(Column(order, "o_custkey"),          //
-                    Buffer(sel_order),                   //
-                    conf.hash_sel_int32_t_col(),         //
-                    primitives::keys_equal_int32_t_col);
-   auto lineitem = Scan("lineitem");
-   Select(Expression().addOp(BF(primitives::sel_greater_Date_col_Date_val), //
-                             Buffer(sel_lineitem, sizeof(pos_t)),           //
-                             Column(lineitem, "l_shipdate"),                //
-                             Value(&r->c3)));
-   HashJoin(Buffer(j1_lineitem, sizeof(pos_t)), conf.joinAll()) //
-       .setProbeSelVector(Buffer(sel_lineitem), conf.joinSel())
-       .addBuildKey(Column(order, "o_orderkey"), //
-                    Buffer(cust_ord),            //
-                    conf.hash_sel_int32_t_col(), //
-                    primitives::scatter_sel_int32_t_col)
-       .addBuildValue(Column(order, "o_orderdate"), Buffer(cust_ord),
-                      primitives::scatter_sel_Date_col,
-                      Buffer(o_orderdate, sizeof(types::Date)),
-                      primitives::gather_col_Date_col)
-       .addBuildValue(Column(order, "o_shippriority"), Buffer(cust_ord),
-                      primitives::scatter_sel_int32_t_col,
-                      Buffer(o_shippriority, sizeof(types::Integer)),
-                      primitives::gather_col_int32_t_col)
-       .addProbeKey(Column(lineitem, "l_orderkey"), //
-                    Buffer(sel_lineitem),           //
-                    conf.hash_sel_int32_t_col(),    //
-                    primitives::keys_equal_int32_t_col);
-   // build value o_orderdate, o_shippriority
-   Project().addExpression(
-       Expression() //
-           .addOp(primitives::proj_sel_minus_int64_t_val_int64_t_col,
-                  Buffer(j1_lineitem), //
-                  Buffer(result_proj_minus, sizeof(int64_t)), Value(&r->one),
-                  Column(lineitem, "l_discount"))
-           .addOp(primitives::proj_multiplies_sel_int64_t_col_int64_t_col,
-                  Buffer(j1_lineitem),                     //
-                  Buffer(result_project, sizeof(int64_t)), //
-                  Column(lineitem, "l_extendedprice"),
-                  Buffer(result_proj_minus, sizeof(int64_t))));
-   // keys: o_orderdate, o_shippriority, l_orderkey
-   // sum: revenue
-   HashGroup()
-       .pushKeySelVec(Buffer(j1_lineitem),
-                      Buffer(j1_lineitem_grouped, sizeof(pos_t)))
-       .addKey(Column(lineitem, "l_orderkey"), Buffer(j1_lineitem),
-               conf.hash_sel_int32_t_col(),
-               primitives::keys_not_equal_sel_int32_t_col,
-               primitives::partition_by_key_sel_int32_t_col,
-               Buffer(j1_lineitem_grouped, sizeof(pos_t)),
-               primitives::scatter_sel_int32_t_col,
-               primitives::keys_not_equal_row_int32_t_col,
-               primitives::partition_by_key_row_int32_t_col,
-               primitives::scatter_sel_row_int32_t_col,
-               primitives::gather_val_int32_t_col,
-               Buffer(l_orderkey, sizeof(int32_t)))
-       .addKey(Buffer(o_orderdate),
-               primitives::rehash_Date_col, // conf.rehash_Date_col(),
-               primitives::keys_not_equal_Date_col,
-               primitives::partition_by_key_Date_col,
-               primitives::scatter_sel_Date_col,
-               primitives::keys_not_equal_row_Date_col,
-               primitives::partition_by_key_row_Date_col,
-               primitives::scatter_sel_row_Date_col,
-               primitives::gather_val_Date_col, Buffer(o_orderdate))
-       .addKey(Buffer(o_shippriority), conf.rehash_int32_t_col(),
-               primitives::keys_not_equal_int32_t_col,
-               primitives::partition_by_key_int32_t_col,
-               primitives::scatter_sel_int32_t_col,
-               primitives::keys_not_equal_row_int32_t_col,
-               primitives::partition_by_key_row_int32_t_col,
-               primitives::scatter_sel_row_int32_t_col,
-               primitives::gather_val_int32_t_col, Buffer(o_shippriority))
-       .addValue(Buffer(result_project), primitives::aggr_init_plus_int64_t_col,
-                 primitives::aggr_plus_int64_t_col,
-                 primitives::aggr_row_plus_int64_t_col,
-                 primitives::gather_val_int64_t_col, Buffer(result_project));
 
-   result.addValue("revenue", Buffer(result_project))
-       .addValue("o_shippriority", Buffer(o_shippriority))
-       .addValue("o_orderdate", Buffer(o_orderdate))
-       .addValue("l_orderkey", Buffer(l_orderkey))
+   result.addValue("sel_order", Buffer(sel_order))
        .finalize();
 
    r->rootOp = popOperator();
    return r;
-}*/
+}
 
+//for: select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
+void printResultQ3(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto selOrderAttr = result->getAttribute("sel_order");
+  uint32_t* selOrder;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    selOrder = reinterpret_cast</*types::Integer**/ uint32_t*>(block.data(selOrderAttr));
+    for (size_t i = 0; i < elementsInBlock; ++i) {
+      cout << selOrder[i] << endl;
+    }
+  }
+  cout << "total results number = " << found << endl;
 
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
+}
 
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
                                               size_t vectorSize) {
