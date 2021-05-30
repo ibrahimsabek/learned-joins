@@ -305,8 +305,24 @@ std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
+
+void printResultQ3(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto selCustAttr = result->getAttribute("sel_cust");
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    auto selCust = reinterpret_cast<types:Integer>(block.data(selCustAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << ret[i] << "\t" << status[i] << "\t" << qty[i] << "\t" << base[i] << "\t" << disc[i] << "\t" << charge[i] << "\t" << order[i] << endl;
+    //}
+  }
+  cout << "total results number = " << found << endl;
+}
+
 /*
-//select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
+//TODO: select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
 std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -415,6 +431,9 @@ std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }*/
+
+
+
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
                                               size_t vectorSize) {
    using namespace vectorwise;
@@ -431,5 +450,6 @@ std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
              dynamic_cast<ResultWriter*>(query->rootOp.get())->shared.result);
    });
 
+   printResultQ3(result.get()->result.get());
    return result;
 }
