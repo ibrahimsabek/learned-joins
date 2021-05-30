@@ -313,7 +313,7 @@ void printResultQ3(BlockRelation* result) {
   for (auto& block : *result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
-    auto selCust = reinterpret_cast<types:Integer>(block.data(selCustAttr));
+    auto selCust = reinterpret_cast<types::Integer>(block.data(selCustAttr));
     //for (size_t i = 0; i < elementsInBlock; ++i) {
     //  cout << ret[i] << "\t" << status[i] << "\t" << qty[i] << "\t" << base[i] << "\t" << disc[i] << "\t" << charge[i] << "\t" << order[i] << endl;
     //}
