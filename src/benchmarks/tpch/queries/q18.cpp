@@ -389,7 +389,7 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-*/
+
 
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
@@ -407,7 +407,8 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-/*
+*/
+
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
@@ -423,7 +424,7 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-
+/*
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
