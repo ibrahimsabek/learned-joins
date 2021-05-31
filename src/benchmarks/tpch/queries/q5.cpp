@@ -486,7 +486,7 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nationKey, found);   
 }
-*/
+
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -545,8 +545,9 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinCust, found);   
 }
+*/
 
-/*
+
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -570,6 +571,25 @@ unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    return r;
 }
 
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto selOrd2Attr = result->getAttribute("sel_ord2");
+  uint32_t* selOrd2;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    selOrd2 = reinterpret_cast<uint32_t*>(block.data(selOrd2Attr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << selOrd2[i] << endl;
+    //}
+  }
+  cout << "sel_ord2 total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrd2, found);   
+}
+
+/*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
