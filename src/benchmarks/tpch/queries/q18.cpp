@@ -582,7 +582,7 @@ std::unique_ptr<runtime::Query> q18_vectorwise(Database& db, size_t nrThreads,
                       ->shared.result);
     });
 
-   printResultQ18(result.get()->result.get(), "o_orderkey");
+   printResultQ18(result.get()->result.get(), "c_custkey");
 
 
   return result;
