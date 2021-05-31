@@ -543,7 +543,7 @@ void printResultQ5(BlockRelation* result) {
   }
   cout << "join_cust total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinCust, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinCust, found);   
 }
 
 /*
