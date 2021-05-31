@@ -836,7 +836,7 @@ void printResultQ5(BlockRelation* result) {
   }
   cout << "s_nationkey total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nationKey, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nationKey, found);   
 }
 
 /*
