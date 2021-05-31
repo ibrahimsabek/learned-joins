@@ -203,8 +203,8 @@ using namespace std;
    leaveQuery(nrThreads);
    return move(resources.query);
 }*/
-
-unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+//the full query
+/*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -325,8 +325,346 @@ unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    r->rootOp = popOperator();
    assert(operatorStack.size() == 0);
    return r;
+}*/
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto region = Scan("region");
+   Select(
+       Expression().addOp(BF(primitives::sel_equal_to_Char_25_col_Char_25_val),
+                          Buffer(sel_region, sizeof(pos_t)), //
+                          Column(region, "r_name"),          //
+                          Value(&r->c3)));
+   result //
+       .addValue("sel_region", Buffer(sel_region))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
 }
 
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto selRegionAttr = result->getAttribute("sel_region");
+  uint32_t* selRegion;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    selRegion = reinterpret_cast<uint32_t*>(block.data(selRegionAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << selRegion[i] << endl;
+    //}
+  }
+  cout << "sel_region total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selRegion, found);   
+}
+/*
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+
+   auto nation = Scan("nation");
+
+   result //
+       .addValue("n_regionkey", Column(nation, "n_regionkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto region = Scan("region");
+   Select(
+       Expression().addOp(BF(primitives::sel_equal_to_Char_25_col_Char_25_val),
+                          Buffer(sel_region, sizeof(pos_t)), //
+                          Column(region, "r_name"),          //
+                          Value(&r->c3)));
+   auto nation = Scan("nation");
+   HashJoin(Buffer(join_reg_nat, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(region, "r_regionkey"), Buffer(sel_region),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(nation, "n_regionkey"), conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+
+   result //
+       .addValue("join_reg_nat", Buffer(join_reg_nat))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto customer = Scan("customer");
+  
+   result //
+       .addValue("c_nationkey", Column(customer, "c_nationkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto region = Scan("region");
+   Select(
+       Expression().addOp(BF(primitives::sel_equal_to_Char_25_col_Char_25_val),
+                          Buffer(sel_region, sizeof(pos_t)), //
+                          Column(region, "r_name"),          //
+                          Value(&r->c3)));
+   auto nation = Scan("nation");
+   HashJoin(Buffer(join_reg_nat, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(region, "r_regionkey"), Buffer(sel_region),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(nation, "n_regionkey"), conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+   auto customer = Scan("customer");
+   HashJoin(Buffer(join_cust, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(nation, "n_nationkey"), Buffer(join_reg_nat),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(customer, "c_nationkey"),
+                    conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Column(nation, "n_name"), Buffer(join_reg_nat),
+                      primitives::scatter_sel_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col);
+
+   result //
+       .addValue("join_cust", Buffer(join_cust))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto orders = Scan("orders");
+   Select(Expression()
+              .addOp(BF(primitives::sel_less_Date_col_Date_val),
+                     Buffer(sel_ord, sizeof(pos_t)),
+                     Column(orders, "o_orderdate"), Value(&r->c2))
+              .addOp(BF(primitives::selsel_greater_equal_Date_col_Date_val),
+                     Buffer(sel_ord, sizeof(pos_t)),
+                     Buffer(sel_ord2, sizeof(pos_t)),
+                     Column(orders, "o_orderdate"), Value(&r->c1)));
+   result //
+       .addValue("sel_ord2", Buffer(sel_ord2, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto region = Scan("region");
+   Select(
+       Expression().addOp(BF(primitives::sel_equal_to_Char_25_col_Char_25_val),
+                          Buffer(sel_region, sizeof(pos_t)), //
+                          Column(region, "r_name"),          //
+                          Value(&r->c3)));
+   auto nation = Scan("nation");
+   HashJoin(Buffer(join_reg_nat, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(region, "r_regionkey"), Buffer(sel_region),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(nation, "n_regionkey"), conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+   auto customer = Scan("customer");
+   HashJoin(Buffer(join_cust, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(nation, "n_nationkey"), Buffer(join_reg_nat),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(customer, "c_nationkey"),
+                    conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Column(nation, "n_name"), Buffer(join_reg_nat),
+                      primitives::scatter_sel_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col);
+   auto orders = Scan("orders");
+   Select(Expression()
+              .addOp(BF(primitives::sel_less_Date_col_Date_val),
+                     Buffer(sel_ord, sizeof(pos_t)),
+                     Column(orders, "o_orderdate"), Value(&r->c2))
+              .addOp(BF(primitives::selsel_greater_equal_Date_col_Date_val),
+                     Buffer(sel_ord, sizeof(pos_t)),
+                     Buffer(sel_ord2, sizeof(pos_t)),
+                     Column(orders, "o_orderdate"), Value(&r->c1)));
+   HashJoin(Buffer(join_ord, sizeof(pos_t)), conf.joinAll())
+       .setProbeSelVector(Buffer(sel_ord2), conf.joinSel())
+       .addBuildKey(Column(customer, "c_custkey"), Buffer(join_cust),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(orders, "o_custkey"), Buffer(sel_ord2),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Column(customer, "c_nationkey"), Buffer(join_cust),
+                      primitives::scatter_sel_int32_t_col,
+                      Buffer(join_ord_nationkey, sizeof(int32_t)),
+                      primitives::gather_col_int32_t_col)
+       .addBuildValue(Buffer(n_name), primitives::scatter_Char_25_col,
+                      Buffer(n_name2, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col);
+   
+
+   result //
+       .addValue("join_ord", Buffer(join_ord))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   
+   auto lineitem = Scan("lineitem");
+
+   result //
+       .addValue("l_orderkey", Column(lineitem, "l_orderkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto region = Scan("region");
+   Select(
+       Expression().addOp(BF(primitives::sel_equal_to_Char_25_col_Char_25_val),
+                          Buffer(sel_region, sizeof(pos_t)), //
+                          Column(region, "r_name"),          //
+                          Value(&r->c3)));
+   auto nation = Scan("nation");
+   HashJoin(Buffer(join_reg_nat, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(region, "r_regionkey"), Buffer(sel_region),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(nation, "n_regionkey"), conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+   auto customer = Scan("customer");
+   HashJoin(Buffer(join_cust, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(nation, "n_nationkey"), Buffer(join_reg_nat),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(customer, "c_nationkey"),
+                    conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Column(nation, "n_name"), Buffer(join_reg_nat),
+                      primitives::scatter_sel_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col);
+   auto orders = Scan("orders");
+   Select(Expression()
+              .addOp(BF(primitives::sel_less_Date_col_Date_val),
+                     Buffer(sel_ord, sizeof(pos_t)),
+                     Column(orders, "o_orderdate"), Value(&r->c2))
+              .addOp(BF(primitives::selsel_greater_equal_Date_col_Date_val),
+                     Buffer(sel_ord, sizeof(pos_t)),
+                     Buffer(sel_ord2, sizeof(pos_t)),
+                     Column(orders, "o_orderdate"), Value(&r->c1)));
+   HashJoin(Buffer(join_ord, sizeof(pos_t)), conf.joinAll())
+       .setProbeSelVector(Buffer(sel_ord2), conf.joinSel())
+       .addBuildKey(Column(customer, "c_custkey"), Buffer(join_cust),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(orders, "o_custkey"), Buffer(sel_ord2),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Column(customer, "c_nationkey"), Buffer(join_cust),
+                      primitives::scatter_sel_int32_t_col,
+                      Buffer(join_ord_nationkey, sizeof(int32_t)),
+                      primitives::gather_col_int32_t_col)
+       .addBuildValue(Buffer(n_name), primitives::scatter_Char_25_col,
+                      Buffer(n_name2, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col);
+   auto lineitem = Scan("lineitem");
+   HashJoin(Buffer(join_line, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(orders, "o_orderkey"), Buffer(join_ord),
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(lineitem, "l_orderkey"),
+                    conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Buffer(join_ord_nationkey),
+                      primitives::scatter_int32_t_col,
+                      Buffer(join_line_nationkey, sizeof(int32_t)),
+                      primitives::gather_col_int32_t_col)
+       .addBuildValue(Buffer(n_name2), primitives::scatter_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col);
+   result //
+       .addValue("join_line", Buffer(join_line))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+   auto r = make_unique<Q5>();
+   auto supplier = Scan("supplier");
+   
+   result //
+       .addValue("s_nationkey", Column(supplier, "s_nationkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   assert(operatorStack.size() == 0);
+   return r;
+}
+*/
 std::unique_ptr<runtime::Query> q5_vectorwise(Database& db, size_t nrThreads,
                                               size_t vectorSize) {
    using namespace vectorwise;
@@ -344,5 +682,6 @@ std::unique_ptr<runtime::Query> q5_vectorwise(Database& db, size_t nrThreads,
                            ->shared.result);
    });
 
+   printResultQ5(result.get()->result.get());
    return result;
 }
