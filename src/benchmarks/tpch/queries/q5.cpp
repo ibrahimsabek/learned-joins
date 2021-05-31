@@ -707,7 +707,6 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(orderKey, found);   
 }
-*/
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -804,7 +803,8 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinLine, found);   
 }
-/*
+*/
+
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -820,6 +820,26 @@ unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    assert(operatorStack.size() == 0);
    return r;
 }
+
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto nationKeyAttr = result->getAttribute("s_nationkey");
+  uint32_t* nationKey;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    nationKey = reinterpret_cast<uint32_t*>(block.data(nationKeyAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << nationKey[i] << endl;
+    //}
+  }
+  cout << "s_nationkey total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nationKey, found);   
+}
+
+/*
 */
 std::unique_ptr<runtime::Query> q5_vectorwise(Database& db, size_t nrThreads,
                                               size_t vectorSize) {
