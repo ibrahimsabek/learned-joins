@@ -424,7 +424,7 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-*/
+
 
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
@@ -471,7 +471,8 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-/*
+*/
+
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
@@ -530,6 +531,7 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    return r;
 }
 
+/*
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
@@ -583,7 +585,7 @@ std::unique_ptr<runtime::Query> q18_vectorwise(Database& db, size_t nrThreads,
                       ->shared.result);
     });
 
-   printResultQ18(result.get()->result.get(), "orders_matches");
+   printResultQ18(result.get()->result.get(), "customer_matches");
 
 
   return result;
