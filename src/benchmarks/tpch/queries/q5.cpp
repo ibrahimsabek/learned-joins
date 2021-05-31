@@ -356,13 +356,13 @@ void printResultQ5(BlockRelation* result) {
     auto elementsInBlock = block.size();
     found += elementsInBlock;
     selRegion = reinterpret_cast<uint32_t*>(block.data(selRegionAttr));
-    //for (size_t i = 0; i < elementsInBlock; ++i) {
-    //  cout << selRegion[i] << endl;
-    //}
+    for (size_t i = 0; i < elementsInBlock; ++i) {
+      cout << selRegion[i] << endl;
+    }
   }
   cout << "sel_region total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selRegion, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selRegion, found);   
 }
 /*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
