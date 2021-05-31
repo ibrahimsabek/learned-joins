@@ -333,7 +333,7 @@ using namespace std;
    return r;
 }*/
 
-unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+/*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -369,8 +369,8 @@ void printResultQ5(BlockRelation* result) {
   cout << "sel_region total results number = " << found << endl;
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selRegion, found);   
-}
-/*
+}*/
+
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -388,7 +388,25 @@ unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    return r;
 }
 
-unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto nRegionKeyAttr = result->getAttribute("n_regionkey");
+  uint32_t* nRegionKey;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    nRegionKey = reinterpret_cast<uint32_t*>(block.data(nRegionKeyAttr));
+    for (size_t i = 0; i < elementsInBlock; ++i) {
+      cout << nRegionKey[i] << endl;
+    }
+  }
+  cout << "n_regionkey total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nRegionKey, found);   
+}
+
+/*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
