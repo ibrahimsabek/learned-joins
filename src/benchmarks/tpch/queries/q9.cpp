@@ -754,7 +754,7 @@ q9_vectorwise(runtime::Database& db, size_t nrThreads, size_t vectorSize) {
                       dynamic_cast<ResultWriter*>(query->rootOp.get())->shared.result);
     });
 
-   printResultQ9(result.get()->result.get(), "l_suppkey");
+   printResultQ9(result.get()->result.get(), "xlineitem");
 
   return result;
 }
