@@ -545,7 +545,7 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinCust, found);   
 }
-*/
+
 
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
@@ -588,8 +588,9 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrd2, found);   
 }
+*/
 
-/*
+
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -655,6 +656,25 @@ unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    return r;
 }
 
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto joinOrdAttr = result->getAttribute("join_ord");
+  uint32_t* joinOrd;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    joinOrd = reinterpret_cast<uint32_t*>(block.data(joinOrdAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << joinOrd[i] << endl;
+    //}
+  }
+  cout << "join_ord total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinOrd, found);   
+}
+
+/*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
