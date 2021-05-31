@@ -756,7 +756,7 @@ q9_vectorwise(runtime::Database& db, size_t nrThreads, size_t vectorSize) {
                       dynamic_cast<ResultWriter*>(query->rootOp.get())->shared.result);
     });
 
-   printResultQ9(result.get()->result.get(), "part_partsupp");
+   printResultQ9(result.get()->result.get(), "pspp");
 
   return result;
 }
