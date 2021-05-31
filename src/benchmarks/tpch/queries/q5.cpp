@@ -452,8 +452,6 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(regNat, found);   
 }
-*/
-
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -488,9 +486,9 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nationKey, found);   
 }
+*/
 
-
-/*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -530,6 +528,25 @@ void printResultQ5(BlockRelation* result) {
    return r;
 }
 
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto joinCustAttr = result->getAttribute("join_cust");
+  uint32_t* joinCust;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    joinCust = reinterpret_cast<uint32_t*>(block.data(joinCustAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << joinCust[i] << endl;
+    //}
+  }
+  cout << "join_cust total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinCust, found);   
+}
+
+/*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
