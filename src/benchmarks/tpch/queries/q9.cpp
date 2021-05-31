@@ -459,7 +459,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-*/
+
 
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
@@ -476,7 +476,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-/*
+*/
 
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
@@ -507,7 +507,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    return r;
 }
 
-
+/*
 
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
@@ -755,7 +755,7 @@ q9_vectorwise(runtime::Database& db, size_t nrThreads, size_t vectorSize) {
                       dynamic_cast<ResultWriter*>(query->rootOp.get())->shared.result);
     });
 
-   printResultQ9(result.get()->result.get(), "ps_partkey");
+   printResultQ9(result.get()->result.get(), "nation_supplier");
 
   return result;
 }
