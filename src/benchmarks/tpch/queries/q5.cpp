@@ -671,7 +671,7 @@ void printResultQ5(BlockRelation* result) {
   }
   cout << "join_ord total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinOrd, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinOrd, found);   
 }
 
 /*
