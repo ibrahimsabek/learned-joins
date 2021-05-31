@@ -425,7 +425,7 @@ void printResultQ3(BlockRelation* result) {
 */
 
 // for: select l_orderkey from l_shipdate > date '1995-03-15'
-std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+/*std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -461,7 +461,7 @@ void printResultQ3(BlockRelation* result) {
 
   //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selLineitem, found);   
 }
-
+*/
 std::unique_ptr<runtime::Query> q3_vectorwise(Database& db, size_t nrThreads,
                                               size_t vectorSize) {
    using namespace vectorwise;
