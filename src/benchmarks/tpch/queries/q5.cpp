@@ -705,7 +705,7 @@ void printResultQ5(BlockRelation* result) {
   }
   cout << "l_orderkey total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(orderKey, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(orderKey, found);   
 }
 
 /*
