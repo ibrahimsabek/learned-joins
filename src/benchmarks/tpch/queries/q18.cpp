@@ -353,7 +353,7 @@ using namespace std;
    r->rootOp = popOperator();
    return r;
 }*/
-/*
+/**/
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
@@ -391,6 +391,7 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
 }
 
 
+/*
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
@@ -530,7 +531,6 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-*/
 
 std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
@@ -547,7 +547,7 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    r->rootOp = popOperator();
    return r;
 }
-/*
+
 */
 void printResultQ18(BlockRelation* result, std::string attrName) {
   using namespace types;  
@@ -564,7 +564,7 @@ void printResultQ18(BlockRelation* result, std::string attrName) {
   }
   cout << attrName << " total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
 }
 
 
@@ -586,7 +586,7 @@ std::unique_ptr<runtime::Query> q18_vectorwise(Database& db, size_t nrThreads,
                       ->shared.result);
     });
 
-   printResultQ18(result.get()->result.get(), "l_orderkey");
+   printResultQ18(result.get()->result.get(), "sel_orderkey");
 
 
   return result;
