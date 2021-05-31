@@ -449,7 +449,7 @@ void printResultQ5(BlockRelation* result) {
   }
   cout << "join_reg_nat total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(regNat, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(regNat, found);   
 }
 
 /*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
