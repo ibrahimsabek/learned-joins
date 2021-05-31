@@ -14,7 +14,7 @@
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
 #include "configs/eth_configs.h"
-//#include "utils/io.h"
+#include "utils/io.h"
 
 using namespace runtime;
 using namespace std;
@@ -331,7 +331,7 @@ void printResultQ3(BlockRelation* result) {
 }*/
 
 //for: select o_custkey from orders where  o_orderdate < date '1995-03-15'; 
-/*std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
+std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -365,9 +365,9 @@ void printResultQ3(BlockRelation* result) {
   }
   cout << "sel_order total results number = " << found << endl;
 
-  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selOrder, found);   
 }
-*/
+
 
 //for: select * from customer, orders where c_mktsegment = 'BUILDING' and c_custkey = o_custkey and o_orderdate < date '1995-03-15'
 /*std::unique_ptr<Q3Builder::Q3> Q3Builder::getQuery() {
