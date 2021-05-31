@@ -596,7 +596,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-*/
+
 
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
@@ -614,7 +614,8 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-/*
+*/
+
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
    using namespace vectorwise;
@@ -698,7 +699,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-
+/*
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
    using namespace vectorwise;
