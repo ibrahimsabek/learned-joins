@@ -12,6 +12,11 @@
 #include "vectorwise/VectorAllocator.hpp"
 #include <iostream>
 
+#include "config.h"            /* autoconf header */
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
+#include "utils/io.h"
+
 using namespace runtime;
 using namespace std;
 using vectorwise::primitives::Char_10;
@@ -226,8 +231,8 @@ nation,
    leaveQuery(nrThreads);
    return move(resources.query);
 }*/
-
-std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+//the full query
+/*std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
    using namespace vectorwise;
    auto result = Result();
@@ -396,7 +401,333 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
    r->rootOp = popOperator();
    return r;
+}*/
+
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+   auto nation = Scan("nation");
+
+   result.addValue("n_nationkey", Column(nation, "n_nationkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
 }
+
+/*
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+   auto supplier = Scan("supplier");
+
+   result.addValue("s_nationkey", Column(supplier, "s_nationkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+
+   auto part = Scan("part");
+   Select(Expression().addOp(primitives::sel_contains_Varchar_55_col_Varchar_55_val,
+                             Buffer(sel_part, sizeof(pos_t)),
+                             Column(part, "p_name"), //
+                             Value(&r->contains)));
+
+   result.addValue("sel_part", Buffer(sel_part, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+   auto partsupp = Scan("partsupp");
+   
+   result.addValue("ps_partkey", Column(partsupp, "ps_partkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+   auto nation = Scan("nation");
+   auto supplier = Scan("supplier");
+   //join nation supplier
+   HashJoin(Buffer(nation_supplier, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(nation, "n_nationkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::scatter_int32_t_col)
+       .addBuildValue(Column(nation, "n_name"), //
+                      primitives::scatter_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col)
+       .addProbeKey(Column(supplier, "s_nationkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::keys_equal_int32_t_col);
+
+   result.addValue("nation_supplier", Buffer(nation_supplier, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+
+   auto part = Scan("part");
+   Select(Expression().addOp(primitives::sel_contains_Varchar_55_col_Varchar_55_val,
+                             Buffer(sel_part, sizeof(pos_t)),
+                             Column(part, "p_name"), //
+                             Value(&r->contains)));
+   auto partsupp = Scan("partsupp");
+   HashJoin(Buffer(part_partsupp, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(part, "p_partkey"), //
+                    Buffer(sel_part),          //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(partsupp, "ps_partkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::keys_equal_int32_t_col);
+
+   result.addValue("part_partsupp", Buffer(part_partsupp, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+   auto nation = Scan("nation");
+   auto supplier = Scan("supplier");
+   //join nation supplier
+   HashJoin(Buffer(nation_supplier, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(nation, "n_nationkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::scatter_int32_t_col)
+       .addBuildValue(Column(nation, "n_name"), //
+                      primitives::scatter_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col)
+       .addProbeKey(Column(supplier, "s_nationkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::keys_equal_int32_t_col);
+
+   auto part = Scan("part");
+   Select(Expression().addOp(primitives::sel_contains_Varchar_55_col_Varchar_55_val,
+                             Buffer(sel_part, sizeof(pos_t)),
+                             Column(part, "p_name"), //
+                             Value(&r->contains)));
+   auto partsupp = Scan("partsupp");
+   HashJoin(Buffer(part_partsupp, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(part, "p_partkey"), //
+                    Buffer(sel_part),          //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(partsupp, "ps_partkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::keys_equal_int32_t_col);
+
+   HashJoin(Buffer(pspp, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(supplier, "s_suppkey"), //
+                    Buffer(nation_supplier),       //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addBuildValue(Buffer(n_name), //
+                      primitives::scatter_Char_25_col, Buffer(n_name),
+                      primitives::gather_col_Char_25_col)
+       .setProbeSelVector(Buffer(part_partsupp), conf.joinSel())
+       .addProbeKey(Column(partsupp, "ps_suppkey"), //
+                    Buffer(part_partsupp),          //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+
+   result.addValue("pspp", Buffer(pspp, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+  
+   auto lineitem = Scan("lineitem");
+
+   result.addValue("l_suppkey", Column(lineitem, "l_suppkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+   auto nation = Scan("nation");
+   auto supplier = Scan("supplier");
+   //join nation supplier
+   HashJoin(Buffer(nation_supplier, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(nation, "n_nationkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::scatter_int32_t_col)
+       .addBuildValue(Column(nation, "n_name"), //
+                      primitives::scatter_Char_25_col,
+                      Buffer(n_name, sizeof(Char_25)),
+                      primitives::gather_col_Char_25_col)
+       .addProbeKey(Column(supplier, "s_nationkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::keys_equal_int32_t_col);
+
+   auto part = Scan("part");
+   Select(Expression().addOp(primitives::sel_contains_Varchar_55_col_Varchar_55_val,
+                             Buffer(sel_part, sizeof(pos_t)),
+                             Column(part, "p_name"), //
+                             Value(&r->contains)));
+   auto partsupp = Scan("partsupp");
+   HashJoin(Buffer(part_partsupp, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(part, "p_partkey"), //
+                    Buffer(sel_part),          //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(partsupp, "ps_partkey"), //
+                    conf.hash_int32_t_col(),       //
+                    primitives::keys_equal_int32_t_col);
+
+   HashJoin(Buffer(pspp, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(supplier, "s_suppkey"), //
+                    Buffer(nation_supplier),       //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addBuildValue(Buffer(n_name), //
+                      primitives::scatter_Char_25_col, Buffer(n_name),
+                      primitives::gather_col_Char_25_col)
+       .setProbeSelVector(Buffer(part_partsupp), conf.joinSel())
+       .addProbeKey(Column(partsupp, "ps_suppkey"), //
+                    Buffer(part_partsupp),          //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+
+   auto lineitem = Scan("lineitem");
+   HashJoin(Buffer(xlineitem, sizeof(pos_t)), conf.joinAll())
+       .addBuildKey(Column(partsupp, "ps_partkey"),   //
+                    Buffer(pspp),                     //
+                    conf.hash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addBuildKey(Column(partsupp, "ps_suppkey"),     //
+                    Buffer(pspp),                       //
+                    conf.rehash_sel_int32_t_col(),
+                    primitives::scatter_sel_int32_t_col)
+       .addBuildValue(Buffer(n_name),                  //
+                      primitives::scatter_Char_25_col, //
+                      Buffer(n_name),                  //
+                      primitives::gather_col_Char_25_col)
+       .addBuildValue(Column(partsupp, "ps_supplycost"), //
+                      Buffer(pspp),                      //
+                      primitives::scatter_sel_int64_t_col,
+                      Buffer(ps_supplycost, sizeof(int64_t)), //
+                      primitives::gather_col_int64_t_col)
+       .addProbeKey(Column(lineitem, "l_partkey"), //
+                    conf.hash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col)
+       .addProbeKey(Column(lineitem, "l_suppkey"), //
+                    conf.rehash_int32_t_col(),
+                    primitives::keys_equal_int32_t_col);
+
+   result.addValue("xlineitem", Buffer(xlineitem, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
+
+   using namespace vectorwise;
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q9>();
+
+   auto orders = Scan("orders");
+
+   result.addValue("o_orderkey", Column(orders, "o_orderkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+*/
+
+void printResultQ9(BlockRelation* result, std::string attrName) {
+  using namespace types;  
+  size_t found = 0;
+  auto attr = result->getAttribute(attrName);
+  uint32_t* attrValue;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    attrValue = reinterpret_cast<uint32_t*>(block.data(attr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << attrValue[i] << endl;
+    //}
+  }
+  cout << attrName << " total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
+}
+
 
 std::unique_ptr<runtime::Query>
 q9_vectorwise(runtime::Database& db, size_t nrThreads, size_t vectorSize) {
@@ -414,6 +745,8 @@ q9_vectorwise(runtime::Database& db, size_t nrThreads, size_t vectorSize) {
         result = move(
                       dynamic_cast<ResultWriter*>(query->rootOp.get())->shared.result);
     });
+
+   printResultQ9(result.get()->result.get(), "n_nationkey");
 
   return result;
 }
