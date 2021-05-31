@@ -15,6 +15,11 @@
 #include "vectorwise/VectorAllocator.hpp"
 #include <iostream>
 
+#include "config.h"            /* autoconf header */
+#include "configs/base_configs.h"
+#include "configs/eth_configs.h"
+//#include "utils/io.h"
+
 using namespace runtime;
 using namespace std;
 
@@ -206,8 +211,8 @@ using namespace std;
    leaveQuery(nrThreads);
    return move(resources.query);
 }*/
-
-std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+//the full query
+/*std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
    using namespace vectorwise;
 
    auto result = Result();
@@ -347,7 +352,215 @@ std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
 
    r->rootOp = popOperator();
    return r;
+}*/
+
+std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+   using namespace vectorwise;
+
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q18>();
+   auto lineitem = Scan("lineitem");
+   HashGroup()
+       .addKey(Column(lineitem, "l_orderkey"), primitives::hash_int32_t_col,
+               primitives::keys_not_equal_int32_t_col,
+               primitives::partition_by_key_int32_t_col,
+               primitives::scatter_sel_int32_t_col,
+               primitives::keys_not_equal_row_int32_t_col,
+               primitives::partition_by_key_row_int32_t_col,
+               primitives::scatter_sel_row_int32_t_col,
+               primitives::gather_val_int32_t_col,
+               Buffer(l_orderkey, sizeof(int32_t)))
+       .addValue(Column(lineitem, "l_quantity"),
+                 primitives::aggr_init_plus_int64_t_col,
+                 primitives::aggr_plus_int64_t_col,
+                 primitives::aggr_row_plus_int64_t_col,
+                 primitives::gather_val_int64_t_col,
+                 Buffer(l_quantity, sizeof(int64_t)));
+   Select(
+       Expression().addOp(BF(primitives::sel_greater_int64_t_col_int64_t_val),
+                          Buffer(sel_orderkey, sizeof(pos_t)),
+                          Buffer(l_quantity), Value(&r->qty_bound)));
+
+   result.addValue("sel_orderkey", Buffer(sel_orderkey, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
 }
+/*
+std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+   using namespace vectorwise;
+
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q18>();
+
+   auto orders = Scan("orders");
+
+   result.addValue("o_orderkey", Column(orders, "o_orderkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+   using namespace vectorwise;
+
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q18>();
+   auto customer = Scan("customer");
+
+   result.addValue("c_custkey", Column(customer, "c_custkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+   using namespace vectorwise;
+
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q18>();
+   auto lineitem = Scan("lineitem");
+   HashGroup()
+       .addKey(Column(lineitem, "l_orderkey"), primitives::hash_int32_t_col,
+               primitives::keys_not_equal_int32_t_col,
+               primitives::partition_by_key_int32_t_col,
+               primitives::scatter_sel_int32_t_col,
+               primitives::keys_not_equal_row_int32_t_col,
+               primitives::partition_by_key_row_int32_t_col,
+               primitives::scatter_sel_row_int32_t_col,
+               primitives::gather_val_int32_t_col,
+               Buffer(l_orderkey, sizeof(int32_t)))
+       .addValue(Column(lineitem, "l_quantity"),
+                 primitives::aggr_init_plus_int64_t_col,
+                 primitives::aggr_plus_int64_t_col,
+                 primitives::aggr_row_plus_int64_t_col,
+                 primitives::gather_val_int64_t_col,
+                 Buffer(l_quantity, sizeof(int64_t)));
+   Select(
+       Expression().addOp(BF(primitives::sel_greater_int64_t_col_int64_t_val),
+                          Buffer(sel_orderkey, sizeof(pos_t)),
+                          Buffer(l_quantity), Value(&r->qty_bound)));
+   auto orders = Scan("orders");
+   // FIXME: This should be a right semi join (, but for now, hashjoin may be
+   // good enough)
+   HashJoin(Buffer(orders_matches, sizeof(pos_t)))
+       .addBuildKey(Buffer(l_orderkey), //
+                    Buffer(sel_orderkey), primitives::hash_sel_int32_t_col,
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(orders, "o_orderkey"), //
+                    primitives::hash_int32_t_col,
+                    primitives::keys_equal_int32_t_col);
+
+   result.addValue("orders_matches", Buffer(orders_matches, sizeof(pos_t)))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+   using namespace vectorwise;
+
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q18>();
+   auto customer = Scan("customer");
+   auto lineitem = Scan("lineitem");
+   HashGroup()
+       .addKey(Column(lineitem, "l_orderkey"), primitives::hash_int32_t_col,
+               primitives::keys_not_equal_int32_t_col,
+               primitives::partition_by_key_int32_t_col,
+               primitives::scatter_sel_int32_t_col,
+               primitives::keys_not_equal_row_int32_t_col,
+               primitives::partition_by_key_row_int32_t_col,
+               primitives::scatter_sel_row_int32_t_col,
+               primitives::gather_val_int32_t_col,
+               Buffer(l_orderkey, sizeof(int32_t)))
+       .addValue(Column(lineitem, "l_quantity"),
+                 primitives::aggr_init_plus_int64_t_col,
+                 primitives::aggr_plus_int64_t_col,
+                 primitives::aggr_row_plus_int64_t_col,
+                 primitives::gather_val_int64_t_col,
+                 Buffer(l_quantity, sizeof(int64_t)));
+   Select(
+       Expression().addOp(BF(primitives::sel_greater_int64_t_col_int64_t_val),
+                          Buffer(sel_orderkey, sizeof(pos_t)),
+                          Buffer(l_quantity), Value(&r->qty_bound)));
+   auto orders = Scan("orders");
+   // FIXME: This should be a right semi join (, but for now, hashjoin may be
+   // good enough)
+   HashJoin(Buffer(orders_matches, sizeof(pos_t)))
+       .addBuildKey(Buffer(l_orderkey), //
+                    Buffer(sel_orderkey), primitives::hash_sel_int32_t_col,
+                    primitives::scatter_sel_int32_t_col)
+       .addProbeKey(Column(orders, "o_orderkey"), //
+                    primitives::hash_int32_t_col,
+                    primitives::keys_equal_int32_t_col);
+   HashJoin(Buffer(customer_matches, sizeof(pos_t)))
+       .setProbeSelVector(Buffer(orders_matches))
+       .addBuildKey(Column(customer, "c_custkey"), primitives::hash_int32_t_col,
+                    primitives::scatter_int32_t_col)
+       .addProbeKey(Column(orders, "o_custkey"), Buffer(orders_matches),
+                    primitives::hash_sel_int32_t_col,
+                    primitives::keys_equal_int32_t_col)
+       .addBuildValue(Column(customer, "c_name"),
+                      primitives::scatter_Char_25_col,
+                      Buffer(c_name, sizeof(types::Char<25>)),
+                      primitives::gather_col_Char_25_col);
+
+   result.addValue("customer_matches", Buffer(customer_matches, sizeof(pos_t)))
+         .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+
+std::unique_ptr<Q18Builder::Q18> Q18Builder::getQuery() {
+   using namespace vectorwise;
+
+   auto result = Result();
+   previous = result.resultWriter.shared.result->participate();
+
+   auto r = make_unique<Q18>();
+   auto lineitem2 = Scan("lineitem");
+
+   result.addValue("l_orderkey", Column(lineitem2, "l_orderkey"))
+       .finalize();
+
+   r->rootOp = popOperator();
+   return r;
+}
+*/
+void printResultQ18(BlockRelation* result, std::string attrName) {
+  using namespace types;  
+  size_t found = 0;
+  auto attr = result->getAttribute(attrName);
+  uint32_t* attrValue;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    attrValue = reinterpret_cast<uint32_t*>(block.data(attr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << attrValue[i] << endl;
+    //}
+  }
+  cout << attrName << " total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
+}
+
 
 std::unique_ptr<runtime::Query> q18_vectorwise(Database& db, size_t nrThreads,
                                                size_t vectorSize) {
@@ -366,6 +579,10 @@ std::unique_ptr<runtime::Query> q18_vectorwise(Database& db, size_t nrThreads,
         result = move(dynamic_cast<ResultWriter*>(resources->rootOp.get())
                       ->shared.result);
     });
+
+   printResultQ18(result.get()->result.get(), "sel_orderkey");
+
+
   return result;
 }
 

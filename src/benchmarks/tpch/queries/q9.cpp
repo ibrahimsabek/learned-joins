@@ -15,7 +15,7 @@
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
 #include "configs/eth_configs.h"
-#include "utils/io.h"
+//#include "utils/io.h"
 
 using namespace runtime;
 using namespace std;
@@ -735,7 +735,7 @@ void printResultQ9(BlockRelation* result, std::string attrName) {
   }
   cout << attrName << " total results number = " << found << endl;
 
-  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
 }
 
 
