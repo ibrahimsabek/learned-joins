@@ -671,7 +671,7 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinOrd, found);   
 }
-*/
+
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -707,8 +707,8 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(orderKey, found);   
 }
+*/
 
-/*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -787,6 +787,24 @@ unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    return r;
 }
 
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto joinLineAttr = result->getAttribute("join_line");
+  uint32_t* joinLine;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    joinLine = reinterpret_cast<uint32_t*>(block.data(joinLineAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << joinLine[i] << endl;
+    //}
+  }
+  cout << "join_line total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinLine, found);   
+}
+/*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
