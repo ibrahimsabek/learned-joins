@@ -369,7 +369,7 @@ void printResultQ5(BlockRelation* result) {
   cout << "sel_region total results number = " << found << endl;
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selRegion, found);   
-}*/
+}
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -405,8 +405,8 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nRegionKey, found);   
 }
-
-/*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+*/
+unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
@@ -434,7 +434,25 @@ void printResultQ5(BlockRelation* result) {
    return r;
 }
 
-unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
+void printResultQ5(BlockRelation* result) {
+  using namespace types;  
+  size_t found = 0;
+  auto regNatAttr = result->getAttribute("join_reg_nat");
+  uint32_t* regNat;
+  for (auto& block : *result) {
+    auto elementsInBlock = block.size();
+    found += elementsInBlock;
+    regNat = reinterpret_cast<uint32_t*>(block.data(regNatAttr));
+    //for (size_t i = 0; i < elementsInBlock; ++i) {
+    //  cout << regNat[i] << endl;
+    //}
+  }
+  cout << "join_reg_nat total results number = " << found << endl;
+
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(regNat, found);   
+}
+
+/*unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
    previous = result.resultWriter.shared.result->participate();
