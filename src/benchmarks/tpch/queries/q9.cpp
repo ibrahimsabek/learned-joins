@@ -403,7 +403,7 @@ nation,
    return r;
 }*/
 
-/*
+/**/
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
    using namespace vectorwise;
@@ -420,6 +420,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    return r;
 }
 
+/*
 
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
@@ -614,7 +615,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-*/
+
 
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
@@ -699,7 +700,7 @@ std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
    r->rootOp = popOperator();
    return r;
 }
-/*
+
 std::unique_ptr<Q9Builder::Q9> Q9Builder::getQuery(){
 
    using namespace vectorwise;
@@ -733,7 +734,7 @@ void printResultQ9(BlockRelation* result, std::string attrName) {
   }
   cout << attrName << " total results number = " << found << endl;
 
-  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
+  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(attrValue, found);   
 }
 
 
@@ -754,7 +755,7 @@ q9_vectorwise(runtime::Database& db, size_t nrThreads, size_t vectorSize) {
                       dynamic_cast<ResultWriter*>(query->rootOp.get())->shared.result);
     });
 
-   printResultQ9(result.get()->result.get(), "xlineitem");
+   printResultQ9(result.get()->result.get(), "n_nationkey");
 
   return result;
 }
