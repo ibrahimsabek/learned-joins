@@ -370,6 +370,7 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(selRegion, found);   
 }
+*/
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -403,10 +404,10 @@ void printResultQ5(BlockRelation* result) {
   }
   cout << "n_regionkey total results number = " << found << endl;
 
-  materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nRegionKey, found);   
+  //materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nRegionKey, found);   
 }
 
-
+/*
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
    auto result = Result();
@@ -803,7 +804,7 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(joinLine, found);   
 }
-*/
+
 
 unique_ptr<Q5Builder::Q5> Q5Builder::getQuery() {
    using namespace vectorwise;
@@ -838,9 +839,9 @@ void printResultQ5(BlockRelation* result) {
 
   materialize_one_relation<RELATION_KEY_TYPE, RELATION_PAYLOAD_TYPE>(nationKey, found);   
 }
-
-/*
 */
+
+
 std::unique_ptr<runtime::Query> q5_vectorwise(Database& db, size_t nrThreads,
                                               size_t vectorSize) {
    using namespace vectorwise;
