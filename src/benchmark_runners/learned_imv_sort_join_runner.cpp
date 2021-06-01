@@ -945,7 +945,7 @@ void * learned_imv_sort_join_thread(void * param)
             //deltaT = (t2.tv_sec - t1.tv_sec) * 1000000 + t2.tv_usec - t1.tv_usec;
             deltaT = std::chrono::duration_cast<std::chrono::microseconds>(learned_model_t2 - learned_model_t1).count();
             perf_event.fillProfileVectors(NUM_THREADS, &curr_learned_model_cycles_vec, &curr_learned_model_llc_misses_vec, &curr_learned_model_l1_misses_vec,
-                                                           &curr_learned_model_instructions_vec, &curr_learned_model_branch_misses_vec, &curr_learned_model_task_clock_vec);
+                                                       &curr_learned_model_instructions_vec, &curr_learned_model_branch_misses_vec, &curr_learned_model_task_clock_vec);
             //curr_learned_model_timings_in_ms.push_back((uint64_t)(deltaT * 1.0 / 1000)); //ms
             curr_learned_model_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
             printf("---- Learned sort join sampling and training models time (ms) = %10.4lf\n",  deltaT * 1.0 / 1000);
