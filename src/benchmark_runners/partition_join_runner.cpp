@@ -930,7 +930,7 @@ void * pj_join_thread(void * param)
 #endif            
         }        
     }
-    if(args->tid == 0){
+    if(args->my_tid == 0){
         std::sort(curr_learn_model_timings_in_ms.begin(), curr_learn_model_timings_in_ms.end());
         final_learn_model_timings_in_ms.push_back(curr_learn_model_timings_in_ms[(int)(curr_learn_model_timings_in_ms.size()/2)]);
     }    

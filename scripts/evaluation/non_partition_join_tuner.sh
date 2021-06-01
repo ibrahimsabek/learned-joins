@@ -3,7 +3,7 @@
 process_non_partition_join()
 {
     threads=(32) #(2 4 8 16 32 64)
-    bucket_size=(2 4 8 10) #2 4 8 10
+    bucket_size=(2) #2 4 8 10
     prefetch_distance=(32) #(4 16 32)
     #npj_eth_avx_imv=1 #(0 1)
     use_murmur3_hash=1 #(0 1)
