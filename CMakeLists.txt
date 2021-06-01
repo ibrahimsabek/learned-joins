@@ -142,15 +142,15 @@ ELSE(LINUX)
 ENDIF(LINUX)
 
 add_library(common
-  src/common/algebra/Operators.cpp
-  src/common/algebra/Types.cpp
-  src/common/runtime/Database.cpp
-  src/common/runtime/MemoryPool.cpp
-  src/common/runtime/Types.cpp
-  src/common/runtime/String.cpp
-  src/common/runtime/Import.cpp
-  src/common/runtime/Hashmap.cpp
-  src/common/runtime/Concurrency.cpp
+#  src/common/algebra/Operators.cpp
+#  src/common/algebra/Types.cpp
+#  src/common/runtime/Database.cpp
+#  src/common/runtime/MemoryPool.cpp
+#  src/common/runtime/Types.cpp
+#  src/common/runtime/String.cpp
+#  src/common/runtime/Import.cpp
+#  src/common/runtime/Hashmap.cpp
+#  src/common/runtime/Concurrency.cpp
   src/common/runtime/profile.cpp
   )
 target_include_directories(common PUBLIC
@@ -158,53 +158,64 @@ target_include_directories(common PUBLIC
     $<INSTALL_INTERFACE:include>
     PRIVATE src)
 
-FILE(GLOB PRIMITIVES ${CMAKE_CURRENT_SOURCE_DIR}/src/vectorwise/primitives/*.cpp)
-add_library(vectorwise
-  src/vectorwise/Operations.cpp
-  src/vectorwise/Operators.cpp
-  ${PRIMITIVES}
-  src/vectorwise/QueryBuilder.cpp
-  )
-target_include_directories(vectorwise PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
+#FILE(GLOB PRIMITIVES ${CMAKE_CURRENT_SOURCE_DIR}/src/vectorwise/primitives/*.cpp)
+#add_library(vectorwise
+#  src/vectorwise/Operations.cpp
+#  src/vectorwise/Operators.cpp
+#  ${PRIMITIVES}
+#  src/vectorwise/QueryBuilder.cpp
+#  )
+#target_include_directories(vectorwise PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
 
-SET_TARGET_PROPERTIES(vectorwise PROPERTIES
-  COMPILE_FLAGS "-march=skylake-avx512"
-)
+#SET_TARGET_PROPERTIES(vectorwise PROPERTIES
+#  COMPILE_FLAGS "-march=skylake-avx512"
+#)
 
-target_link_libraries(vectorwise common)
+#target_link_libraries(vectorwise common)
 
-add_library(benchmark_config
-  src/benchmarks/config.cpp)
-target_include_directories(benchmark_config PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
-target_link_libraries(benchmark_config vectorwise common)
+#add_library(benchmark_config
+#  src/benchmarks/config.cpp)
+#target_include_directories(benchmark_config PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
+#target_link_libraries(benchmark_config vectorwise common)
 
 
 # imv labrary
-add_library(imv
-    src/imv/PipelineTPCH.cpp
-  )
-target_include_directories(imv PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
-target_link_libraries(imv common)
+#add_library(imv
+#    src/imv/PipelineTPCH.cpp
+#  )
+#target_include_directories(imv PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
+#target_link_libraries(imv common)
 
 
-file(GLOB TPCHQUERIES ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmarks/tpch/queries/*.cpp)
-add_library(tpch
-  ${TPCHQUERIES}
-  )
-target_include_directories(tpch PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
-target_link_libraries(tpch imv benchmark_config pthread ${TBB_LIBRARIES} vectorwise common)
+#file(GLOB TPCHQUERIES ${CMAKE_CURRENT_SOURCE_DIR}/src/benchmarks/tpch/queries/*.cpp)
+#add_library(tpch
+#  ${TPCHQUERIES}
+#  )
+#target_include_directories(tpch PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
+#target_link_libraries(tpch imv benchmark_config pthread ${TBB_LIBRARIES} vectorwise common)
+
+#add_executable(run_tpch
+#  ${HYPER_TRANSLATORS}
+#  src/benchmarks/tpch/run.cpp
+#  )
+#target_include_directories(run_tpch PUBLIC
+#    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#    $<INSTALL_INTERFACE:include>
+#    PRIVATE src)
+#target_link_libraries(run_tpch imv tpch vectorwise common ${JEVENTSLIB})
+
 
 # Enable tests
 enable_testing()
@@ -254,20 +265,9 @@ target_include_directories(non_imv_indexed_nested_loop_join_runner PUBLIC
   PRIVATE src)  
   target_link_libraries(non_imv_indexed_nested_loop_join_runner common ${JEVENTSLIB} rmi_lib)
 
-add_executable(avx512_benchmarker src/benchmark_runners/avx512_benchmarker.cpp)
-target_include_directories(avx512_benchmarker PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>
-  PRIVATE src)  
-  target_link_libraries(avx512_benchmarker common ${JEVENTSLIB})
-
-
-add_executable(run_tpch
-  ${HYPER_TRANSLATORS}
-  src/benchmarks/tpch/run.cpp
-  )
-target_include_directories(run_tpch PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-    PRIVATE src)
-target_link_libraries(run_tpch imv tpch vectorwise common ${JEVENTSLIB})
+#add_executable(avx512_benchmarker src/benchmark_runners/avx512_benchmarker.cpp)
+#target_include_directories(avx512_benchmarker PUBLIC
+#  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#  $<INSTALL_INTERFACE:include>
+#  PRIVATE src)  
+#  target_link_libraries(avx512_benchmarker common ${JEVENTSLIB})
