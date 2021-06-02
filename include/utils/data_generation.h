@@ -385,8 +385,8 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, in
     
     //random_real_data_uint_gen(relation, "books32");
     //random_real_data_uint_gen(relation, "books64");
-    random_real_data_uint_gen(relation, "fb");
-    //random_real_data_uint_gen(relation, "osm_cellids");
+    //random_real_data_uint_gen(relation, "fb");
+    random_real_data_uint_gen(relation, "osm_cellids");
     //random_real_data_uint_gen(relation, "wiki");
 
     return 0;
