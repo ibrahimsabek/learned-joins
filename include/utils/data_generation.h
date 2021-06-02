@@ -138,7 +138,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     {
       c_check=1;
       cout<<"osm_cellids"<<endl;
-       file_name="/spinning/sabek/learned_join_datasets_sosd/osm_cellids_200M_uint64";
+       file_name="/spinning/sabek/learned_join_datasets_sosd/osm_cellids_800M_uint64";
     }
 
     if (filename_arg.compare("map_learned_index_paper")==0)
@@ -154,7 +154,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     {
       c_check=1;
       cout<<"books64"<<endl;
-      file_name="/spinning/sabek/learned_join_datasets_sosd/books_200M_uint64";
+      file_name="/spinning/sabek/learned_join_datasets_sosd/books_800M_uint64";
     }
 
     if (filename_arg.compare("fb")==0)
