@@ -743,8 +743,6 @@ int main(int argc, char **argv)
 
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
-printf("here1 \n");    
-
     string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
     string curr_rel_s_folder_path = RELATION_S_FOLDER_PATH;
 
@@ -755,8 +753,7 @@ printf("here1 \n");
     string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
 
     load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
-    load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);
-printf("here2 \n");    
+    load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);    
 #else
 
     string curr_rel_r_path = RELATION_R_PATH;
@@ -835,9 +832,6 @@ printf("here2 \n");
 
     for(int j = 0; j < rel_r.num_tuples; j++)
         sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
-
-printf("here3 \n");    
-
 #else
 
     for(int j = 0; j < rel_r.num_tuples; j++)
