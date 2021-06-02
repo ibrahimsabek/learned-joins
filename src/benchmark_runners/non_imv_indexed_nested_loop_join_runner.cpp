@@ -851,6 +851,7 @@ int main(int argc, char **argv)
     write_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str());
     #endif
 #endif
+/*
     int i, rv;
     pthread_barrier_t barrier;
     Result * joinresult;
@@ -880,12 +881,12 @@ int main(int argc, char **argv)
 #endif        
     allocate_hashtable(&ht, nbuckets);
 #endif
-
+*/
 
 
 #ifdef INLJ_WITH_LEARNED_INDEX
   
-    std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;    
+//    std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;    
 /*
     //////////////////////////////////////////////////////////////////////////////
     // start stuff for sampling and building RMI models for both relations R and S
@@ -941,7 +942,7 @@ int main(int argc, char **argv)
     //////////////////////////////////////////////////////////////////////////////
 */
 #endif
-
+/*
 #ifdef INLJ_WITH_CSS_TREE_INDEX
 	CC_CSSTree<KeyType, PayloadType> *tree=new CC_CSSTree<KeyType, PayloadType>(sorted_relation_r.tuples, sorted_relation_r.num_tuples, INLJ_CSS_TREE_FANOUT);
 #endif
@@ -1013,7 +1014,7 @@ int main(int argc, char **argv)
     }
 
     printf("join results: %ld \n", result);
-
+*/
   return 0;
 }
 
