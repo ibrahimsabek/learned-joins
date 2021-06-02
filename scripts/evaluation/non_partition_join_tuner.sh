@@ -186,7 +186,7 @@ process_non_partition_join()
 }
 
 
-run_nums=10
+run_nums=5 #10
 load_relations_for_evaluation=1
 persist_relations_for_evaluation=0
 
@@ -277,8 +277,8 @@ s_datasets_sizes=(32E6 128E6 640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1
 r_datasets_file_num_partitions=(32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32) #(64 64 64 64 64 64 64 64 64)
 
-output_folder_path=/spinning/sabek/learned_join_results/npj_with_learned_uniform/
-process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+#output_folder_path=/spinning/sabek/learned_join_results/npj_with_learned_uniform/
+#process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
 #output_folder_path=/spinning/sabek/learned_join_results/npj_with_non_learned_uniform/
 #process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 
