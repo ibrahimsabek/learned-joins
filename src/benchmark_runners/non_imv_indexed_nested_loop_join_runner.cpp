@@ -595,7 +595,7 @@ void * inlj_join_thread(void * param)
                 perf_event.fillProfileVectors(NUM_THREADS, &curr_probe_cycles_vec, &curr_probe_llc_misses_vec, &curr_probe_l1_misses_vec,
                                                            &curr_probe_instructions_vec, &curr_probe_branch_misses_vec, &curr_probe_task_clock_vec);
                 //perf_event.printProfile("RMI probes ", NUM_THREADS, (uint32_t)(deltaT * 1.0 / 1000));
-                //printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
+                printf("---- %5s Probe costs time (ms) = %10.4lf\n", inlj_pfun1[fid].fun_name, deltaT * 1.0 / 1000);
                 curr_probe_timings_in_ms.push(make_pair((uint64_t)(deltaT * 1.0 / 1000), rp)); //ms
             }
         }
