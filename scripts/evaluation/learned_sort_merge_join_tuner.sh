@@ -3,12 +3,12 @@
 process_learned_sort_merge_join()
 {
     threads=(32) #(2 4 8 16 32 64) 
-    use_avxsort_for_sorting_minor_bckts=(1) #0 1
+    use_avxsort_for_sorting_minor_bckts=(0) #0 1
     ls_default_threshold=(100 1000 2000 10000 20000 30000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
     ls_default_arch=(1000 2000 5000 10000 20000 50000 100000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
-    ls_imv_avx=(1) #0 1 
-    ls_prefetch_minor_bckt_sizes_off=(0 1) #0 1 
-    ls_prefetch_slopes_intercepts_minor_bckts=(0 1) #0 1 
+    ls_imv_avx=(0) #0 1 
+    ls_prefetch_minor_bckt_sizes_off=(0) #0 1 
+    ls_prefetch_slopes_intercepts_minor_bckts=(0) #0 1 
     ls_simdstate=(5) #5 8 10 
     ls_pdis=(320) #32 128 320 640 
 
@@ -16,7 +16,8 @@ process_learned_sort_merge_join()
     #SPILL_BUCKET_SIZE_RATIO=1 #optional: 1 0.5 0.25
     #LS_FOR_SORT_MERGE_DEFAULT_BATCH_SZ=10 #optional: 10 20 50 100
 
-    dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
 
     #r_datasets=$1
     #r_datasets_sizes=$2
@@ -389,3 +390,29 @@ s_datasets_file_num_partitions=(32 32 32) #(64 64 64 64 64 64 64 64 64)
 #process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
 #output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_uniform/
 #process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+
+#sosd datasets
+################
+
+r_datasets=(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
+s_datasets=(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
+r_datasets_sizes=(200E6 800E6 200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6)
+s_datasets_sizes=(200E6 800E6 200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6)
+r_datasets_file_num_partitions=(32 32 32 32 32) #(32 32 32 32 32)
+s_datasets_file_num_partitions=(32 32 32 32 32) #(32 32 32 32 32)
+input_hash_table_size=(536870912 1073741824 536870912 1073741824 536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+
+#r_datasets=(fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
+#s_datasets=(fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
+#r_datasets_sizes=(200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6)
+#s_datasets_sizes=(200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6)
+#r_datasets_file_num_partitions=(32 32 32) #(32 32 32 32 32)
+#s_datasets_file_num_partitions=(32 32 32) #(32 32 32 32 32)
+#input_hash_table_size=(536870912 1073741824 536870912) #(536870912 1073741824 536870912 1073741824 536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+
+
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_sosd/
+#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd/
+#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+
