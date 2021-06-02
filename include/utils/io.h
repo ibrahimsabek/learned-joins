@@ -776,7 +776,7 @@ void * read_relation_thread(void * args)
     full_filename << arg->thread_id;
     full_filename << arg->file_extension;
 
-    std::cout << full_filename << "\n";
+    std::cout << full_filename.str() << "\n";
     read_relation(&(arg->rel), full_filename.str().c_str());
 
     return 0;
