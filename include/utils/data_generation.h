@@ -122,6 +122,119 @@ void knuth_shuffle(Relation<KeyType, PayloadType> * relation)
 
 //based on the ETH implementation 
 template<class KeyType, class PayloadType>
+void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filename_arg) 
+{
+    cout<<"reading file "<<filename_arg<<endl;
+    string file_name;
+    int c_check=0;
+    if (filename_arg.compare("wiki")==0)
+    {
+      c_check=1;
+      cout<<"wiki"<<endl;
+      file_name= "/spinning/sabek/learned_join_datasets_sosd/data/wiki_ts_200M_uint64";  
+    }
+
+    if (filename_arg.compare("osm_cellids")==0)
+    {
+      c_check=1;
+      cout<<"osm_cellids"<<endl;
+       file_name="/spinning/sabek/learned_join_datasets_sosd/data/osm_cellids_200M_uint64";
+    }
+
+    if (filename_arg.compare("map_learned_index_paper")==0)
+    {
+      c_check=0;
+      cout<<"map_learned_index_paper"<<endl;
+      file_name="/spinning/sabek/learned_join_datasets_sosd/data/planet-170501.lon200M.bin";
+      // file_name="data/planetbin";
+    }
+
+
+    if (filename_arg.compare("books64")==0)
+    {
+      c_check=1;
+      cout<<"books64"<<endl;
+      file_name="/spinning/sabek/learned_join_datasets_sosd/data/books_200M_uint64";
+    }
+
+    if (filename_arg.compare("fb")==0)
+    {
+      c_check=1;
+      cout<<"fb"<<endl;
+      file_name="/spinning/sabek/learned_join_datasets_sosd/data/fb_200M_uint64";
+    }
+
+    if(c_check==0)
+    {
+      if (filename_arg.compare("books32")==0)
+      {
+        cout<<"books32"<<endl;
+        file_name="/spinning/sabek/learned_join_datasets_sosd/data/books_200M_uint32";
+      }
+    }
+    std::ifstream input( file_name, std::ios::binary );  
+    std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+    
+    cout<<"done reading file"<<endl;
+
+    uint64_t file_elements=0;
+
+    file_elements = buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24) | buffer[4+0] << 32 | (buffer[4+1] << 40) | (buffer[4+2] << 48) | (buffer[4+3] << 56); 
+    cout<<"value is: "<<file_elements<<" buffer size: "<<buffer.size()<<" c check: "<<c_check<<endl; 
+    
+    //file_elements=200000000-1;
+
+    vector<uint64_t> v_int(file_elements,0.0);
+
+    if(c_check==1)
+    {
+      for(uint64_t i=0;i<file_elements;i++)
+      {
+        uint64_t index=i*8+8;
+        v_int[i]=buffer[index+0] | (buffer[index+1] << 8) | (buffer[index+2] << 16) | (buffer[index+3] << 24) | buffer[index+4+0] << 32 | (buffer[index+4+1] << 40) | (buffer[index+4+2] << 48) | (buffer[index+4+3] << 56);
+      }
+      cout<<"done building array "<<endl;
+    }
+    else
+    {
+      for(uint64_t i=0;i<file_elements;i++)
+      {
+        uint64_t index=i*4+8;
+        v_int[i]=buffer[index+0] | (buffer[index+1] << 8) | (buffer[index+2] << 16) | (buffer[index+3] << 24);
+      }
+
+      cout<<"done building array "<<endl; 
+    }
+
+    cout<<v_int[0]<<" "<<v_int[1]<<" "<<v_int[2]<<" printing scores"<<endl;
+    cout<<"last element: "<<v_int[v_int.size()-1]<<endl;
+    std::sort(v_int.begin(), v_int.end());
+    v_int.erase( unique( v_int.begin(), v_int.end() ), v_int.end() );
+
+    file_elements=v_int.size();
+
+    std::sort(v_int.begin(), v_int.end());
+
+    cout<<"done sorting de duplicating array "<<v_int.size()<<" max value is: "<<log2(v_int[v_int.size()-1])<<" max value is: "<<log2(v_int[v_int.size()-2])<<endl;
+    cout<<"num tuples are: "<<rel->num_tuples<<endl;
+
+    for (uint64_t i = 0; i < rel->num_tuples; i++) {
+        rel->tuples[i].key = (KeyType)(v_int[i]);
+
+#ifdef ZERO_PAYLOAD
+        rel->tuples[i].payload = (PayloadType) 0; 
+#else
+        rel->tuples[i].payload = (PayloadType)(v_int[i]);
+#endif
+    }
+
+    /* randomly shuffle elements */
+    knuth_shuffle<KeyType, PayloadType>(rel);
+}
+
+
+//based on the ETH implementation 
+template<class KeyType, class PayloadType>
 void random_seq_holes_gen(Relation<KeyType, PayloadType> * rel) 
 {
     uint64_t i;
@@ -267,8 +380,14 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, in
     }
   
     //random_unique_gen<KeyType, PayloadType>(relation);
-    random_uniq_unif_gen<KeyType, PayloadType>(relation);
+    //random_uniq_unif_gen<KeyType, PayloadType>(relation);
     //random_seq_holes_gen<KeyType, PayloadType>(relation);
+    
+    random_real_data_uint_gen(relation, "books32");
+    //random_real_data_uint_gen(relation, "books64");
+    //random_real_data_uint_gen(relation, "fb");
+    //random_real_data_uint_gen(relation, "osm_cellids");
+    //random_real_data_uint_gen(relation, "wiki");
 
     return 0;
 }
