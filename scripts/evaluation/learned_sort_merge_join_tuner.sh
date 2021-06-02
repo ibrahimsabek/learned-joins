@@ -115,6 +115,8 @@ process_learned_sort_merge_join()
                                                                                         -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
                                                                                         -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
                                                                                         -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
+                                                                                        #-CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
+                                                                                        #-CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"' \
                                                                                         -USE_AVXSORT_FOR_SORTING_MINOR_BCKTS $curr_use_avxsort_for_sorting_minor_bckts \
                                                                                         -LS_FOR_SORT_MERGE_DEFAULT_THRESHOLD $curr_ls_default_threshold \
                                                                                         -LS_FOR_SORT_MERGE_DEFAULT_FANOUT $curr_ls_default_threshold \
@@ -124,9 +126,7 @@ process_learned_sort_merge_join()
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_MINOR_BCKT_SIZES_OFF $curr_ls_prefetch_minor_bckt_sizes_off \
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_SLOPES_AND_INTERCEPTS_MINOR_BCKTS $curr_ls_prefetch_slopes_intercepts_minor_bckts \
                                                                                         -LS_FOR_SORT_MERGE_SIMDStateSize $curr_ls_simdstate \
-                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis \
-                                                                                        -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
-                                                                                        -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
+                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis
 
 
                                                     cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
@@ -227,6 +227,8 @@ process_learned_sort_merge_join()
                                                                                         -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
                                                                                         -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
                                                                                         -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
+                                                                                        #-CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
+                                                                                        #-CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"' \                                                                                        
                                                                                         -USE_AVXSORT_FOR_SORTING_MINOR_BCKTS $curr_use_avxsort_for_sorting_minor_bckts \
                                                                                         -LS_FOR_SORT_MERGE_DEFAULT_THRESHOLD $curr_ls_default_threshold \
                                                                                         -LS_FOR_SORT_MERGE_DEFAULT_FANOUT $curr_ls_default_threshold \
@@ -236,9 +238,7 @@ process_learned_sort_merge_join()
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_MINOR_BCKT_SIZES_OFF $curr_ls_prefetch_minor_bckt_sizes_off \
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_SLOPES_AND_INTERCEPTS_MINOR_BCKTS $curr_ls_prefetch_slopes_intercepts_minor_bckts \
                                                                                         -LS_FOR_SORT_MERGE_SIMDStateSize $curr_ls_simdstate \
-                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis \
-                                                                                        -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
-                                                                                        -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
+                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis
 
 
                                                     cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
@@ -400,7 +400,6 @@ r_datasets_sizes=(200E6 800E6 200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6
 s_datasets_sizes=(200E6 800E6 200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32 32 32 32 32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32 32) #(32 32 32 32 32)
-input_hash_table_size=(536870912 1073741824 536870912 1073741824 536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
 #r_datasets=(fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
 #s_datasets=(fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
@@ -408,7 +407,6 @@ input_hash_table_size=(536870912 1073741824 536870912 1073741824 536870912) #(16
 #s_datasets_sizes=(200E6 800E6 200E6) #(200E6 800E6 200E6 800E6 200E6)
 #r_datasets_file_num_partitions=(32 32 32) #(32 32 32 32 32)
 #s_datasets_file_num_partitions=(32 32 32) #(32 32 32 32 32)
-#input_hash_table_size=(536870912 1073741824 536870912) #(536870912 1073741824 536870912 1073741824 536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
 
 #output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_sosd/
