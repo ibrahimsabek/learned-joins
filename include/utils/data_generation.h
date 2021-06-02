@@ -131,21 +131,21 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     {
       c_check=1;
       cout<<"wiki"<<endl;
-      file_name= "/spinning/sabek/learned_join_datasets_sosd/data/wiki_ts_200M_uint64";  
+      file_name= "/spinning/sabek/learned_join_datasets_sosd/wiki_ts_200M_uint64";  
     }
 
     if (filename_arg.compare("osm_cellids")==0)
     {
       c_check=1;
       cout<<"osm_cellids"<<endl;
-       file_name="/spinning/sabek/learned_join_datasets_sosd/data/osm_cellids_200M_uint64";
+       file_name="/spinning/sabek/learned_join_datasets_sosd/osm_cellids_200M_uint64";
     }
 
     if (filename_arg.compare("map_learned_index_paper")==0)
     {
       c_check=0;
       cout<<"map_learned_index_paper"<<endl;
-      file_name="/spinning/sabek/learned_join_datasets_sosd/data/planet-170501.lon200M.bin";
+      file_name="/spinning/sabek/learned_join_datasets_sosd/planet-170501.lon200M.bin";
       // file_name="data/planetbin";
     }
 
@@ -154,14 +154,14 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     {
       c_check=1;
       cout<<"books64"<<endl;
-      file_name="/spinning/sabek/learned_join_datasets_sosd/data/books_200M_uint64";
+      file_name="/spinning/sabek/learned_join_datasets_sosd/books_200M_uint64";
     }
 
     if (filename_arg.compare("fb")==0)
     {
       c_check=1;
       cout<<"fb"<<endl;
-      file_name="/spinning/sabek/learned_join_datasets_sosd/data/fb_200M_uint64";
+      file_name="/spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64";
     }
 
     if(c_check==0)
@@ -169,7 +169,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
       if (filename_arg.compare("books32")==0)
       {
         cout<<"books32"<<endl;
-        file_name="/spinning/sabek/learned_join_datasets_sosd/data/books_200M_uint32";
+        file_name="/spinning/sabek/learned_join_datasets_sosd/books_200M_uint32";
       }
     }
     std::ifstream input( file_name, std::ios::binary );  
