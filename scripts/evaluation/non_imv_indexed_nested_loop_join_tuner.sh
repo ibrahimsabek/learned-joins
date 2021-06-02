@@ -451,10 +451,10 @@ input_hash_table_size=(16777216 33554432 134217728 536870912) #(33554432(for_32E
 #sosd datasets
 ################
 
-r_datasets=(fb_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
-s_datasets=(fb_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
-r_datasets_sizes=(200E6) #(200E6 800E6 200E6 800E6 200E6)
-s_datasets_sizes=(200E6) #(200E6 800E6 200E6 800E6 200E6)
+r_datasets=(osm_cellids_800M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
+s_datasets=(osm_cellids_800M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
+r_datasets_sizes=(800E6) #(200E6 800E6 200E6 800E6 200E6)
+s_datasets_sizes=(800E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 input_hash_table_size=(33554432 33554432 134217728 134217728 536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
