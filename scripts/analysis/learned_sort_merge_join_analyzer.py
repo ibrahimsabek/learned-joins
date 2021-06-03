@@ -145,3 +145,12 @@ analyzer = LearnedSortMergeJoinAnalyzer()
 
 print(f'sj_with_learned_sosd_books_800M_uint64/')
 analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_800M_uint64/")
+
+print(f'sj_with_learned_sosd_fb_200M_uint64/')
+analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_sosd_fb_200M_uint64/")
+
+print(f'sj_with_learned_sosd_osm_cellids_800M_uint64/')
+analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_sosd_osm_cellids_800M_uint64/")
+
+print(f'sj_with_learned_sosd_wiki_ts_200M_uint64/')
+analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_sosd_wiki_ts_200M_uint64/")
