@@ -222,11 +222,11 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
         if(c_check == 1)
         {
                 //double ratio = (double)(v_int[i] * 1.) / (double)(1. * std::numeric_limits<uint64_t>::max());
-                double ratio = (double)(static_cast<double>(v_int[i]) * 1.) / (double)(1. * static_cast<double>(max_val));    
-                double val = ratio * (1.0 * (1.0 * std::numeric_limits<uint32_t>::max() - 1));
+                double ratio = static_cast<double>(v_int[i]) / static_cast<double>(max_val);    
+                double val = ratio * static_cast<double>(std::numeric_limits<uint32_t>::max());
                 rel->tuples[i].key = (KeyType)(val);
                 if (i < 10)
-                printf("uint64 %lf v_int[i] %lf val %lf key %d ratio %lf \n", std::numeric_limits<uint64_t>::max() - 1, v_int[i], val, rel->tuples[i].key, ratio);
+                printf("uint64 %lf v_int[i] %lf val %lf key %d ratio %lf \n", static_cast<double>(std::numeric_limits<uint64_t>::max()), v_int[i], val, rel->tuples[i].key, ratio);
 
             #ifdef ZERO_PAYLOAD
                 rel->tuples[i].payload = (PayloadType) 0; 
