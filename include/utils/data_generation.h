@@ -234,13 +234,17 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
                 double val = ratio * static_cast<double>(std::numeric_limits<uint32_t>::max());
                 rel->tuples[i].key = (KeyType)(val);
                 if (i < 10)
-                printf("uint64 %lf v_int[i] %lf val %lf key %u ratio %lf \n", static_cast<double>(std::numeric_limits<uint64_t>::max()), v_int[i], val, rel->tuples[i].key, ratio);
+                //printf("uint64 %lf v_int[i] %lf val %lf key %u ratio %lf \n", static_cast<double>(std::numeric_limits<uint64_t>::max()), v_int[i], val, rel->tuples[i].key, ratio);
+                printf("key %u payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
 
             #ifdef ZERO_PAYLOAD
                 rel->tuples[i].payload = (PayloadType) 0; 
             #else
                 rel->tuples[i].payload = (PayloadType)(val);
             #endif
+            if (i < 10)
+                //printf("uint64 %lf v_int[i] %lf val %lf key %u ratio %lf \n", static_cast<double>(std::numeric_limits<uint64_t>::max()), v_int[i], val, rel->tuples[i].key, ratio);
+                printf("again key %u payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
         }
         else
         {
@@ -256,7 +260,6 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
 for (uint64_t i = 0; i < rel->num_tuples; i++) {
      if (i < 10)
         printf("before key %u payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
-
 }
     /* randomly shuffle elements */
     knuth_shuffle<KeyType, PayloadType>(rel);
