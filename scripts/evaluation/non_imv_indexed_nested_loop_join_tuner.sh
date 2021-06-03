@@ -121,8 +121,9 @@ process_non_imv_indexed_nested_loop_join()
 
                 for model in  ${!rmi_models[@]}
                 do
-                    curr_rmi_model=${r_datasets[$ds]}'_key_uint32_'${rmi_models[$model]}
-
+                    #curr_rmi_model=${r_datasets[$ds]}'_key_uint32_'${rmi_models[$model]}
+                    curr_rmi_model=${r_datasets[$ds]}'_'${rmi_models[$model]}
+                    
                     curr_output_file=$output_folder_path'non_imv_inlj_with_learned_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'_rmi_'${rmi_models[$model]}'.csv'
                 
                     sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 0 \
