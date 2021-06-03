@@ -143,5 +143,5 @@ analyzer = LearnedSortMergeJoinAnalyzer()
 #analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_uniform/640E6_640E6/imv/")
 
 
-print(f'sj_with_learned_sosd_books_200M_uint32/')
-analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_200M_uint32/")
+print(f'sj_with_learned_sosd_books_800M_uint64/')
+analyzer.analyze_datasets_sort_results("/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_800M_uint64/")
