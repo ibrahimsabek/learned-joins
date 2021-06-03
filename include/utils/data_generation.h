@@ -232,7 +232,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
                 //double ratio = (double)(v_int[i] * 1.) / (double)(1. * std::numeric_limits<uint64_t>::max());
                 double ratio = static_cast<double>(v_int[i]) / static_cast<double>(max_val);    
                 double val = ratio * static_cast<double>(std::numeric_limits<uint32_t>::max());
-                rel->tuples[i].key = (KeyType)(val);
+                rel->tuples[i].key = static_cast<KeyType>(val);//(KeyType)(val);
                 if (i < 10){
                 //printf("uint64 %lf v_int[i] %lf val %lf key %u ratio %lf \n", static_cast<double>(std::numeric_limits<uint64_t>::max()), v_int[i], val, rel->tuples[i].key, ratio);
                 printf("key %u \n", rel->tuples[i].key/*, rel->tuples[i].payload*/);
