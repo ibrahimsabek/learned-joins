@@ -222,7 +222,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
         if(c_check == 1)
         {
                 //double ratio = (double)(v_int[i] * 1.) / (double)(1. * std::numeric_limits<uint64_t>::max());
-                double ratio = (double)(v_int[i] * 1.) / (double)(1. * max_val);    
+                double ratio = (double)(static_cast<double>(v_int[i]) * 1.) / (double)(1. * static_cast<double>(max_val));    
                 double val = ratio * (1.0 * (std::numeric_limits<uint32_t>::max() - 1));
                 rel->tuples[i].key = (KeyType)(val);
                 if (i < 10)
