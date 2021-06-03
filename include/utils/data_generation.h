@@ -214,18 +214,19 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     file_elements=v_int.size();
 
     std::sort(v_int.begin(), v_int.end());
-
-    cout<<"done sorting de duplicating array "<<v_int.size()<<" max value is: "<<log2(v_int[v_int.size()-1])<<" max value is: "<<log2(v_int[v_int.size()-2])<<endl;
+    uint64_t max_val = v_int[v_int.size()-1];
+    cout<<"done sorting de duplicating array "<<v_int.size()<<" max value is: "<<v_int[v_int.size()-1]<<" max value is: "<<log2(v_int[v_int.size()-2])<<endl;
     cout<<"num tuples are: "<<rel->num_tuples<<endl;
 
     for (uint64_t i = 0; i < rel->num_tuples; i++) {
         if(c_check == 1)
         {
-                double ratio = (double)(v_int[i] * 1.) / (double)(1. * std::numeric_limits<uint64_t>::max());
+                //double ratio = (double)(v_int[i] * 1.) / (double)(1. * std::numeric_limits<uint64_t>::max());
+                double ratio = (double)(v_int[i] * 1.) / (double)(1. * max_val);    
                 double val = ratio * (1.0 * std::numeric_limits<uint32_t>::max());
                 rel->tuples[i].key = (KeyType)(val);
                 if (i < 10)
-                printf("v_int[i] %ld val %lf key %d ratio %lf \n", v_int[i], val, rel->tuples[i].key, ratio);
+                printf("uint64 %ld v_int[i] %ld val %lf key %d ratio %lf \n", std::numeric_limits<uint64_t>::max(), v_int[i], val, rel->tuples[i].key, ratio);
 
             #ifdef ZERO_PAYLOAD
                 rel->tuples[i].payload = (PayloadType) 0; 
