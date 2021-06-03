@@ -108,14 +108,14 @@ template<class KeyType, class PayloadType>
 void knuth_shuffle(Relation<KeyType, PayloadType> * relation)
 {
     uint64_t i;
-    for (i = 0; i < relation->num_tuples; i++) {
-        if (i < 10)
-        printf("before key %u, payload %u \n", relation->tuples[i].key, relation->tuples[i].payload);
-    }
+    //for (i = 0; i < relation->num_tuples; i++) {
+    //    if (i < 10)
+    //    printf("before key %u, payload %u \n", relation->tuples[i].key, relation->tuples[i].payload);
+    //}
     
     for (i = relation->num_tuples - 1; i > 0; i--) {
-        if (i < 10)
-        printf("after key %u, payload %u \n", relation->tuples[i].key, relation->tuples[i].payload);
+    //    if (i < 10)
+    //    printf("after key %u, payload %u \n", relation->tuples[i].key, relation->tuples[i].payload);
 
         int64_t  j             = RAND_RANGE(i);
         KeyType tmp            = relation->tuples[i].key;
@@ -253,7 +253,11 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
         #endif
         }
     }
+for (uint64_t i = 0; i < rel->num_tuples; i++) {
+     if (i < 10)
+        printf("before key %u payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
 
+}
     /* randomly shuffle elements */
     knuth_shuffle<KeyType, PayloadType>(rel);
 }
