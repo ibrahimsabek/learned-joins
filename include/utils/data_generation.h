@@ -299,7 +299,7 @@ void random_seq_holes_gen(Relation<KeyType, PayloadType> * rel)
     }
 
     /* randomly shuffle elements */
-    knuth_shuffle<KeyType, PayloadType>(rel);
+    //knuth_shuffle<KeyType, PayloadType>(rel);
 }
 
 //based on the ETH implementation 
