@@ -108,15 +108,7 @@ template<class KeyType, class PayloadType>
 void knuth_shuffle(Relation<KeyType, PayloadType> * relation)
 {
     uint64_t i;
-    //for (i = 0; i < relation->num_tuples; i++) {
-    //    if (i < 10)
-    //    printf("before key %u, payload %u \n", relation->tuples[i].key, relation->tuples[i].payload);
-    //}
-    
     for (i = relation->num_tuples - 1; i > 0; i--) {
-    //    if (i < 10)
-    //    printf("after key %u, payload %u \n", relation->tuples[i].key, relation->tuples[i].payload);
-
         int64_t  j             = RAND_RANGE(i);
         KeyType tmp            = relation->tuples[i].key;
         relation->tuples[i].key = relation->tuples[j].key;
@@ -227,7 +219,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     cout<<"num tuples are: "<<rel->num_tuples<<endl;
 
     for (uint64_t i = 0; i < rel->num_tuples; i++) {
-        if(c_check == 1)
+        /*if(c_check == 1)
         {
                 //double ratio = (double)(v_int[i] * 1.) / (double)(1. * std::numeric_limits<uint64_t>::max());
                 double ratio = static_cast<double>(v_int[i]) / static_cast<double>(max_val);    
@@ -247,7 +239,7 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
                 printf("again key %u payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
         }
         else
-        {
+        {*/
                 rel->tuples[i].key = (KeyType)(v_int[i]);
 
         #ifdef ZERO_PAYLOAD
@@ -255,12 +247,9 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
         #else
                 rel->tuples[i].payload = (PayloadType)(v_int[i]);
         #endif
-        }
+        /*}*/
     }
-for (uint64_t i = 0; i < rel->num_tuples; i++) {
-     if (i < 10)
-        printf("before key %u payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
-}
+
     /* randomly shuffle elements */
     knuth_shuffle<KeyType, PayloadType>(rel);
 }
