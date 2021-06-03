@@ -4,8 +4,10 @@ process_learned_sort_merge_join()
 {
     threads=(32) #(2 4 8 16 32 64) 
     use_avxsort_for_sorting_minor_bckts=(0) #0 1
-    ls_default_threshold=(100 1000 2000 10000 20000 30000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
-    ls_default_arch=(1000 2000 5000 10000 20000 50000 100000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
+    #ls_default_threshold=(100 1000 2000 10000 20000 30000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
+    ls_default_threshold=(2000 10000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
+    #ls_default_arch=(1000 2000 5000 10000 20000 50000 100000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
+    ls_default_arch=(1000 2000 5000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
     ls_imv_avx=(0) #0 1 
     ls_prefetch_minor_bckt_sizes_off=(0) #0 1 
     ls_prefetch_slopes_intercepts_minor_bckts=(0) #0 1 
@@ -414,8 +416,8 @@ s_datasets_sizes=(800E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 
-output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_800M_uint64/
-process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_800M_uint64/
+#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 #output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_sosd_books_800M_uint64/
 #process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
 
