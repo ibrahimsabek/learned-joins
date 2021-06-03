@@ -101,8 +101,19 @@ cd $(dirname "$0")/../../RMI && cargo build --release && cd ../build/release
 #build_rmi_set r_UNIFORM_v5_uint32_uint32_640000000 /spinning/sabek/learned_join_datasets/r_UNIFORM_v5_uint32_uint32_640000000_key_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 
-optimize_rmis books_200M_uint32 /spinning/sabek/learned_join_datasets_sosd/books_200M_uint32 $(dirname "$0")/../../include/rmi_specs 32
-build_rmi_set books_200M_uint32 /spinning/sabek/learned_join_datasets_sosd/books_200M_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+#optimize_rmis books_200M_uint32 /spinning/sabek/learned_join_datasets_sosd/books_200M_uint32 $(dirname "$0")/../../include/rmi_specs 32
+#build_rmi_set books_200M_uint32 /spinning/sabek/learned_join_datasets_sosd/books_200M_uint32 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
+optimize_rmis books_800M_uint64 /spinning/sabek/learned_join_datasets_sosd/books_800M_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set books_800M_uint64 /spinning/sabek/learned_join_datasets_sosd/books_800M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+
+optimize_rmis fb_200M_uint64 /spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set fb_200M_uint64 /spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+
+optimize_rmis osm_cellids_800M_uint64 /spinning/sabek/learned_join_datasets_sosd/osm_cellids_800M_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set osm_cellids_800M_uint64 /spinning/sabek/learned_join_datasets_sosd/osm_cellids_800M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+
+optimize_rmis wiki_ts_200M_uint64 /spinning/sabek/learned_join_datasets_sosd/wiki_ts_200M_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set wiki_ts_200M_uint64 /spinning/sabek/learned_join_datasets_sosd/wiki_ts_200M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 /bin/bash $(dirname "$0")/generate_all_rmis.sh
