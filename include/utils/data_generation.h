@@ -219,13 +219,27 @@ void random_real_data_uint_gen(Relation<KeyType, PayloadType> * rel,string filen
     cout<<"num tuples are: "<<rel->num_tuples<<endl;
 
     for (uint64_t i = 0; i < rel->num_tuples; i++) {
-        rel->tuples[i].key = (KeyType)(v_int[i]);
+        if(c_check == 1)
+        {
+                double val = (v_int[i] * 1. * std::numeric_limits<uint32_t>::max()) / ( * 1. * std::numeric_limits<uint64_t>::max());
+                rel->tuples[i].key = (KeyType)(val);
 
-#ifdef ZERO_PAYLOAD
-        rel->tuples[i].payload = (PayloadType) 0; 
-#else
-        rel->tuples[i].payload = (PayloadType)(v_int[i]);
-#endif
+            #ifdef ZERO_PAYLOAD
+                rel->tuples[i].payload = (PayloadType) 0; 
+            #else
+                rel->tuples[i].payload = (PayloadType)(val);
+            #endif
+        }
+        else
+        {
+                rel->tuples[i].key = (KeyType)(v_int[i]);
+
+        #ifdef ZERO_PAYLOAD
+                rel->tuples[i].payload = (PayloadType) 0; 
+        #else
+                rel->tuples[i].payload = (PayloadType)(v_int[i]);
+        #endif
+        }
     }
 
     /* randomly shuffle elements */
@@ -379,12 +393,12 @@ int create_eth_workload_relation_pk(Relation<KeyType, PayloadType> *relation, in
         return -1; 
     }
   
-    random_unique_gen<KeyType, PayloadType>(relation);
+    //random_unique_gen<KeyType, PayloadType>(relation);
     //random_uniq_unif_gen<KeyType, PayloadType>(relation);
     //random_seq_holes_gen<KeyType, PayloadType>(relation);
     
     //random_real_data_uint_gen(relation, "books32");
-    //random_real_data_uint_gen(relation, "books64");
+    random_real_data_uint_gen(relation, "books64");
     //random_real_data_uint_gen(relation, "fb");
     //random_real_data_uint_gen(relation, "osm_cellids");
     //random_real_data_uint_gen(relation, "wiki");
