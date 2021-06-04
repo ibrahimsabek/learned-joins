@@ -300,7 +300,7 @@ uint64_t inlj_with_csstree_probe_rel_s_partition(Relation<KeyType, PayloadType> 
     uint64_t matches = 0; 
     uint64_t curIndex=0;
 	KeyType keyForSearch;
-
+printf("here in csstree probe \n");
     CC_CSSTree<KeyType, PayloadType> *tree = build_output->tree;
     KeyType * sorted_relation_r_keys_only = build_output->sorted_relation_r_keys_only;
     uint64_t original_relR_num_tuples = build_output->original_relR->num_tuples;
@@ -448,7 +448,7 @@ void * inlj_join_thread(void * param)
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
-    
+    printf("before starting the csstree join \n");
     IndexedNestedLoopJoinBuild<KeyType, PayloadType> build_data; 
     build_data.original_relR = args->original_relR;
     build_data.original_relS = args->original_relS;
