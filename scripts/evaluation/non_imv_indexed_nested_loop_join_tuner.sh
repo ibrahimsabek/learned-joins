@@ -6,7 +6,8 @@ process_non_imv_indexed_nested_loop_join()
     rmi_models=(0 1 2 3 4 5 6 7 8 9)
     css_fanouts=(33) #(10 33 40)
 
-    dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
     #dataset_folder_path=/spinning/sabek/learned_join_datasets/
 
     #r_datasets=$1
@@ -466,8 +467,8 @@ input_hash_table_size=(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_sosd_books_200M_uint32/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_books_200M_uint32/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_books_200M_uint32/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
 r_datasets=(books_800M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
 s_datasets=(books_800M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
@@ -483,8 +484,8 @@ input_hash_table_size=(1073741824) #(16777216(for_16E6) 33554432(for_32E6) 13421
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_sosd_books_800M_uint64/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_books_800M_uint64/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_books_800M_uint64/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
 
 r_datasets=(fb_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
@@ -501,8 +502,8 @@ input_hash_table_size=(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_sosd_fb_200M_uint64/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_fb_200M_uint64/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_fb_200M_uint64/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
 
 r_datasets=(osm_cellids_800M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
@@ -519,8 +520,8 @@ input_hash_table_size=(1073741824) #(16777216(for_16E6) 33554432(for_32E6) 13421
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_sosd_osm_cellids_800M_uint64/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_osm_cellids_800M_uint64/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_osm_cellids_800M_uint64/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
 r_datasets=(wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
 s_datasets=(wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
@@ -536,5 +537,52 @@ input_hash_table_size=(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_sosd_wiki_ts_200M_uint64/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_wiki_ts_200M_uint64/
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_wiki_ts_200M_uint64/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+
+
+#tpch workloads
+################
+
+r_datasets=(r_q18_v1_uint32_uint32_57 r_q18_v2_uint32_uint32_150000 r_q18_v3_uint32_uint32_57)
+s_datasets=(s_q18_v1_uint32_uint32_1500000 s_q18_v2_uint32_uint32_57 s_q18_v3_uint32_uint32_6001215) 
+r_datasets_sizes=(57 150000 57) 
+s_datasets_sizes=(1500000 57 6001215)
+r_datasets_file_num_partitions=(32 32 32) 
+s_datasets_file_num_partitions=(32 32 32)
+input_hash_table_size=(16777216 16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_tpch_q18/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_tpch_q18/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_tpch_q18/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_tpch_q18/
 process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+
+
+
+#-rw-r--r-- 1 sabek sabek 3.7K May 30 18:22 r_q3_v1_uint32_uint32_30142_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek  18K May 30 18:47 r_q3_v2_uint32_uint32_147126_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek   10 May 30 23:51 r_q5_v1_uint32_uint32_1_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek   10 May 31 01:38 r_q5_v2_uint32_uint32_5_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 3.7K May 31 00:22 r_q5_v3_uint32_uint32_30183_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 5.7K May 31 00:38 r_q5_v4_uint32_uint32_46008_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek  23K May 31 01:00 r_q5_v5_uint32_uint32_184082_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek   10 May 31 12:29 r_q9_v1_uint32_uint32_25_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 1.4K May 31 12:41 r_q9_v2_uint32_uint32_10664_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 1.3K May 31 12:47 r_q9_v3_uint32_uint32_10000_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 5.3K May 31 12:53 r_q9_v4_uint32_uint32_42656_sorted_0.txt
+
+#-rw-r--r-- 1 sabek sabek  89K May 31 01:55 s_q3_v1_uint32_uint32_727305_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 396K May 30 19:04 s_q3_v2_uint32_uint32_3241776_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek   10 May 31 01:33 s_q5_v1_uint32_uint32_25_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek  19K May 31 00:09 s_q5_v2_uint32_uint32_150000_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek  28K May 31 00:30 s_q5_v3_uint32_uint32_227597_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 733K May 31 00:51 s_q5_v4_uint32_uint32_6001215_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 1.3K May 31 01:11 s_q5_v5_uint32_uint32_10000_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 1.3K May 31 12:37 s_q9_v1_uint32_uint32_10000_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek  98K May 31 12:44 s_q9_v2_uint32_uint32_800000_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 5.3K May 31 12:49 s_q9_v3_uint32_uint32_42656_sorted_0.txt
+#-rw-r--r-- 1 sabek sabek 733K May 31 12:57 s_q9_v4_uint32_uint32_6001215_sorted_0.txt
