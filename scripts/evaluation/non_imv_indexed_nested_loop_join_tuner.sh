@@ -544,6 +544,24 @@ input_hash_table_size=(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217
 #tpch workloads
 ################
 
+r_datasets=(r_q3_v1_uint32_uint32_30142 r_q3_v2_uint32_uint32_147126)
+s_datasets=(s_q3_v1_uint32_uint32_727305 s_q3_v2_uint32_uint32_3241776) 
+r_datasets_sizes=(30142 147126) 
+s_datasets_sizes=(727305 3241776)
+r_datasets_file_num_partitions=(32 32) 
+s_datasets_file_num_partitions=(32 32)
+input_hash_table_size=(16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_tpch_q3/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_tpch_q3/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_tpch_q3/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_tpch_q3/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+
+
 r_datasets=(r_q18_v1_uint32_uint32_57 r_q18_v2_uint32_uint32_150000 r_q18_v3_uint32_uint32_57)
 s_datasets=(s_q18_v1_uint32_uint32_1500000 s_q18_v2_uint32_uint32_57 s_q18_v3_uint32_uint32_6001215) 
 r_datasets_sizes=(57 150000 57) 
@@ -552,19 +570,17 @@ r_datasets_file_num_partitions=(32 32 32)
 s_datasets_file_num_partitions=(32 32 32)
 input_hash_table_size=(16777216 16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_tpch_q18/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_tpch_q18/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_tpch_q18/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_tpch_q18/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_tpch_q18/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_tpch_q18/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_tpch_q18/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_tpch_q18/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
 
 
-#-rw-r--r-- 1 sabek sabek 3.7K May 30 18:22 r_q3_v1_uint32_uint32_30142_sorted_0.txt
-#-rw-r--r-- 1 sabek sabek  18K May 30 18:47 r_q3_v2_uint32_uint32_147126_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek   10 May 30 23:51 r_q5_v1_uint32_uint32_1_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek   10 May 31 01:38 r_q5_v2_uint32_uint32_5_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek 3.7K May 31 00:22 r_q5_v3_uint32_uint32_30183_sorted_0.txt
@@ -575,8 +591,6 @@ process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datase
 #-rw-r--r-- 1 sabek sabek 1.3K May 31 12:47 r_q9_v3_uint32_uint32_10000_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek 5.3K May 31 12:53 r_q9_v4_uint32_uint32_42656_sorted_0.txt
 
-#-rw-r--r-- 1 sabek sabek  89K May 31 01:55 s_q3_v1_uint32_uint32_727305_sorted_0.txt
-#-rw-r--r-- 1 sabek sabek 396K May 30 19:04 s_q3_v2_uint32_uint32_3241776_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek   10 May 31 01:33 s_q5_v1_uint32_uint32_25_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek  19K May 31 00:09 s_q5_v2_uint32_uint32_150000_sorted_0.txt
 #-rw-r--r-- 1 sabek sabek  28K May 31 00:30 s_q5_v3_uint32_uint32_227597_sorted_0.txt
