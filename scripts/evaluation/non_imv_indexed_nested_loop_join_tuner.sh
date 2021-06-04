@@ -582,11 +582,14 @@ input_hash_table_size=(16777216 16777216 16777216 16777216 16777216) #(16777216(
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_tpch_q5/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
-
-r_datasets=(r_q9_v1_uint32_uint32_25 r_q9_v2_uint32_uint32_10664 r_q9_v3_uint32_uint32_10000 r_q9_v4_uint32_uint32_42656)
-s_datasets=(s_q9_v1_uint32_uint32_10000 s_q9_v2_uint32_uint32_800000 s_q9_v3_uint32_uint32_42656 s_q9_v4_uint32_uint32_6001215) 
-r_datasets_sizes=(25 10664 10000 42656) 
-s_datasets_sizes=(10000 800000 42656 6001215)
+#r_q9_v1_uint32_uint32_25
+#25
+#s_q9_v1_uint32_uint32_10000
+#10000
+r_datasets=(r_q9_v2_uint32_uint32_10664 r_q9_v3_uint32_uint32_10000 r_q9_v4_uint32_uint32_42656)
+s_datasets=(s_q9_v2_uint32_uint32_800000 s_q9_v3_uint32_uint32_42656 s_q9_v4_uint32_uint32_6001215) 
+r_datasets_sizes=(10664 10000 42656) 
+s_datasets_sizes=(800000 42656 6001215)
 r_datasets_file_num_partitions=(32 32 32 32) 
 s_datasets_file_num_partitions=(32 32 32 32)
 input_hash_table_size=(16777216 16777216 16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
