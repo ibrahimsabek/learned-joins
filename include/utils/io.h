@@ -88,8 +88,6 @@ void write_relation(Relation<KeyType, PayloadType>* rel, const char * filename)
                 fprintf(fp, "%u %d\n", rel->tuples[i].key, rel->tuples[i].payload);
         else if(std::is_same<PayloadType, unsigned int>::value)
             for (i = 0; i < rel->num_tuples; i++){            
-                if (i < 10)
-                printf("key %u, payload %u \n", rel->tuples[i].key, rel->tuples[i].payload);
                 fprintf(fp, "%u %u\n", rel->tuples[i].key, rel->tuples[i].payload);
             }
         else if(std::is_same<PayloadType, long long int>::value)

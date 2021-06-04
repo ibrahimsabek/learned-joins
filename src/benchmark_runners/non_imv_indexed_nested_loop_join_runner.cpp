@@ -300,7 +300,7 @@ uint64_t inlj_with_csstree_probe_rel_s_partition(Relation<KeyType, PayloadType> 
     uint64_t matches = 0; 
     uint64_t curIndex=0;
 	KeyType keyForSearch;
-printf("here in csstree probe \n");
+
     CC_CSSTree<KeyType, PayloadType> *tree = build_output->tree;
     KeyType * sorted_relation_r_keys_only = build_output->sorted_relation_r_keys_only;
     uint64_t original_relR_num_tuples = build_output->original_relR->num_tuples;
@@ -448,7 +448,6 @@ void * inlj_join_thread(void * param)
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
-    printf("before starting the csstree join \n");
     IndexedNestedLoopJoinBuild<KeyType, PayloadType> build_data; 
     build_data.original_relR = args->original_relR;
     build_data.original_relS = args->original_relS;
@@ -752,8 +751,17 @@ int main(int argc, char **argv)
     string curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
     string curr_rel_s_file_extension = RELATION_S_FILE_EXTENSION;
 
-    load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
-    load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);    
+    string curr_rel_r_path = RELATION_R_PATH;
+    string curr_rel_s_path = RELATION_S_PATH;
+
+    //load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+    //load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);    
+
+/////
+    load_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str(), curr_num_tuples_r);
+    load_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str(), curr_num_tuples_s);    
+/////
+
 #else
 
     string curr_rel_r_path = RELATION_R_PATH;
@@ -821,17 +829,31 @@ int main(int argc, char **argv)
     Relation<KeyType, PayloadType> sorted_relation_r;
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
 
-    curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
+//    curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
 
-    curr_rel_r_file_name = RELATION_R_FILE_NAME;
-    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
+//    curr_rel_r_file_name = RELATION_R_FILE_NAME;
+//    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
 
-    curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
+//    curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
-    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+//    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
 
+//    for(int j = 0; j < rel_r.num_tuples; j++)
+//        sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
+
+///////
     for(int j = 0; j < rel_r.num_tuples; j++)
-        sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
+        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
+    
+    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
+
+    sorted_relation_r.num_tuples = rel_r.num_tuples;
+    sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
+
+    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
+        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
+/////
+
 #else
 
     for(int j = 0; j < rel_r.num_tuples; j++)
