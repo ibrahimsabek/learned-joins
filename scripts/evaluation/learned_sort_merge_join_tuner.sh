@@ -3,12 +3,12 @@
 process_learned_sort_merge_join()
 {
     threads=(32) #(2 4 8 16 32 64) 
-    use_avxsort_for_sorting_minor_bckts=(0) #0 1
+    use_avxsort_for_sorting_minor_bckts=(1) #0 1
     #ls_default_threshold=(100 1000 2000 10000 20000 30000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
     ls_default_threshold=(100 1000 2000 10000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
     #ls_default_arch=(1000 2000 5000 10000 20000 50000 100000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
     ls_default_arch=(1000 2000 5000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
-    ls_imv_avx=(0) #0 1 
+    ls_imv_avx=(1) #0 1 
     ls_prefetch_minor_bckt_sizes_off=(0) #0 1 
     ls_prefetch_slopes_intercepts_minor_bckts=(0) #0 1 
     ls_simdstate=(5) #5 8 10 
