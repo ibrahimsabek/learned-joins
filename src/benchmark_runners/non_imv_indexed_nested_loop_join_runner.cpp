@@ -1057,23 +1057,15 @@ int main(int argc, char **argv)
             {
                 if(!hit_the_end)
                 {
-                                        //cout<< " here 1 \n"; 
-
-                    for(h = down_count; h >= 0; h--){
-                        //cout << h << curr_index + h + 1 << curr_index + h <<"\n",
+                    for(h = down_count; h >= 0; h--)
                         reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
-                    }
 
                     reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key; 
-
-                                                            //cout<< " here 1 again\n"; 
                 }
                 else
                 {
                     if(!hit_the_start)
                     {
-                                                                    //cout<< " here 2 \n"; 
-
                         for(h = down_count; h >= 0; h--)
                             reinserted_rel_r_keys_vec[curr_index - h - 1] = reinserted_rel_r_keys_vec[curr_index - h];
             
@@ -1082,8 +1074,6 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                                                                    //cout<< " here 3 \n"; 
-
                         it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
                         it = reinserted_rel_r_keys_vec.begin();
 
@@ -1094,8 +1084,6 @@ int main(int argc, char **argv)
             {
                 if(!hit_the_start)
                 {
-                                                                //cout<< " here 4 \n"; 
-
                     for(h = down_count; h >= 0; h--)
                         reinserted_rel_r_keys_vec[curr_index - h - 1] = reinserted_rel_r_keys_vec[curr_index - h];
         
@@ -1105,8 +1093,6 @@ int main(int argc, char **argv)
                 {
                     if(!hit_the_end)
                     {
-                                                                    //cout<< " here 5 \n"; 
-
                         for(h = down_count; h >= 0; h--)
                             reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
 
@@ -1114,21 +1100,17 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                                                                    //cout<< " here 6 \n"; 
-
                         it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
                         it = reinserted_rel_r_keys_vec.begin();
                     }
                 }
             }
-
-
         }
 
     }
 
     for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
-        //if(*it != 0)
+        if(*it != 0)
             std::cout << ' ' << *it;
     std::cout << "reinserted_rel_r_keys_vec size " << reinserted_rel_r_keys_vec.size() << '\n';
 
