@@ -26,6 +26,7 @@
 
 #include <chrono>
 #include <bits/stdc++.h>
+#include <vector>
 
 using namespace chrono;
 
@@ -75,14 +76,14 @@ PerfEvents perf_event;
 typedef void (*INLJBuildFun)(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r);
 volatile static struct Fun {
   INLJBuildFun fun_ptr;
-  char fun_name[16];
+  char fun_name[32];
 } inlj_pfun[4];
 volatile static int inlj_pf_num = 0;
 
 typedef uint64_t (*INLJProbeFun)(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output);
 volatile static struct Fun1 {
   INLJProbeFun fun_ptr;
-  char fun_name[16];
+  char fun_name[32];
 } inlj_pfun1[4];
 
 #ifdef INLJ_WITH_HASH_INDEX
@@ -242,6 +243,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
 #endif
 
 #ifdef INLJ_WITH_LEARNED_INDEX
+#ifndef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
 uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
 {
     uint64_t i;
@@ -290,6 +292,56 @@ uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * re
 
     return matches;
 }
+#else
+uint64_t inlj_with_rmi_model_based_build_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
+{
+    uint64_t i;
+    uint64_t matches = 0; 
+    size_t err;
+    uint64_t rmi_guess;
+    uint64_t bound_start, bound_end;
+    int n; uint64_t lower;
+    KeyType * sorted_relation_r_keys_only = build_output->sorted_relation_r_keys_only;
+    uint64_t original_relR_num_tuples = build_output->original_relR->num_tuples;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {        
+        rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_s_partition->tuples[i].key, &err);
+        bound_start = rmi_guess - err; 
+        bound_start = (bound_start < 0)? 0 : bound_start;
+        bound_end = rmi_guess + err;
+        bound_end = (bound_end > original_relR_num_tuples - 1)? original_relR_num_tuples - 1 : bound_end;
+
+        n = bound_end - bound_start + 1; // `end` is inclusive.
+        lower = bound_start;
+
+        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
+        // Authored by Giorgio Vinciguerra.
+        while (const int half = n / 2) {
+            const uint64_t middle = lower + half;
+            // Prefetch next two middles.
+            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
+            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
+            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
+            n -= half;
+        }
+
+        // Scroll back to the first occurrence.
+        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
+
+        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
+        {
+            // Sum over all values with that key.
+            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
+                matches ++;
+            }
+
+        }
+    }
+
+    return matches;
+}
+#endif
 #endif
 
 
@@ -421,12 +473,21 @@ void * inlj_join_thread(void * param)
 #endif
 
 #ifdef INLJ_WITH_LEARNED_INDEX        
+#ifndef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
         //strcpy(inlj_pfun[inlj_pf_num].fun_name, "Learned");
         //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_rmi_build_rel_r_partition;
 
         strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Learned");
         inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_rmi_probe_rel_s_partition;
         inlj_pf_num++;
+#else
+        //strcpy(inlj_pfun[inlj_pf_num].fun_name, "Learned_with_model_based_build");
+        //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_rmi_model_based_build_build_rel_r_partition;
+
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Learned_with_model_based_build");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_rmi_model_based_build_probe_rel_s_partition;
+        inlj_pf_num++;
+#endif
 #endif
 
 #ifdef INLJ_WITH_CSS_TREE_INDEX        
@@ -754,12 +815,12 @@ int main(int argc, char **argv)
     string curr_rel_r_path = RELATION_R_PATH;
     string curr_rel_s_path = RELATION_S_PATH;
 
-    //load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
-    //load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);    
+    load_relation_threaded<KeyType, PayloadType>(&rel_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), curr_rel_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+    load_relation_threaded<KeyType, PayloadType>(&rel_s, RELATION_S_FILE_NUM_PARTITIONS, curr_rel_s_folder_path.c_str(), curr_rel_s_file_name.c_str(), curr_rel_s_file_extension.c_str(), curr_num_tuples_s);    
 
 ///// here for tpch only ////
-    load_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str(), curr_num_tuples_r);
-    load_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str(), curr_num_tuples_s);    
+    //load_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str(), curr_num_tuples_r);
+    //load_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str(), curr_num_tuples_s);    
 ////////////////////////
 
 #else
@@ -829,29 +890,29 @@ int main(int argc, char **argv)
     Relation<KeyType, PayloadType> sorted_relation_r;
 #ifdef LOAD_RELATIONS_FOR_EVALUATION
 
-//    curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
+    curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
 
-//    curr_rel_r_file_name = RELATION_R_FILE_NAME;
-//    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
+    curr_rel_r_file_name = RELATION_R_FILE_NAME;
+    string sorted_r_file_name = curr_rel_r_file_name + "_sorted";
 
-//    curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
+    curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
-//    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
 
-//    for(int j = 0; j < rel_r.num_tuples; j++)
-//        sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
+    for(int j = 0; j < rel_r.num_tuples; j++)
+        sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
 
 ///// here for tpch only ////
-    for(int j = 0; j < rel_r.num_tuples; j++)
-        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
+//    for(int j = 0; j < rel_r.num_tuples; j++)
+//        sorted_relation_r_keys_only[j] = rel_r.tuples[j].key;
     
-    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
+//    std::sort((KeyType *)(sorted_relation_r_keys_only), (KeyType *)(sorted_relation_r_keys_only) + rel_r.num_tuples);
 
-    sorted_relation_r.num_tuples = rel_r.num_tuples;
-    sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
+//    sorted_relation_r.num_tuples = rel_r.num_tuples;
+//    sorted_relation_r.tuples = (Tuple<KeyType, PayloadType> *) alloc_aligned(rel_r.num_tuples * sizeof(Tuple<KeyType, PayloadType>));
 
-    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
-        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
+//    for(int j = 0; j < sorted_relation_r.num_tuples; j++)
+//        sorted_relation_r.tuples[j].key = sorted_relation_r_keys_only[j];
 ///////////////////////////
 
 #else
@@ -910,6 +971,148 @@ int main(int argc, char **argv)
 #ifdef INLJ_WITH_LEARNED_INDEX
   
     std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;    
+
+#ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
+    int scaling_factor = 4;
+    uint64_t k, h;
+    size_t err;
+    uint64_t rmi_guess;
+    uint64_t max_rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_r.tuples[0].key, &err);;
+    for (k = 0; k < rel_r.num_tuples; k++)
+    {        
+        rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_r.tuples[k].key, &err);
+        if (rmi_guess > max_rmi_guess)
+            max_rmi_guess = rmi_guess;
+    }
+
+    std::vector<KeyType> reinserted_rel_r_keys_vec ((max_rmi_guess + 1) * scaling_factor);
+    std::vector<KeyType>::iterator it;
+    uint64_t down_ptr, up_ptr;
+    uint64_t down_count, up_count; 
+    bool hit_the_end, hit_the_start;
+    for (k = 0; k < rel_r.num_tuples; k++)
+    {
+        rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_r.tuples[k].key, &err);
+        
+        uint64_t curr_index = rmi_guess * scaling_factor;
+
+        if(reinserted_rel_r_keys_vec.at(curr_index) == 0)
+        {
+            reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key;
+        }
+        else
+        {
+            down_ptr = curr_index;
+            down_count = 0;
+            hit_the_end = false;
+            up_ptr = curr_index;
+            up_count = 0;
+            hit_the_start = false;
+
+            //searh in the lower part
+            do
+            {
+                down_ptr ++;
+                if(down_ptr >= reinserted_rel_r_keys_vec.size())
+                {
+                    hit_the_end = true;
+                    break;
+                }
+
+                if(reinserted_rel_r_keys_vec.at(down_ptr) == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    down_count ++;
+                }                
+            }
+            while(1);
+
+            //search in the upper part
+            do
+            {
+                up_ptr --;
+                if(up_ptr < 0)
+                {
+                    hit_the_start = true;
+                    break;
+                }
+
+                if(reinserted_rel_r_keys_vec.at(up_ptr) == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    up_count ++;
+                }                
+            }
+            while(1);
+
+            if (down_count <= up_count)
+            {
+                if(!hit_the_end)
+                {
+                    for(h = down_count; h >= 0; h--)
+                        reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
+
+                    reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key;  
+                }
+                else
+                {
+                    if(!hit_the_start)
+                    {
+                        for(h = down_count; h >= 0; h--)
+                            reinserted_rel_r_keys_vec[curr_index - h - 1] = reinserted_rel_r_keys_vec[curr_index - h];
+            
+                        reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key;  
+                    }
+                    else
+                    {
+                        it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
+                        it = reinserted_rel_r_keys_vec.begin();
+                    }
+                }
+            }
+            else
+            {
+                if(!hit_the_start)
+                {
+                    for(h = down_count; h >= 0; h--)
+                        reinserted_rel_r_keys_vec[curr_index - h - 1] = reinserted_rel_r_keys_vec[curr_index - h];
+        
+                    reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key;  
+                }
+                else
+                {
+                    if(!hit_the_end)
+                    {
+                        for(h = down_count; h >= 0; h--)
+                            reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
+
+                        reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key;  
+                    }
+                    else
+                    {
+                        it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
+                        it = reinserted_rel_r_keys_vec.begin();
+                    }
+                }
+            }
+
+
+        }
+
+    }
+
+    for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
+        std::cout << ' ' << *it;
+    std::cout << '\n';
+
+#endif
+
 /*
     //////////////////////////////////////////////////////////////////////////////
     // start stuff for sampling and building RMI models for both relations R and S
