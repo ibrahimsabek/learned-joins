@@ -129,6 +129,7 @@ process_non_imv_indexed_nested_loop_join()
                 
                     sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 0 \
                                                     -INLJ_WITH_LEARNED_INDEX 1 \
+                                                    -INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD 1 \
                                                     -INLJ_WITH_CSS_TREE_INDEX 0 \
                                                     -INLJ_WITH_ART32_TREE_INDEX 0 \
                                                     -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
