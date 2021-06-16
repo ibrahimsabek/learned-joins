@@ -1059,10 +1059,14 @@ int main(int argc, char **argv)
                 {
                                         cout<< " here 1 \n"; 
 
-                    for(h = down_count; h >= 0; h--)
+                    for(h = down_count; h >= 0; h--){
+                        cout << h << curr_index + h + 1 << curr_index + h <<"\n",
                         reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
+                    }
 
                     reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key; 
+
+                                                            cout<< " here 1 again\n"; 
                 }
                 else
                 {
