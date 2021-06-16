@@ -1108,8 +1108,9 @@ int main(int argc, char **argv)
     }
 
     for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
-        std::cout << ' ' << *it;
-    std::cout << '\n';
+        if(*it != 0)
+            std::cout << ' ' << *it;
+    std::cout << "reinserted_rel_r_keys_vec size" << reinserted_rel_r_keys_vec.size() << '\n';
 
 #endif
 
