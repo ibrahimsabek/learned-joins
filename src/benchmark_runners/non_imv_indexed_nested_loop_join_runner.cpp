@@ -1108,7 +1108,7 @@ int main(int argc, char **argv)
         }
 
     }
-
+/*
     //NOTE: Assume we have at least two items in the keys array
     int64_t curr_start = 0;
     KeyType curr_key, prev_key;
@@ -1151,7 +1151,7 @@ int main(int argc, char **argv)
         for(h = 0; h < keys_vec.size(); h++)
             reinserted_rel_r_keys_vec[curr_start + h] = keys_vec[h];   
     }
-
+*/
     for(k = 0; k < reinserted_rel_r_keys_vec.size() - 1; k++)
     {
         if((reinserted_rel_r_keys_vec[k] != 0) && (reinserted_rel_r_keys_vec[k+1] != 0) && (reinserted_rel_r_keys_vec[k] > reinserted_rel_r_keys_vec[k+1]))
