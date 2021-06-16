@@ -973,7 +973,7 @@ int main(int argc, char **argv)
     std::cout << "RMI status: " << INLJ_RMI_NAMESPACE::load(INLJ_RMI_DATA_PATH) << std::endl;    
 
 #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
-    int scaling_factor = 4;
+    int scaling_factor = INLJ_WITH_LEARNED_GAPS_FACTOR;
     uint64_t k; int64_t h;
     size_t err;
     uint64_t rmi_guess;
@@ -1111,7 +1111,7 @@ int main(int argc, char **argv)
 
     for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
         //if(*it != 0)
-            std::cout << ' ' << *it;
+        //    std::cout << ' ' << *it;
     std::cout << "reinserted_rel_r_keys_vec size " << reinserted_rel_r_keys_vec.size() << '\n';
 
 #endif
