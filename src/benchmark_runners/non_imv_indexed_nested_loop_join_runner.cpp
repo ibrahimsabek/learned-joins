@@ -974,7 +974,7 @@ int main(int argc, char **argv)
 
 #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
     int scaling_factor = 4;
-    uint64_t k, h;
+    uint64_t k; int64_t h;
     size_t err;
     uint64_t rmi_guess;
     uint64_t max_rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_r.tuples[0].key, &err);;
@@ -1001,7 +1001,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            cout << "max_rmi_guess: " << max_rmi_guess << " key: " << rel_r.tuples[k].key << " rmi_guess: " << rmi_guess << " curr_index: " << curr_index << " vec_size: " << reinserted_rel_r_keys_vec.size() << "\n";
+            //cout << "max_rmi_guess: " << max_rmi_guess << " key: " << rel_r.tuples[k].key << " rmi_guess: " << rmi_guess << " curr_index: " << curr_index << " vec_size: " << reinserted_rel_r_keys_vec.size() << "\n";
             down_ptr = curr_index;
             down_count = 0;
             hit_the_end = false;
@@ -1051,28 +1051,28 @@ int main(int argc, char **argv)
             }
             while(1);
             
-            cout << "down_count: " << down_count << " up_count: " << up_count << " hit_the_end: " << hit_the_end << " hit_the_start: " << hit_the_start << " vec_size: " << reinserted_rel_r_keys_vec.size() << "\n";
+            //cout << "down_count: " << down_count << " up_count: " << up_count << " hit_the_end: " << hit_the_end << " hit_the_start: " << hit_the_start << " vec_size: " << reinserted_rel_r_keys_vec.size() << "\n";
 
             if (down_count <= up_count)
             {
                 if(!hit_the_end)
                 {
-                                        cout<< " here 1 \n"; 
+                                        //cout<< " here 1 \n"; 
 
                     for(h = down_count; h >= 0; h--){
-                        cout << h << curr_index + h + 1 << curr_index + h <<"\n",
+                        //cout << h << curr_index + h + 1 << curr_index + h <<"\n",
                         reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
                     }
 
                     reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key; 
 
-                                                            cout<< " here 1 again\n"; 
+                                                            //cout<< " here 1 again\n"; 
                 }
                 else
                 {
                     if(!hit_the_start)
                     {
-                                                                    cout<< " here 2 \n"; 
+                                                                    //cout<< " here 2 \n"; 
 
                         for(h = down_count; h >= 0; h--)
                             reinserted_rel_r_keys_vec[curr_index - h - 1] = reinserted_rel_r_keys_vec[curr_index - h];
@@ -1082,7 +1082,7 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                                                                    cout<< " here 3 \n"; 
+                                                                    //cout<< " here 3 \n"; 
 
                         it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
                         it = reinserted_rel_r_keys_vec.begin();
@@ -1094,7 +1094,7 @@ int main(int argc, char **argv)
             {
                 if(!hit_the_start)
                 {
-                                                                cout<< " here 4 \n"; 
+                                                                //cout<< " here 4 \n"; 
 
                     for(h = down_count; h >= 0; h--)
                         reinserted_rel_r_keys_vec[curr_index - h - 1] = reinserted_rel_r_keys_vec[curr_index - h];
@@ -1105,7 +1105,7 @@ int main(int argc, char **argv)
                 {
                     if(!hit_the_end)
                     {
-                                                                    cout<< " here 5 \n"; 
+                                                                    //cout<< " here 5 \n"; 
 
                         for(h = down_count; h >= 0; h--)
                             reinserted_rel_r_keys_vec[curr_index + h + 1] = reinserted_rel_r_keys_vec[curr_index + h];
@@ -1114,7 +1114,7 @@ int main(int argc, char **argv)
                     }
                     else
                     {
-                                                                    cout<< " here 6 \n"; 
+                                                                    //cout<< " here 6 \n"; 
 
                         it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
                         it = reinserted_rel_r_keys_vec.begin();
@@ -1127,9 +1127,9 @@ int main(int argc, char **argv)
 
     }
 
-    //for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
-    //    if(*it != 0)
-    //        std::cout << ' ' << *it;
+    for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
+        if(*it != 0)
+            std::cout << ' ' << *it;
     std::cout << "reinserted_rel_r_keys_vec size " << reinserted_rel_r_keys_vec.size() << '\n';
 
 #endif
