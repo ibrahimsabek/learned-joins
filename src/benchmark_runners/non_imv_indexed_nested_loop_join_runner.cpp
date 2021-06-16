@@ -993,8 +993,8 @@ int main(int argc, char **argv)
     for (k = 0; k < rel_r.num_tuples; k++)
     {
         rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_r.tuples[k].key, &err);
-        
         uint64_t curr_index = rmi_guess * scaling_factor;
+        cout << "max_rmi_guess: " << max_rmi_guess << " key: " << rel_r.tuples[k].key << " rmi_guess: " << rmi_guess << " curr_index: " << curr_index << " vec_size: " << reinserted_rel_r_keys_vec.size() << "\n";
 
         if(reinserted_rel_r_keys_vec.at(curr_index) == 0)
         {
@@ -1107,9 +1107,9 @@ int main(int argc, char **argv)
 
     }
 
-    for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
-        if(*it != 0)
-            std::cout << ' ' << *it;
+    //for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
+    //    if(*it != 0)
+    //        std::cout << ' ' << *it;
     std::cout << "reinserted_rel_r_keys_vec size " << reinserted_rel_r_keys_vec.size() << '\n';
 
 #endif
