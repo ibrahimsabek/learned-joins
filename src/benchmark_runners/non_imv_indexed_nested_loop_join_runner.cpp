@@ -1156,7 +1156,7 @@ int main(int argc, char **argv)
     {
         if((reinserted_rel_r_keys_vec[k] != 0) && (reinserted_rel_r_keys_vec[k+1] != 0) && (reinserted_rel_r_keys_vec[k] > reinserted_rel_r_keys_vec[k+1]))
         {
-            cout << "Not sorted at " << k << " and "<< k + 1 << " : " reinserted_rel_r_keys_vec[k] << " and " << reinserted_rel_r_keys_vec[k + 1] <<"\n";
+            cout << "Not sorted at " << k << " and "<< k + 1 << " : " << reinserted_rel_r_keys_vec[k] << " and " << reinserted_rel_r_keys_vec[k + 1] <<"\n";
         }
     }
 
