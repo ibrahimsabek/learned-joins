@@ -974,7 +974,7 @@ int main(int argc, char **argv)
 
 #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
     int scaling_factor = INLJ_WITH_LEARNED_GAPS_FACTOR;
-    uint64_t k; int64_t h;
+    int64_t k; int64_t h;
     size_t err;
     uint64_t rmi_guess;
     uint64_t max_rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_r.tuples[0].key, &err);;
@@ -1107,6 +1107,49 @@ int main(int argc, char **argv)
             }
         }
 
+    }
+
+    //NOTE: Assume we have at least two items in the keys array
+    int64_t curr_start = 0;
+    KeyType curr_key, prev_key;
+    vector<KeyType> keys_vec;
+
+    prev_key = reinserted_rel_r_keys_vec[0];
+    if(prev_key > 0)
+    {
+        keys_vec.push_back(prev_key);
+    }
+
+    for (k = 1; k < reinserted_rel_r_keys_vec.size(); k++)
+    {
+        curr_key = reinserted_rel_r_keys_vec[k];
+
+        if((prev_key == 0) && (curr_key > 0))
+        {
+            keys_vec.clear();
+            keys_vec.push_back(curr_key);
+            curr_start = k;
+        }
+        else if((prev_key > 0) && (curr_key == 0))
+        {
+            std::sort(keys_vec.begin(), keys_vec.end());
+            for(h = 0; h < keys_vec.size(); h++)
+                reinserted_rel_r_keys_vec[curr_start + h] = keys_vec[h];
+        }
+        else if((prev_key > 1) && (curr_key > 1))
+        {
+            keys_vec.push_back(curr_key);
+        }
+        
+        if(k < reinserted_rel_r_keys_vec.size() - 1)
+            prev_key = curr_key;
+    }
+
+    if(((prev_key == 0) && (curr_key > 0)) || ((prev_key > 0) && (curr_key == 0)))
+    {
+        std::sort(keys_vec.begin(), keys_vec.end());
+        for(h = 0; h < keys_vec.size(); h++)
+            reinserted_rel_r_keys_vec[curr_start + h] = keys_vec[h];   
     }
 
     for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
