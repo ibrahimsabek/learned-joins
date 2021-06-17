@@ -996,9 +996,7 @@ int main(int argc, char **argv)
         uint64_t curr_index = rmi_guess * scaling_factor;
 
         if(reinserted_rel_r_keys_vec.at(curr_index) == 0)
-        {
             reinserted_rel_r_keys_vec[curr_index] = rel_r.tuples[k].key;
-        }
         else
         {
             //cout << "max_rmi_guess: " << max_rmi_guess << " key: " << rel_r.tuples[k].key << " rmi_guess: " << rmi_guess << " curr_index: " << curr_index << " vec_size: " << reinserted_rel_r_keys_vec.size() << "\n";
@@ -1020,13 +1018,9 @@ int main(int argc, char **argv)
                 }
 
                 if(reinserted_rel_r_keys_vec.at(down_ptr) == 0)
-                {
                     break;
-                }
                 else
-                {
-                    down_count ++;
-                }                
+                    down_count ++;             
             }
             while(1);
 
@@ -1041,13 +1035,9 @@ int main(int argc, char **argv)
                 }
 
                 if(reinserted_rel_r_keys_vec.at(up_ptr) == 0)
-                {
                     break;
-                }
                 else
-                {
-                    up_count ++;
-                }                
+                    up_count ++;                
             }
             while(1);
             
@@ -1076,7 +1066,6 @@ int main(int argc, char **argv)
                     {
                         it = reinserted_rel_r_keys_vec.insert (it + curr_index, rel_r.tuples[k].key);
                         it = reinserted_rel_r_keys_vec.begin();
-
                     }
                 }
             }
@@ -1106,9 +1095,8 @@ int main(int argc, char **argv)
                 }
             }
         }
-
     }
-/*
+
     //NOTE: Assume we have at least two items in the keys array
     int64_t curr_start = 0;
     KeyType curr_key, prev_key;
@@ -1116,10 +1104,8 @@ int main(int argc, char **argv)
 
     prev_key = reinserted_rel_r_keys_vec[0];
     if(prev_key > 0)
-    {
         keys_vec.push_back(prev_key);
-    }
-
+    
     for (k = 1; k < reinserted_rel_r_keys_vec.size(); k++)
     {
         curr_key = reinserted_rel_r_keys_vec[k];
@@ -1137,9 +1123,7 @@ int main(int argc, char **argv)
                 reinserted_rel_r_keys_vec[curr_start + h] = keys_vec[h];
         }
         else if((prev_key > 1) && (curr_key > 1))
-        {
             keys_vec.push_back(curr_key);
-        }
         
         if(k < reinserted_rel_r_keys_vec.size() - 1)
             prev_key = curr_key;
@@ -1151,19 +1135,19 @@ int main(int argc, char **argv)
         for(h = 0; h < keys_vec.size(); h++)
             reinserted_rel_r_keys_vec[curr_start + h] = keys_vec[h];   
     }
-*/
-    for(k = 0; k < reinserted_rel_r_keys_vec.size() - 1; k++)
-    {
-        if((reinserted_rel_r_keys_vec[k] != 0) && (reinserted_rel_r_keys_vec[k+1] != 0) && (reinserted_rel_r_keys_vec[k] > reinserted_rel_r_keys_vec[k+1]))
-        {
-            cout << "Not sorted at " << k << " and "<< k + 1 << " : " << reinserted_rel_r_keys_vec[k] << " and " << reinserted_rel_r_keys_vec[k + 1] <<"\n";
-        }
-    }
+
+//    for(k = 0; k < reinserted_rel_r_keys_vec.size() - 1; k++)
+//    {
+//        if((reinserted_rel_r_keys_vec[k] != 0) && (reinserted_rel_r_keys_vec[k+1] != 0) && (reinserted_rel_r_keys_vec[k] > reinserted_rel_r_keys_vec[k+1]))
+//        {
+//            cout << "Not sorted at " << k << " and "<< k + 1 << " : " << reinserted_rel_r_keys_vec[k] << " and " << reinserted_rel_r_keys_vec[k + 1] <<"\n";
+//        }
+//    }
 
     //for (it=reinserted_rel_r_keys_vec.begin(); it<reinserted_rel_r_keys_vec.end(); it++)
         //if(*it != 0)
     //        std::cout << ' ' << *it;
-    std::cout << "reinserted_rel_r_keys_vec size " << reinserted_rel_r_keys_vec.size() << '\n';
+    //std::cout << "reinserted_rel_r_keys_vec size " << reinserted_rel_r_keys_vec.size() << '\n';
 
 #endif
 
