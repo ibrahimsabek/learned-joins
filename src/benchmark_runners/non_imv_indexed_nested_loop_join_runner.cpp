@@ -1248,7 +1248,7 @@ int main(int argc, char **argv)
                                     ht, 
                                 #endif
                                     sorted_relation_r_keys_only,
-                                #ifdef INLJ_WITH_LEARNED_INDEX                                    
+                                #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD                                    
                                     sorted_relation_r_gapped_keys_only,
                                     sorted_relation_r_gapped_keys_only_size,
                                 #endif
