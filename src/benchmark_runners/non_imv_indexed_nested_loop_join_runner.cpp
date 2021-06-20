@@ -265,31 +265,29 @@ uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * re
 
         n = bound_end - bound_start + 1; // `end` is inclusive.
         lower = bound_start;
-/////// uncomment the binary search stuff and remove my code in the following lines //// 
-        matches += n; //remove from here 
 
-//        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
-//        // Authored by Giorgio Vinciguerra.
-//        while (const int half = n / 2) {
-//            const uint64_t middle = lower + half;
-//            // Prefetch next two middles.
-//            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
-//            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
-//            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
-//            n -= half;
-//        }
+        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
+        // Authored by Giorgio Vinciguerra.
+        while (const int half = n / 2) {
+            const uint64_t middle = lower + half;
+            // Prefetch next two middles.
+            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
+            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
+            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
+            n -= half;
+        }
 
-//        // Scroll back to the first occurrence.
-//        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
+        // Scroll back to the first occurrence.
+        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
 
-//        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
-//        {
-//            // Sum over all values with that key.
-//            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
-//                matches ++;
-//            }
+        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
+        {
+            // Sum over all values with that key.
+            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
+                matches ++;
+            }
 
-//        }
+        }
     }
 
     return matches;
