@@ -409,6 +409,10 @@ struct IndexedNestedLoopJoinThread
     vector<double>* slopes; 
     vector<double>* intercepts;*/
     /**** end stuff for learning RMI models ****/
+    #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD 
+        KeyType * sorted_relation_r_gapped_keys_only;
+        uint64_t sorted_relation_r_gapped_keys_only_size;
+    #endif
     #endif
 
 #ifdef INLJ_WITH_CSS_TREE_INDEX
@@ -462,6 +466,10 @@ struct IndexedNestedLoopJoinBuild {
 #endif
 
     KeyType * sorted_relation_r_keys_only;
+    #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD 
+    KeyType * sorted_relation_r_gapped_keys_only;
+    uint64_t sorted_relation_r_gapped_keys_only_size;
+    #endif    
     Relation<KeyType, PayloadType> *     original_relR;
     Relation<KeyType, PayloadType> *     original_relS;
 };

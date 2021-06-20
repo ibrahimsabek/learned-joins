@@ -265,29 +265,31 @@ uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * re
 
         n = bound_end - bound_start + 1; // `end` is inclusive.
         lower = bound_start;
+/////// uncomment the binary search stuff and remove my code in the following lines //// 
+        matches += n; //remove from here 
 
-        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
-        // Authored by Giorgio Vinciguerra.
-        while (const int half = n / 2) {
-            const uint64_t middle = lower + half;
-            // Prefetch next two middles.
-            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
-            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
-            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
-            n -= half;
-        }
+//        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
+//        // Authored by Giorgio Vinciguerra.
+//        while (const int half = n / 2) {
+//            const uint64_t middle = lower + half;
+//            // Prefetch next two middles.
+//            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
+//            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
+//            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
+//            n -= half;
+//        }
 
-        // Scroll back to the first occurrence.
-        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
+//        // Scroll back to the first occurrence.
+//        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
 
-        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
-        {
-            // Sum over all values with that key.
-            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
-                matches ++;
-            }
+//        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
+//        {
+//            // Sum over all values with that key.
+//            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
+//                matches ++;
+//            }
 
-        }
+//        }
     }
 
     return matches;
@@ -513,6 +515,11 @@ void * inlj_join_thread(void * param)
     build_data.original_relR = args->original_relR;
     build_data.original_relS = args->original_relS;
     build_data.sorted_relation_r_keys_only = args->sorted_relation_r_keys_only;
+#ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
+    build_data.sorted_relation_r_gapped_keys_only = args->sorted_relation_r_gapped_keys_only;
+    build_data.sorted_relation_r_gapped_keys_only_size = args->sorted_relation_r_gapped_keys_only_size;
+#endif
+
 #ifdef INLJ_WITH_CSS_TREE_INDEX        
     build_data.tree = args->tree;
 #endif
@@ -699,6 +706,10 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                                  Hashtable<KeyType, PayloadType> * ht, 
                         #endif
                                  KeyType * sorted_relation_r_keys_only,
+                        #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
+                                 KeyType * sorted_relation_r_gapped_keys_only,
+                                 uint64_t sorted_relation_r_gapped_keys_only_size, 
+                        #endif
                         #ifdef INLJ_WITH_LEARNED_INDEX
                                  /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi,
                                  learned_sort_for_sort_merge::RMI<KeyType, PayloadType>::Params p,
@@ -757,6 +768,11 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).original_relS = rel_s;
 
         (*(args + i)).sorted_relation_r_keys_only = sorted_relation_r_keys_only;
+
+    #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
+        (*(args + i)).sorted_relation_r_gapped_keys_only = sorted_relation_r_gapped_keys_only;
+        (*(args + i)).sorted_relation_r_gapped_keys_only_size = sorted_relation_r_gapped_keys_only_size; 
+    #endif
 
     #ifdef INLJ_WITH_LEARNED_INDEX
         /**** start stuff for learning RMI models ****/
@@ -1136,6 +1152,9 @@ int main(int argc, char **argv)
             reinserted_rel_r_keys_vec[curr_start + h] = keys_vec[h];   
     }
 
+    KeyType* sorted_relation_r_gapped_keys_only = reinserted_rel_r_keys_vec.data();
+    uint64_t sorted_relation_r_gapped_keys_only_size = reinserted_rel_r_keys_vec.size();
+
 //    for(k = 0; k < reinserted_rel_r_keys_vec.size() - 1; k++)
 //    {
 //        if((reinserted_rel_r_keys_vec[k] != 0) && (reinserted_rel_r_keys_vec[k+1] != 0) && (reinserted_rel_r_keys_vec[k] > reinserted_rel_r_keys_vec[k+1]))
@@ -1229,6 +1248,10 @@ int main(int argc, char **argv)
                                     ht, 
                                 #endif
                                     sorted_relation_r_keys_only,
+                                #ifdef INLJ_WITH_LEARNED_INDEX                                    
+                                    sorted_relation_r_gapped_keys_only,
+                                    sorted_relation_r_gapped_keys_only_size,
+                                #endif
                                 #ifdef INLJ_WITH_LEARNED_INDEX                                    
                                     //&rmi, rmi_params,
                                     //SAMPLE_SZ_R, SAMPLE_SZ_S,
