@@ -2,8 +2,8 @@
 
 process_non_imv_indexed_nested_loop_join()
 {
-    threads=(4 16) #(2 4 8 16 32 64)
-    rmi_models=(8) #(0 1 2 3 4 5 6 7 8 9)
+    threads=(32) #(2 4 8 16 32 64)
+    rmi_models=(0 1 2 3 4 5 6 7 8 9)
     css_fanouts=(33) #(10 33 40)
 
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
@@ -347,10 +347,10 @@ input_hash_table_size=(536870912) #(33554432(for_32E6) 134217728(for_128E6) 5368
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_model_based_build_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique_without_bs/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_unique/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_unique/

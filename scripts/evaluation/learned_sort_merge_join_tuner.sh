@@ -2,13 +2,13 @@
 
 process_learned_sort_merge_join()
 {
-    threads=(32) #(2 4 8 16 32 64) 
-    use_avxsort_for_sorting_minor_bckts=(1) #0 1
+    threads=(4 16) #(2 4 8 16 32 64) 
+    use_avxsort_for_sorting_minor_bckts=(0) #0 1
     #ls_default_threshold=(100 1000 2000 10000 20000 30000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
-    ls_default_threshold=(100 1000 2000 10000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
+    ls_default_threshold=(20000) #100 1000 2000 10000 20000 30000 40000 60000 80000 
     #ls_default_arch=(1000 2000 5000 10000 20000 50000 100000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
-    ls_default_arch=(1000 2000 5000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
-    ls_imv_avx=(1) #0 1 
+    ls_default_arch=(1000) #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
+    ls_imv_avx=(0) #0 1 
     ls_prefetch_minor_bckt_sizes_off=(0) #0 1 
     ls_prefetch_slopes_intercepts_minor_bckts=(0) #0 1 
     ls_simdstate=(5) #5 8 10 
@@ -18,8 +18,8 @@ process_learned_sort_merge_join()
     #SPILL_BUCKET_SIZE_RATIO=1 #optional: 1 0.5 0.25
     #LS_FOR_SORT_MERGE_DEFAULT_BATCH_SZ=10 #optional: 10 20 50 100
 
-    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
-    dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
 
     #r_datasets=$1
@@ -127,9 +127,9 @@ process_learned_sort_merge_join()
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_MINOR_BCKT_SIZES_OFF $curr_ls_prefetch_minor_bckt_sizes_off \
                                                                                         -LS_FOR_SORT_MERGE_PREFETCH_SLOPES_AND_INTERCEPTS_MINOR_BCKTS $curr_ls_prefetch_slopes_intercepts_minor_bckts \
                                                                                         -LS_FOR_SORT_MERGE_SIMDStateSize $curr_ls_simdstate \
-                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis #\
-                                                                                        #-CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
-                                                                                        #-CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
+                                                                                        -LS_FOR_SORT_MERGE_PDIS $curr_ls_pdis \
+                                                                                        -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
+                                                                                        -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
 
 
                                                     cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
@@ -303,10 +303,17 @@ s_datasets_file_num_partitions=(32 32 32 32 32 32 32 32 32 32 32 32) #(64 64 64 
 #r_datasets_file_num_partitions=(32 32) #(64 64 64 64 64 64 64 64 64)
 #s_datasets_file_num_partitions=(32 32) #(64 64 64 64 64 64 64 64 64)
 
+r_datasets=(r_UNIQUE_v5_uint32_uint32_640000000) #(r_UNIQUE_v1_uint32_uint32_16000000 r_UNIQUE_v2_uint32_uint32_32000000 r_UNIQUE_v3_uint32_uint32_128000000 r_UNIQUE_v4_uint32_uint32_384000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v6_uint32_uint32_896000000 r_UNIQUE_v7_uint32_uint32_1152000000 r_UNIQUE_v8_uint32_uint32_1664000000 r_UNIQUE_v9_uint32_uint32_1920000000)
+s_datasets=(s_UNIQUE_v5_uint32_uint32_640000000) #(s_UNIQUE_v1_uint32_uint32_16000000 s_UNIQUE_v2_uint32_uint32_32000000 s_UNIQUE_v3_uint32_uint32_128000000 s_UNIQUE_v4_uint32_uint32_384000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v6_uint32_uint32_896000000 s_UNIQUE_v7_uint32_uint32_1152000000 s_UNIQUE_v8_uint32_uint32_1664000000 s_UNIQUE_v9_uint32_uint32_1920000000)
+r_datasets_sizes=(640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E6)
+s_datasets_sizes=(640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E6)
+r_datasets_file_num_partitions=(32) #(64 64 64 64 64 64 64 64 64)
+s_datasets_file_num_partitions=(32) #(64 64 64 64 64 64 64 64 64)
+
 #output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_unique/
 #process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_unique/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_unique/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 
 
 #lognormal datasets
