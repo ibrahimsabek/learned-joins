@@ -81,7 +81,7 @@ def plt_histogram(is_cdf_plot, input_file_path, key_type_str, is_rmi_keys_only, 
 
     print("Count of loaded elements: ", len(keys_arr))
     if is_sample_first:
-        keys_arr = np.random.choice(keys_arr, size=(int)(len(keys_arr)/2), replace=False)
+        keys_arr = np.random.choice(keys_arr, size=(int)(len(keys_arr)/4), replace=False)
 
     if is_cdf_plot:
         print("Plotting the CDF now ....")
