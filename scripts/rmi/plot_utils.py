@@ -175,7 +175,7 @@ def plt_histogram(is_cdf_plot, input_file_path, key_type_str, is_rmi_keys_only, 
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets_sosd/wiki_ts_200M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "wiki_ts_200M_uint64_hist.png")
 #plt_histogram(1, "/spinning/sabek/learned_join_datasets_sosd/wiki_ts_200M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "wiki_ts_200M_uint64_cdf.png")
 
-plt_histogram(0, "/spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "fb_200M_uint64_hist.png", is_sample_first=True)
+plt_histogram(0, "/spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64", 'uint64', 1, "/spinning/sabek/learned_join_plots/", "fb_200M_uint64_input_hist.png", is_sample_first=True)
 #plt_histogram(1, "/spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "fb_200M_uint64_cdf.png")
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets_sosd/osm_cellids_800M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "osm_cellids_800M_uint64_hist.png")
 #plt_histogram(1, "/spinning/sabek/learned_join_datasets_sosd/osm_cellids_800M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "osm_cellids_800M_uint64_cdf.png")
