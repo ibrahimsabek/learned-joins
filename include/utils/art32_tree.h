@@ -53,22 +53,23 @@ using namespace std;
     ~Node() {
       switch (type) {
         case NodeType4: {
-          allocated_byte_count -= sizeof(Node4);
+          //allocated_byte_count -= sizeof(Node4);
           break;
         }
         case NodeType16: {
-          allocated_byte_count -= sizeof(Node16);
+          //allocated_byte_count -= sizeof(Node16);
           break;
         }
         case NodeType48: {
-          allocated_byte_count -= sizeof(Node48);
+          //allocated_byte_count -= sizeof(Node48);
           break;
         }
         case NodeType256: {
-          allocated_byte_count -= sizeof(Node256);
+          //allocated_byte_count -= sizeof(Node256);
           break;
         }
       }
+      allocated_byte_count -= sizeof(this);
     }
   };
 
@@ -857,4 +858,4 @@ class ART32 {
   const std::vector<Tuple<uint32_t, PayloadType>>* data_;
 };
 
-uint64_t ART32::allocated_byte_count;
+//uint64_t ART32::allocated_byte_count;
