@@ -1239,6 +1239,7 @@ int main(int argc, char **argv)
 
 	ART32<PayloadType> *art32_tree=new ART32<PayloadType>();
     art32_tree->Build(art32_data);
+    printf("ART size in bytes %ld \n", art32_tree->size());
 
 #endif
 
