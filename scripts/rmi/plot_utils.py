@@ -85,7 +85,7 @@ def plt_histogram(is_cdf_plot, input_file_path, key_type_str, is_rmi_keys_only, 
 
     if is_cdf_plot:
         print("Plotting the CDF now ....")
-        n, bins, patches = plt.hist(x=keys_arr, bins=100, density=True, cumulative=True, label='CDF',
+        n, bins, patches = plt.hist(x=keys_arr, bins='auto', density=True, cumulative=True, label='CDF',
                 histtype='step', alpha=0.7, rwidth=0.85, color='k')
         plt.grid(axis='y', alpha=0.75)
         plt.xlabel('Key')
