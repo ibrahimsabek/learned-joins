@@ -196,7 +196,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
         if((curr_buckts_num > 2) && (i < 100))
             printf("naive i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
     }*/
-
+    uint64_t chasing_counter = 0;
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {
 #ifdef PREFETCH_INLJ        
@@ -221,6 +221,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
         Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
 
         do {
+            chasing_counter ++;
         #ifdef SINGLE_TUPLE_PER_BUCKET    
             if(rel_s_partition->tuples[i].key == b->tuples[0].key){
                     matches ++;
@@ -237,7 +238,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
         } while(b);
 
     }
-
+    matches = chasing_counter;
     return matches;
 }
 #endif
