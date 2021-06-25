@@ -164,7 +164,10 @@ plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v5_uint32_uint
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v8_uint32_uint32_1664000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v8_uint32_uint32_1664000000_hist.png")
 #plt_histogram(0, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v9_uint32_uint32_1920000000.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "s_UNIFORM_v9_uint32_uint32_1920000000_hist.png")    
 
-
+#SOSD
+############
+plt_histogram(0, "/spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "fb_200M_uint64_hist.png")
+plt_histogram(1, "/spinning/sabek/learned_join_datasets_sosd/fb_200M_uint64.txt", 'uint32', 0, "/spinning/sabek/learned_join_plots/", "fb_200M_uint64_cdf.png")
 
 
 
