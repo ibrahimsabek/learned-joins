@@ -2,14 +2,14 @@
 
 process_sort_merge_join()
 {
-    threads=(4 16) #(2 4 8 16 32 64)
+    threads=(32) #(2 4 8 16 32 64)
     fanout_per_thread=(128) #(4 16 128 1024 2048 4096)
     use_learned_sort=(0) #(0 1)
     use_avxsort_as_std_sort=(0) #(0 1)
 
-    dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
-    #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
 
     #r_datasets=$1
     #r_datasets_sizes=$2
@@ -77,9 +77,9 @@ process_sort_merge_join()
                                                                 -USE_LEARNED_SORT $curr_use_learned_sort \
                                                                 -USE_AVXSORT_AS_STD_SORT $curr_use_avxsort_as_std_sort \
                                                                 -USE_AVXSORT_FOR_SORTING_MINOR_BCKTS 0 \
-                                                                -ETH_SORT_MERGE_IS_SCALAR_MERGE 0 \
-                                                                -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
-                                                                -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
+                                                                -ETH_SORT_MERGE_IS_SCALAR_MERGE 0 #\
+                                                                #-CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
+                                                                #-CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
 
                         cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
 
@@ -131,8 +131,8 @@ s_datasets_sizes=(640E6) #(16E6 32E6 128E6 384E6 640E6 896E6 1152E6 1664E6 1920E
 r_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 
-output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_unique/
-process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_unique/
+#process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
 
 
 #lognormal datasets
@@ -276,8 +276,8 @@ r_datasets_file_num_partitions=(32 32)
 s_datasets_file_num_partitions=(32 32)
 input_hash_table_size=(16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q3/
-#process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q3/
+process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
 
 
 r_datasets=(r_q5_v1_uint32_uint32_1 r_q5_v2_uint32_uint32_5 r_q5_v3_uint32_uint32_191 r_q5_v4_uint32_uint32_88 r_q5_v5_uint32_uint32_38)
@@ -288,8 +288,8 @@ r_datasets_file_num_partitions=(32 32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32 32)
 input_hash_table_size=(16777216 16777216 16777216 16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q5/
-#process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q5/
+process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
 
 
 r_datasets=(r_q9_v1_uint32_uint32_22 r_q9_v2_uint32_uint32_47 r_q9_v3_uint32_uint32_705 r_q9_v4_uint32_uint32_73)
@@ -300,8 +300,8 @@ r_datasets_file_num_partitions=(32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32)
 input_hash_table_size=(16777216 16777216 16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q9/
-#process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q9/
+process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
 
 
 r_datasets=(r_q18_v1_uint32_uint32_1 r_q18_v2_uint32_uint32_922 r_q18_v3_uint32_uint32_1)
@@ -312,5 +312,5 @@ r_datasets_file_num_partitions=(32 32 32)
 s_datasets_file_num_partitions=(32 32 32)
 input_hash_table_size=(16777216 16777216 16777216) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q18/
-#process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_eth_tpch_q18/
+process_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation
