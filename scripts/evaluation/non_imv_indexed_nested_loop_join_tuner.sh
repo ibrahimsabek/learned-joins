@@ -31,8 +31,9 @@ process_non_imv_indexed_nested_loop_join()
     run_inlj_with_learned_index=${12}
     run_inlj_with_csstree_index=${13}
     run_inlj_with_art32tree_index=${14}
+    run_inlj_with_cuckoohash_index=${15}
 
-    #input_hash_table_size=${15}
+    #input_hash_table_size=${16}
 
     if [ ${run_inlj_with_hash_index} == 1 ]
     then
@@ -61,6 +62,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 -INLJ_WITH_LEARNED_INDEX 0 \
                                                 -INLJ_WITH_CSS_TREE_INDEX 0 \
                                                 -INLJ_WITH_ART32_TREE_INDEX 0 \
+                                                -INLJ_WITH_CUCKOO_HASH_INDEX 0 \
                                                 -PREFETCH_INLJ 0 \
                                                 -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
                                                 -NUM_THREADS_FOR_EVALUATION $curr_threads \
@@ -133,6 +135,7 @@ process_non_imv_indexed_nested_loop_join()
                                                     -INLJ_WITH_LEARNED_GAPS_FACTOR 10 \
                                                     -INLJ_WITH_CSS_TREE_INDEX 0 \
                                                     -INLJ_WITH_ART32_TREE_INDEX 0 \
+                                                    -INLJ_WITH_CUCKOO_HASH_INDEX 0 \
                                                     -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
                                                     -INLJ_RMI_DATA_PATH '"'/spinning/sabek/rmi_data'"' \
                                                     -INLJ_RMI_NAMESPACE ${curr_rmi_model} \
@@ -199,6 +202,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 -INLJ_WITH_LEARNED_INDEX 0 \
                                                 -INLJ_WITH_CSS_TREE_INDEX 1 \
                                                 -INLJ_WITH_ART32_TREE_INDEX 0 \
+                                                -INLJ_WITH_CUCKOO_HASH_INDEX 0 \
                                                 -INLJ_CSS_TREE_FANOUT $curr_fanout \
                                                 -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                                 -RELATION_R_PATH $curr_r_dataset \
@@ -261,6 +265,66 @@ process_non_imv_indexed_nested_loop_join()
                                             -INLJ_WITH_LEARNED_INDEX 0 \
                                             -INLJ_WITH_CSS_TREE_INDEX 0 \
                                             -INLJ_WITH_ART32_TREE_INDEX 1 \
+                                            -INLJ_WITH_CUCKOO_HASH_INDEX 0 \
+                                            -NUM_THREADS_FOR_EVALUATION $curr_threads \
+                                            -RELATION_R_PATH $curr_r_dataset \
+                                            -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
+                                            -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
+                                            -RELATION_R_FILE_EXTENSION ${r_datasets_file_extension} \
+                                            -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
+                                            -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
+                                            -RELATION_S_PATH $curr_s_dataset \
+                                            -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
+                                            -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
+                                            -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
+                                            -RELATION_S_NUM_TUPLES ${curr_s_dataset_size} \
+                                            -RELATION_S_FILE_NUM_PARTITIONS ${curr_s_dataset_file_num_partitions} \
+                                            -BENCHMARK_RESULTS_PATH '"'${curr_output_file}'"' \
+                                            -RUN_NUMS ${run_nums} -LOAD_RELATIONS_FOR_EVALUATION ${load_relations_for_evaluation} \
+                                            -PERSIST_RELATIONS_FOR_EVALUATION ${persist_relations_for_evaluation} \
+                                            -CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
+                                            -CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
+
+                cmake -DCMAKE_BUILD_TYPE=Release -DVECTORWISE_BRANCHING=on $(dirname "$0")/../.. > /dev/null
+
+                cd $(dirname "$0")/../../build/release
+
+                make > /dev/null
+
+                ./non_imv_indexed_nested_loop_join_runner
+
+                cd ../../scripts/evaluation/
+            done
+        done
+
+    fi
+
+    if [ ${run_inlj_with_cuckoohash_index} == 1 ]
+    then
+        echo "Running INLJ with cuckoo hash index ..."
+
+        for ds in ${!r_datasets[@]}
+        do
+            curr_r_dataset='"'$dataset_folder_path${r_datasets[$ds]}.txt'"'
+            curr_r_dataset_size=${r_datasets_sizes[$ds]}
+            curr_r_dataset_file_num_partitions=${r_datasets_file_num_partitions[$ds]}
+            curr_s_dataset='"'$dataset_folder_path${s_datasets[$ds]}.txt'"'
+            curr_s_dataset_size=${s_datasets_sizes[$ds]}
+            curr_s_dataset_file_num_partitions=${s_datasets_file_num_partitions[$ds]}
+
+            echo 'Joining '$curr_r_dataset' '$curr_r_dataset_size' '$curr_s_dataset' '$curr_s_dataset_size'... \n'
+            
+            for th in ${!threads[@]}
+            do
+                curr_threads=${threads[$th]}
+
+                curr_output_file=$output_folder_path'non_imv_inlj_with_cuckoohash_index_tuning_'$curr_r_dataset_size'_'$curr_s_dataset_size'_th_'$curr_threads'.csv'
+
+                sh $(dirname "$0")/base_configs_maker.sh -INLJ_WITH_HASH_INDEX 0 \
+                                            -INLJ_WITH_LEARNED_INDEX 0 \
+                                            -INLJ_WITH_CSS_TREE_INDEX 0 \
+                                            -INLJ_WITH_ART32_TREE_INDEX 0 \
+                                            -INLJ_WITH_CUCKOO_HASH_INDEX 1 \
                                             -NUM_THREADS_FOR_EVALUATION $curr_threads \
                                             -RELATION_R_PATH $curr_r_dataset \
                                             -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
@@ -347,16 +411,19 @@ input_hash_table_size=(16777216 33554432 134217728 536870912 1073741824) #(33554
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_with_chasing_counter/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_model_based_build_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique_without_bs/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_unique/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 $input_hash_table_size
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_unique_with_index_size/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 0 $input_hash_table_size
+
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_cuckoohash_index_unique_with_index_size/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 0 1 $input_hash_table_size
 
 
 #lognormal datasets

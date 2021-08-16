@@ -17,6 +17,10 @@
 #include "utils/art32_tree.h"
 #endif
 
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+#include "utils/stanford_hash.h"
+#endif
+
 using namespace learned_sort_for_sort_merge;
 
 /*********** Common data structures for ETH radix join ***********/
@@ -423,6 +427,10 @@ struct IndexedNestedLoopJoinThread
     ART32<PayloadType> *art32_tree;
 #endif
 
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+    CuckooHashMap<PayloadType> *cuckoo_hashmap;
+#endif
+
     /* stats about the thread */
     struct timeval start_time, partition_end_time, end_time;
 } __attribute__((aligned(CACHE_LINE_SIZE)));
@@ -463,6 +471,10 @@ struct IndexedNestedLoopJoinBuild {
 
 #ifdef INLJ_WITH_ART32_TREE_INDEX
     ART32<PayloadType> *art32_tree;
+#endif
+
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+    CuckooHashMap<PayloadType> *cuckoo_hashmap;
 #endif
 
     KeyType * sorted_relation_r_keys_only;

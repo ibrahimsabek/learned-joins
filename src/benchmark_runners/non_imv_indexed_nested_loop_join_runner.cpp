@@ -22,6 +22,7 @@
 #include "utils/memory.h"
 #include "utils/lock.h" 
 #include "utils/learned_sort_for_sort_merge.h"
+#include "utils/stanford_hash.h"
 #include "profile.h"
 
 #include <chrono>
@@ -55,6 +56,11 @@ using namespace INLJ_RMI_NAMESPACE;
 #ifdef INLJ_WITH_ART32_TREE_INDEX
 #include "utils/art32_tree.h"
 #endif
+
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+#include "utils/stanford_hash.h"
+#endif
+
 
 using namespace std;
 using namespace learned_sort_for_sort_merge;
@@ -412,6 +418,14 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
 }
 #endif
 
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+uint64_t inlj_with_cuckoohash_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
+{
+    uint64_t matches = 0; 
+    //TODO
+    return matches;   
+}
+#endif
 void * inlj_join_thread(void * param)
 {
     IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args   = (IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> *) param;
@@ -507,6 +521,14 @@ void * inlj_join_thread(void * param)
         inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_art32tree_probe_rel_s_partition;
         inlj_pf_num++;
 #endif
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+        //strcpy(inlj_pfun[inlj_pf_num].fun_name, "CuckooHash");
+        //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_cuckoohash_build_rel_r_partition;
+
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "CuckooHash");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_cuckoohash_probe_rel_s_partition;
+        inlj_pf_num++;
+#endif
     }
     BARRIER_ARRIVE(args->barrier, rv);
     
@@ -525,6 +547,10 @@ void * inlj_join_thread(void * param)
 #ifdef INLJ_WITH_ART32_TREE_INDEX        
     build_data.art32_tree = args->art32_tree;
 #endif
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX        
+    build_data.cuckoo_hashmap = args->cuckoo_hashmap;
+#endif
+
 
     for (int fid = 0; fid < inlj_pf_num; ++fid) 
     {
@@ -729,6 +755,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                         #ifdef INLJ_WITH_ART32_TREE_INDEX                        
                                 ART32<PayloadType> *art32_tree,
                         #endif
+                        #ifdef INLJ_WITH_CUCKOO_HASH_INDEX                        
+                                CuckooHashMap<PayloadType> *cuckoo_hashmap,
+                        #endif
                                  pthread_barrier_t* barrier_ptr,
                                  Result * joinresult,
                                  IndexedNestedLoopJoinThread<KeyType, PayloadType, TaskType> * args){
@@ -800,6 +829,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
     #ifdef INLJ_WITH_ART32_TREE_INDEX
         (*(args + i)).art32_tree = art32_tree;
     #endif
+    #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+        (*(args + i)).cuckoo_hashmap = cuckoo_hashmap;
+    #endif    
         (*(args + i)).barrier = barrier_ptr;
         (*(args + i)).threadresult  = &(joinresult->resultlist[i]);
     }
@@ -1246,6 +1278,22 @@ int main(int argc, char **argv)
 
 #endif
 
+#ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+    vector<Tuple<uint32_t, PayloadType>> cuckoo_hashmap_data;
+    for(int j = 0; j < rel_r.num_tuples; j++)
+    {
+        rel_r.tuples[j].payload = rel_r.tuples[j].key;
+        cuckoo_hashmap_data.push_back(rel_r.tuples[j]);
+    }
+
+	CuckooHash<PayloadType> *cuckoo_hashmap=new CuckooHash<PayloadType>(uint32_t(202000000));
+    for (auto& itm : cuckoo_hashmap_data) {
+        cuckoo_hashmap->insert(itm.key, uint32_t(itm.value));
+    }
+#endif
+
+    CuckooHash() : map_(CuckooHashMap<uint32_t>(uint32_t(202000000))) { }
+  
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
                                 #ifdef INLJ_WITH_HASH_INDEX
                                     ht, 
@@ -1268,6 +1316,9 @@ int main(int argc, char **argv)
                                 #endif
                                 #ifdef INLJ_WITH_ART32_TREE_INDEX
                                     art32_tree,
+                                #endif
+                                #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
+                                    cuckoo_hashmap,
                                 #endif
                                     &barrier, joinresult, args_ptr);
 
