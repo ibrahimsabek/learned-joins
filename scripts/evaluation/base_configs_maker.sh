@@ -672,6 +672,10 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'#define INLJ_WITH_ART64_TREE_INDEX '$INLJ_WITH_ART64_TREE_INDEX; echo -n $'\n\n';
         fi
 
+        if [ "$INLJ_WITH_CUCKOO_HASH_INDEX" = 1 ]; then
+             echo -n $'#define INLJ_WITH_CUCKOO_HASH_INDEX '$INLJ_WITH_CUCKOO_HASH_INDEX; echo -n $'\n\n';
+        fi
+
         echo -n $'#define INLJ_RMI_DATA_PATH '$INLJ_RMI_DATA_PATH; echo -n $'\n\n';
 
         echo -n $'#define INLJ_RMI_NAMESPACE '$INLJ_RMI_NAMESPACE; echo -n $'\n\n';
