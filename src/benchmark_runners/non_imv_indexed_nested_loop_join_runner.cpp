@@ -1286,13 +1286,11 @@ int main(int argc, char **argv)
         cuckoo_hashmap_data.push_back(rel_r.tuples[j]);
     }
 
-	CuckooHash<PayloadType> *cuckoo_hashmap=new CuckooHash<PayloadType>(uint32_t(202000000));
+	CuckooHashMap<PayloadType> *cuckoo_hashmap=new CuckooHashMap<PayloadType>(uint32_t(202000000));
     for (auto& itm : cuckoo_hashmap_data) {
         cuckoo_hashmap->insert(itm.key, uint32_t(itm.value));
     }
 #endif
-
-    CuckooHash() : map_(CuckooHashMap<uint32_t>(uint32_t(202000000))) { }
   
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
                                 #ifdef INLJ_WITH_HASH_INDEX
