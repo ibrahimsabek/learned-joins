@@ -17,6 +17,11 @@
 #include "utils/art32_tree.h"
 #endif
 
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+#include "utils/art64_tree.h"
+#endif
+
+
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
 #include "utils/stanford_hash.h"
 #endif
@@ -427,6 +432,10 @@ struct IndexedNestedLoopJoinThread
     ART32<PayloadType> *art32_tree;
 #endif
 
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+    ART<PayloadType> *art64_tree;
+#endif
+
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
     CuckooHashMap<PayloadType> *cuckoo_hashmap;
 #endif
@@ -471,6 +480,10 @@ struct IndexedNestedLoopJoinBuild {
 
 #ifdef INLJ_WITH_ART32_TREE_INDEX
     ART32<PayloadType> *art32_tree;
+#endif
+
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+    ART<PayloadType> *art64_tree;
 #endif
 
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX

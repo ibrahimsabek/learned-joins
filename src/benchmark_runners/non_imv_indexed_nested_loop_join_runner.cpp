@@ -57,6 +57,10 @@ using namespace INLJ_RMI_NAMESPACE;
 #include "utils/art32_tree.h"
 #endif
 
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+#include "utils/art64_tree.h"
+#endif
+
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
 #include "utils/stanford_hash.h"
 #endif
@@ -418,6 +422,34 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
 }
 #endif
 
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+uint64_t inlj_with_art64tree_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
+{
+    uint64_t i;
+    uint64_t matches = 0; 
+
+	KeyType keyForSearch;
+    uint8_t key[8];
+
+    ART<PayloadType> * art64_tree = build_output->art64_tree;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {
+        keyForSearch = rel_s_partition->tuples[i].key;    
+        art64_tree->swapBytes(keyForSearch, key);
+        Node* leaf = art64_tree->lookup(art64_tree->tree_, key, 8, 0, 8);
+        if (art64_tree->isLeaf(leaf))
+        {
+            if (art64_tree->getLeafValue(leaf) == keyForSearch)
+                matches++;   
+        }
+    }
+
+    return matches;
+}
+#endif
+
+
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
 uint64_t inlj_with_cuckoohash_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
 {
@@ -533,6 +565,14 @@ void * inlj_join_thread(void * param)
         inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_art32tree_probe_rel_s_partition;
         inlj_pf_num++;
 #endif
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+        //strcpy(inlj_pfun[inlj_pf_num].fun_name, "ART64Tree");
+        //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_art64tree_build_rel_r_partition;
+
+        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "ART64Tree");
+        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_art64tree_probe_rel_s_partition;
+        inlj_pf_num++;
+#endif
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
         //strcpy(inlj_pfun[inlj_pf_num].fun_name, "CuckooHash");
         //inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_cuckoohash_build_rel_r_partition;
@@ -558,6 +598,9 @@ void * inlj_join_thread(void * param)
 #endif
 #ifdef INLJ_WITH_ART32_TREE_INDEX        
     build_data.art32_tree = args->art32_tree;
+#endif
+#ifdef INLJ_WITH_ART64_TREE_INDEX        
+    build_data.art64_tree = args->art64_tree;
 #endif
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX        
     build_data.cuckoo_hashmap = args->cuckoo_hashmap;
@@ -767,6 +810,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                         #ifdef INLJ_WITH_ART32_TREE_INDEX                        
                                 ART32<PayloadType> *art32_tree,
                         #endif
+                        #ifdef INLJ_WITH_ART64_TREE_INDEX                        
+                                ART<PayloadType> *art64_tree,
+                        #endif                        
                         #ifdef INLJ_WITH_CUCKOO_HASH_INDEX                        
                                 CuckooHashMap<PayloadType> *cuckoo_hashmap,
                         #endif
@@ -841,6 +887,9 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
     #ifdef INLJ_WITH_ART32_TREE_INDEX
         (*(args + i)).art32_tree = art32_tree;
     #endif
+    #ifdef INLJ_WITH_ART64_TREE_INDEX
+        (*(args + i)).art64_tree = art64_tree;
+    #endif    
     #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
         (*(args + i)).cuckoo_hashmap = cuckoo_hashmap;
     #endif    
@@ -1290,6 +1339,20 @@ int main(int argc, char **argv)
 
 #endif
 
+#ifdef INLJ_WITH_ART64_TREE_INDEX
+    vector<Tuple<uint64_t, PayloadType>> art64_data;
+    for(int j = 0; j < rel_r.num_tuples; j++)
+    {
+        rel_r.tuples[j].payload = rel_r.tuples[j].key;
+        art64_data.push_back(rel_r.tuples[j]);
+    }
+
+	ART<PayloadType> *art64_tree=new ART<PayloadType>();
+    art64_tree->Build(art64_data);
+    printf("ART size in bytes %ld \n", art64_tree->size());
+
+#endif
+
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
     vector<Tuple<uint32_t, PayloadType>> cuckoo_hashmap_data;
     for(int j = 0; j < rel_r.num_tuples; j++)
@@ -1327,6 +1390,9 @@ int main(int argc, char **argv)
                                 #ifdef INLJ_WITH_ART32_TREE_INDEX
                                     art32_tree,
                                 #endif
+                                #ifdef INLJ_WITH_ART64_TREE_INDEX
+                                    art64_tree,
+                                #endif                                
                                 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
                                     cuckoo_hashmap,
                                 #endif
