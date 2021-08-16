@@ -421,9 +421,19 @@ uint64_t inlj_with_art32tree_probe_rel_s_partition(Relation<KeyType, PayloadType
 #ifdef INLJ_WITH_CUCKOO_HASH_INDEX
 uint64_t inlj_with_cuckoohash_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
 {
+    uint64_t i;
     uint64_t matches = 0; 
-    //TODO
-    return matches;   
+    CuckooHashMap<PayloadType> * cuckoo_hashmap = build_output->cuckoo_hashmap;
+
+    for (i = 0; i < rel_s_partition->num_tuples; i++)
+    {
+        keyForSearch = rel_s_partition->tuples[i].key;    
+        auto result = cuckoo_hashmap->get(keyForSearch);
+        if(result.found)
+            matches++;  
+    }
+    
+    return matches;
 }
 #endif
 void * inlj_join_thread(void * param)
