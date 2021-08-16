@@ -423,6 +423,8 @@ uint64_t inlj_with_cuckoohash_probe_rel_s_partition(Relation<KeyType, PayloadTyp
 {
     uint64_t i;
     uint64_t matches = 0; 
+	KeyType keyForSearch;
+
     CuckooHashMap<PayloadType> * cuckoo_hashmap = build_output->cuckoo_hashmap;
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
@@ -432,7 +434,7 @@ uint64_t inlj_with_cuckoohash_probe_rel_s_partition(Relation<KeyType, PayloadTyp
         if(result.found)
             matches++;  
     }
-    
+
     return matches;
 }
 #endif
