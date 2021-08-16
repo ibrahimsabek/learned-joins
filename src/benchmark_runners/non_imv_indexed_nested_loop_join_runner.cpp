@@ -1288,7 +1288,7 @@ int main(int argc, char **argv)
 
 	CuckooHashMap<PayloadType> *cuckoo_hashmap=new CuckooHashMap<PayloadType>(uint32_t(202000000));
     for (auto& itm : cuckoo_hashmap_data) {
-        cuckoo_hashmap->insert(itm.key, uint32_t(itm.value));
+        cuckoo_hashmap->insert(itm.key, uint32_t(itm.payload));
     }
 #endif
   
