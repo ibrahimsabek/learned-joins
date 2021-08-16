@@ -60,7 +60,7 @@ public:
   CuckooHashMap(uint32_t capacity): size_(0) {
     num_buckets_ = (capacity + BUCKET_SIZE - 1) / BUCKET_SIZE;
     int r = posix_memalign((void **) &buckets_, 32, num_buckets_ * sizeof(Bucket));
-    if (r != 0) util::fail("could not memalign in cuckoo hash map");
+    if (r != 0) cout << "could not memalign in cuckoo hash map \n";
     for (uint32_t i = 0; i < num_buckets_; i++) {
       for (size_t j = 0; j < BUCKET_SIZE; j++) {
         buckets_[i].keys[j] = INVALID_KEY;
