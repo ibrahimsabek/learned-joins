@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# A generator for the first set of configurations needed to run all join algorithms (generates the file include/configs/base_configs.h) 
+
 # Some default values:
 INTEL_E5=0
 INTEL_XEON=1

@@ -1,3 +1,5 @@
+/* An adapted implementation of query builder for benchmarking with TPCH and SSB based on https://github.com/fzhedu/db-imv */
+
 #include "vectorwise/QueryBuilder.hpp"
 #include <cstddef>
 

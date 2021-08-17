@@ -1,3 +1,5 @@
+/* An adapted implementation of vectorized join based on https://github.com/fzhedu/db-imv (NOT USED NOW) */
+
 #include <iostream>
 #include <cassert>
 #include <algorithm>

@@ -1,3 +1,5 @@
+# A script for parsing parameters used in experiments and profiled results by partitioned hash join 
+
 import os, sys
 from parsed_benchmark_output import ParsedRadixJoinBenchmarkOutput
 

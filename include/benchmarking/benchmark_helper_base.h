@@ -1,5 +1,8 @@
 #pragma once
 
+
+/* A tool to collect benchmarking statistics (NOT USED NOW) */
+
 #include <sched.h>              /* CPU_ZERO, CPU_SET */
 #include <sys/time.h>           /* gettimeofday */
 

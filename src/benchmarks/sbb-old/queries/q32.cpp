@@ -1,3 +1,5 @@
+/* An adapted implementation of SSB query q32 based on https://github.com/fzhedu/db-imv (NOT USED NOW)*/
+
 #include <deque>
 #include <iostream>
 

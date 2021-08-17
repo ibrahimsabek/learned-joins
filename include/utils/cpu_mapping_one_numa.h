@@ -1,6 +1,6 @@
-/* Taken from cpu_mapping.h and adapted for one numa node */
-
 # pragma once
+
+/* Adapted version from cpu_mapping.h for one numa node */
 
 #include <unistd.h> /* sysconf */
 

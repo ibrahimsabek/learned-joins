@@ -1,5 +1,7 @@
 #pragma once
 
+/* An implementation for non-partitioned hash join (vectorized and non-vectorized) (NOT USED NOW) */
+
 #include "emmintrin.h"
 #include "immintrin.h"
 #include "smmintrin.h"

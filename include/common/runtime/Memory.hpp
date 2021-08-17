@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of memory utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <stdexcept>
 #include <sys/mman.h>
 

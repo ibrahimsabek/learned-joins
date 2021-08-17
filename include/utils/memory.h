@@ -1,5 +1,7 @@
 # pragma once
 
+/* Common memory utilities for all join algorithms */
+
 #include <stdio.h>              /* perror */
 #include <stdlib.h>             /* posix_memalign */
 #include <smmintrin.h>          /* simd only for 32-bit keys – SSE4.1 */

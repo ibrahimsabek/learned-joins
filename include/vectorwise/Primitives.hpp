@@ -1,4 +1,8 @@
 #pragma once
+
+/* An adapted implementation of basic primitives (utilities for selection, aggregation, projection, hashing, etc) for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
+
 #include "common/defs.hpp"
 #include "common/runtime/HashmapSmall.hpp"
 #include "common/runtime/SIMD.hpp"
@@ -7,7 +11,7 @@
 #include "vectorwise/VectorAllocator.hpp"
 #include "vectorwise/defs.hpp"
 #include <unordered_map>
-// #include "/home/kersten/tools/iaca-lin64/iacaMarks.h"
+// #include "/home/XXX/tools/iaca-lin64/iacaMarks.h"
 
 namespace vectorwise {
 namespace primitives {

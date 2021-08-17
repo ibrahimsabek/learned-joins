@@ -1,4 +1,8 @@
 #pragma once
+
+/* An interface of implementing Q1 in TPCH benchmark based on https://github.com/fzhedu/db-imv */
+
+
 #include "head.hpp"
 #define PARTITION_SIZE 4096
 using namespace types;

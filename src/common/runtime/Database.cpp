@@ -1,3 +1,5 @@
+/* An adapted implementation of database instance for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/Database.hpp"
 
 #include <malloc.h>

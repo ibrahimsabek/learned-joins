@@ -1,11 +1,7 @@
+/* Adapting the techniques in learned_sort.h for sort_merge */
+
 #ifndef LEARNED_SORT_FOR_SORT_MERGE_H
 #define LEARNED_SORT_FOR_SORT_MERGE_H
-
-/**
- * @file learned_sort_for_sort_merge.h
-
- * Reusing the techniques in learned_sort.h for sort_merge
- */
 
 #include <immintrin.h> /* AVX intrinsics */
 

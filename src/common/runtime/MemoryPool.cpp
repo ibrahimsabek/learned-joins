@@ -1,3 +1,5 @@
+/* An adapted implementation of memory pool for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/MemoryPool.hpp"
 #include "common/runtime/Memory.hpp"
 #include <new>

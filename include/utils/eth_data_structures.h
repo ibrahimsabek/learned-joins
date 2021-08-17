@@ -1,5 +1,7 @@
 #pragma once
 
+/* More data structures used among all join algorithms */
+
 #include <unordered_map> 
 
 #include "configs/eth_configs.h"

@@ -1,3 +1,5 @@
+/* An adapted implementation of vectorized selection operator for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "benchmarks/Primitives.hpp"
 #include "immintrin.h"
 

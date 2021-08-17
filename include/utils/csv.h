@@ -1,6 +1,6 @@
-/* CSV read/write functionalities (adapted from open-source implementations https://www.gormanalysis.com/blog/reading-and-writing-csv-files-with-cpp/)*/
-
 #pragma once
+
+/* An adapted implementation of CSV read/write functionalities based on open-source implementations https://www.gormanalysis.com/blog/reading-and-writing-csv-files-with-cpp/ */
 
 #include <string>
 #include <fstream>

@@ -1,6 +1,6 @@
-/* Common utils */
-
 #pragma once
+
+/* Common printing and debugging utils for all join algorithms */
 
 #include "emmintrin.h"
 #include "immintrin.h"

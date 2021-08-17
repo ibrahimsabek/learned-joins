@@ -1,6 +1,6 @@
 #pragma once
 
-// An adapted variation of CSSTree from "Relational Joins on Graphics Processors" paper
+/* An adapted variation of CSSTree from "Relational Joins on Graphics Processors" paper, sent by the original authors */
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"

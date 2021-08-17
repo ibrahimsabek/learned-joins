@@ -1,3 +1,5 @@
+/* An adapted implementation of SSB query q21 based on https://github.com/fzhedu/db-imv */
+
 #include <deque>
 #include <iostream>
 #include "head.hpp"

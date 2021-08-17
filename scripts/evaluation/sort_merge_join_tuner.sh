@@ -1,3 +1,5 @@
+# A script to run the experiments for MWAY sort merge join algorithm
+
 #!/bin/sh
 
 process_sort_merge_join()

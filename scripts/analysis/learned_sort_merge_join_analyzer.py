@@ -1,3 +1,5 @@
+# A script for parsing parameters used in experiments and profiled results by learned sort-merge join (we can use the same script for MPSM) 
+
 import os, sys
 import collections
 from parsed_benchmark_output import ParsedLearnedSortMergeBenchmarkOutput

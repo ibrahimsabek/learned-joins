@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of vectorization utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <algorithm>
 #include <immintrin.h>
 #include <iostream>

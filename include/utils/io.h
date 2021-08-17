@@ -1,4 +1,4 @@
-/* IO read/write functionalities for input relations based on the ETH implementation */
+/* IO read/write functionalities for input relations adapted from ETH based on https://systems.ethz.ch/research/data-processing-on-modern-hardware/projects/parallel-and-distributed-joins.html */
 
 #pragma once
 

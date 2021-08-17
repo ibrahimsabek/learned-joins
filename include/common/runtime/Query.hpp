@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of Query class for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/MemoryPool.hpp"
 #include <memory>
 

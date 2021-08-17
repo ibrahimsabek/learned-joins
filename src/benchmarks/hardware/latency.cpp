@@ -1,3 +1,5 @@
+/* An adapted implementation of latency profiling for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <atomic>
 #include <iostream>
 #include <algorithm>

@@ -1,5 +1,7 @@
 #pragma once
 
+/* An implementation for learned sort join and "Massively Parallel Sort Merge" (MPSM) join algorithms */
+
 #include "techniques/sortmerge_multiway_join_eth_steps.h"
 #include "utils/learned_sort_for_sort_merge.h"
 

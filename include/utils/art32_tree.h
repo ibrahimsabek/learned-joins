@@ -1,6 +1,6 @@
 #pragma once
 
-// An adapted variation of ART32 implementation in the SOSD paper
+/* An adapted variation of ART32 implementation based on SOSD https://github.com/learnedsystems/SOSD */
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"

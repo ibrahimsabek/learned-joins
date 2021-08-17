@@ -1,5 +1,5 @@
 
-/* Common configs among all hash join algorithms  */
+/* Common configs among all join algorithms (old version) (NOT USED NOW) */
 
 #pragma once
 

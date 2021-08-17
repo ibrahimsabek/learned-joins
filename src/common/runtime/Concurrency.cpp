@@ -1,3 +1,5 @@
+/* An adapted implementation of concurrency for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/Concurrency.hpp"
 
 #include <sys/time.h>

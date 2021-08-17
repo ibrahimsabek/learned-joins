@@ -1,3 +1,5 @@
+/* An adapted implementation of some definitions for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <cstdint>
 
 namespace defs{

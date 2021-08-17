@@ -1,5 +1,7 @@
 # pragma once
 
+/* Algorithm utilities */
+
 #include "emmintrin.h"
 #include "immintrin.h"
 #include "smmintrin.h"

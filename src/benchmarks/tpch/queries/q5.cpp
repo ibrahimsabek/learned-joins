@@ -1,3 +1,5 @@
+/* An adapted implementation of TPCH query q5 based on https://github.com/fzhedu/db-imv */
+
 #include "benchmarks/tpch/Queries.hpp"
 #include "common/runtime/Concurrency.hpp"
 #include "common/runtime/Hash.hpp"

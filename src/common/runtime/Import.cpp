@@ -1,3 +1,5 @@
+/* An adapted implementation of workload importing for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/Import.hpp"
 #include "common/runtime/Mmap.hpp"
 #include "common/runtime/Types.hpp"

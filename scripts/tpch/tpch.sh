@@ -1,6 +1,6 @@
-#!/bin/bash
+## A script to generate TPCH workloads
 
-## Script taken from the blcok partitioning project
+#!/bin/bash
 
 SCALE_FACTOR=${1:-1.0}  # Optional: first parameter of script is SCALE_FACTOR, defaults to 1.0
 TPCH_TOOL_URL="https://github.com/electrum/tpch-dbgen.git"

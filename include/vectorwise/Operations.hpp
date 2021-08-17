@@ -1,4 +1,8 @@
 #pragma once
+
+/* An adapted implementation of needed operations for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
+
 #include "Primitives.hpp"
 #include <experimental/tuple>
 #include <functional>

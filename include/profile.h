@@ -1,3 +1,5 @@
+/* An adapted implementation of performance profiling based on https://github.com/fzhedu/db-imv */
+
 #ifndef PROFILE
 #define PROFILE
 #include "common/Compat.hpp"

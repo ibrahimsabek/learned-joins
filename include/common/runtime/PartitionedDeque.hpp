@@ -1,3 +1,5 @@
+/* An adapted implementation of in-memory data structures for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/defs.hpp"
 #include "common/runtime/Concurrency.hpp"
 #include "common/runtime/MemoryPool.hpp"

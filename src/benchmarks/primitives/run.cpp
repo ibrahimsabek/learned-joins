@@ -1,3 +1,5 @@
+/* Running utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "profile.h"
 #include "vectorwise/Primitives.hpp"
 #include "vectorwise/defs.hpp"

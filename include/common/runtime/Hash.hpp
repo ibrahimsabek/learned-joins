@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of hashing utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/Compat.hpp"
 #include "common/Util.hpp"
 #include "common/defs.hpp"

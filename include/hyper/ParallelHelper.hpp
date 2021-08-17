@@ -3,6 +3,8 @@
 #include <deque>
 #include <tbb/tbb.h>
 
+/* An adapted implementation of parallelism utilities (specific for Hyper DBMS engine) for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 static const size_t morselSize = 10000;
 
 struct ProcessingResources {

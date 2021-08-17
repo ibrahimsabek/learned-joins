@@ -1,6 +1,8 @@
 #pragma once
 #include "vectorwise/Operators.hpp"
 
+/* An interface to implement queries for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 class Query {
  protected:
    vectorwise::SharedStateManager shared;

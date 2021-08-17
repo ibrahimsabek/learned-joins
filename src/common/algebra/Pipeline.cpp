@@ -1,3 +1,5 @@
+/* An adapted implementation of query pipelines for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/algebra/Pipeline.hpp"
 
 using namespace std;

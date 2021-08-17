@@ -1,3 +1,5 @@
+# A script for parsing parameters used in experiments and profiled results by MWAY sort-merge join 
+
 import os, sys
 from parsed_benchmark_output import ParsedETHSortMergeBenchmarkOutput
 

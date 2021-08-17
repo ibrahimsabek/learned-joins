@@ -1,3 +1,5 @@
+/* An adapted implementation of database operations for benchmarking with TPCH and SSB based on https://github.com/fzhedu/db-imv */
+
 #include "vectorwise/Operations.hpp"
 
 namespace vectorwise {

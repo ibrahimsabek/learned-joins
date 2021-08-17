@@ -1,5 +1,7 @@
 #pragma once
 
+/* An adapted implementation of some utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <functional>
 #include <tuple>
 #include <utility>

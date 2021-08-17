@@ -1,4 +1,8 @@
 #pragma once
+
+/* An adapted implementation of vector allocator for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
+
 #include "common/runtime/Concurrency.hpp"
 #include "vectorwise/defs.hpp"
 #include <cstdlib>

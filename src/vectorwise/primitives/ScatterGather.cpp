@@ -1,4 +1,6 @@
 
+/* An adapted implementation of scatter primitive for benchmarking with TPCH and SSB based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/Hash.hpp"
 #include "vectorwise/Operations.hpp"
 #include "vectorwise/Primitives.hpp"

@@ -1,3 +1,5 @@
+/* An adapted implementation of configurations for running TPCH and SSB benchmarks based on https://github.com/fzhedu/db-imv (NOT USED NOW)*/
+
 #include "benchmarks/tpch/Queries.hpp"
 #include "vectorwise/Primitives.hpp"
 

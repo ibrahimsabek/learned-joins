@@ -1,6 +1,7 @@
-/** Common math and hashing utils based on the ETH implementation */
-
 #pragma once
+
+/* Common math and hashing utils adapted from ETH (https://systems.ethz.ch/research/data-processing-on-modern-hardware/projects/parallel-and-distributed-joins.html) 
+   and Stanford (http://graphics.stanford.edu/~seander/bithacks.html) */
 
 #include <stdlib.h>             /* posix_memalign */
 #include <math.h>               /* fmod, pow */

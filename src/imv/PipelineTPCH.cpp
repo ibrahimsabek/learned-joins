@@ -1,3 +1,5 @@
+/* An adapted implementation of TPCH pipelining based on https://github.com/fzhedu/db-imv */
+
 #include "imv/PipelineTPCH.hpp"
 using namespace std;
 __m512i v_all_ones = _mm512_set1_epi64(-1), v_zero = _mm512_set1_epi64(0), v_one = _mm512_set1_epi64(1), v_63 = _mm512_set1_epi64(63);

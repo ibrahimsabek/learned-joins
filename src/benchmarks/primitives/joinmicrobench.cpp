@@ -1,3 +1,5 @@
+/* An adapted implementation of join micro benchmarking based on https://github.com/fzhedu/db-imv (NOT USED NOW)*/
+
 #include "benchmarks/Primitives.hpp"
 #include "vectorwise/Operators.hpp"
 #include "common/runtime/Hashmap.hpp"

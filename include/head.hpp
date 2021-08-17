@@ -1,4 +1,7 @@
 #pragma once
+
+/* Timing utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/Hashmap.hpp"
 #include "common/runtime/Database.hpp"
 #include "vectorwise/Operators.hpp"

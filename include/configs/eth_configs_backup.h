@@ -1,5 +1,8 @@
 #pragma once
 
+/* Another set of common configs among all join algorithms (old version) (NOT USED NOW) */
+
+
 #include "configs/base_configs.h"
 
 /************* Common configs for ETH radix join algorithms **************/

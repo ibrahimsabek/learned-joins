@@ -1,5 +1,7 @@
 #pragma once
 
+/* An implementation for sort-merge join MWAY adapted from ETH based on https://systems.ethz.ch/research/data-processing-on-modern-hardware/projects/parallel-and-distributed-joins.html*/
+
 //#include "emmintrin.h"
 //#include "immintrin.h"
 //#include "smmintrin.h"

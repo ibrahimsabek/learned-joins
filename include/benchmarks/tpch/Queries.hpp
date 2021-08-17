@@ -1,5 +1,8 @@
 #pragma once
 
+/* An adapted implementation of TPCH benchmark join queries based on https://github.com/fzhedu/db-imv */
+
+
 #include <memory>
 
 #include "benchmarks/Config.hpp"

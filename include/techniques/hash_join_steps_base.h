@@ -1,5 +1,7 @@
 #pragma once
 
+/* A generic base class for implementing hash join steps (NOT USED NOW) */
+
 #include "utils/data_structures.h"
 
 template<typename KeyType, typename PayloadType, typename TaskType, typename JoinThreadType, typename PartitionType>

@@ -1,3 +1,5 @@
+# A script for parsing profiled results by different join algorithms 
+
 import os, sys
 
 from parsed_benchmark_output import ParsedNonPartitionJoinBenchmarkOutput

@@ -1,3 +1,5 @@
+/* An adapted implementation of (vectorized and non-vectorized) non-partition hash join based on https://github.com/fzhedu/db-imv (NOT USED NOW) */
+
 #ifndef _SIMD_PREFETCHING
 #define _SIMD_PREFETCHING
 

@@ -2,6 +2,7 @@
 #include "common/algebra/Operators.hpp"
 #include <ostream>
 
+/* An adapted implementation of query pipelineing used for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
 
 namespace algebra{
    class Pipeline {

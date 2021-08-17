@@ -1,3 +1,5 @@
+/* An adapted implementation of TPCH query q18 based on https://github.com/fzhedu/db-imv */
+
 #include "benchmarks/tpch/Queries.hpp"
 #include "common/runtime/Barrier.hpp"
 #include "common/runtime/Hash.hpp"

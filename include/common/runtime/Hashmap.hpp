@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of hashmap for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/defs.hpp"
 #include "common/runtime/Memory.hpp"
 #include "common/runtime/SIMD.hpp"

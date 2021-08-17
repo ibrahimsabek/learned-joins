@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of experiments configuration used for benchmarking hash join with TPCH and SSB queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/runtime/Types.hpp"
 #include "vectorwise/Operators.hpp"
 

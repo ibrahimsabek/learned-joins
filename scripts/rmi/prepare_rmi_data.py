@@ -1,3 +1,5 @@
+# Prepare the datasets used by RMI code (https://drone.rm.cab/learnedsystems/RMI) in a binary format. 
+
 import sys
 import numpy as np
 import struct

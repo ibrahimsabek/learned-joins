@@ -1,3 +1,5 @@
+# A script to run the experiments for the non-partitioned hash join (including learned) algorithms
+
 #!/bin/sh
 
 process_non_partition_join()

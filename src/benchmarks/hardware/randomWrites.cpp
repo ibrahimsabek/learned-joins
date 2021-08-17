@@ -1,3 +1,5 @@
+/* An adapted implementation of writing data to partitions for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv  (NOT USED NOW)*/
+
 #include <cstdint>
 #include <thread>
 #include <iostream>

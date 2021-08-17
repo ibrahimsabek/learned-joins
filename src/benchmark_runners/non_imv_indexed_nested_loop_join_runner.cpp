@@ -1,3 +1,5 @@
+/* Implementation of learned and non-learned indexed nested loop joins */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif

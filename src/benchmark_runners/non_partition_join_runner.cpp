@@ -1,3 +1,5 @@
+/* Implementation of learned and non-learned non-partitioned hash joins */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif

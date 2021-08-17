@@ -1,3 +1,5 @@
+/* Implementation of learned and MPSM sort-merge joins */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif

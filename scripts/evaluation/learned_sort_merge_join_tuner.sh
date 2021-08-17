@@ -1,3 +1,5 @@
+# A script to run the experiments for learned sort merge join and MPSM algorithms
+
 #!/bin/sh
 
 process_learned_sort_merge_join()

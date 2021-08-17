@@ -1,5 +1,7 @@
 #pragma once
 
+/* Basic data structures used among all joins */
+
 #include <stdint.h>
 #include <pthread.h>
 #include <stdlib.h>

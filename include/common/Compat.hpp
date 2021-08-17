@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of more utilities for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <cstdlib>
 #include <fcntl.h>
 #include <string>

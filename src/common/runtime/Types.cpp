@@ -1,3 +1,5 @@
+/* An adapted implementation of data types (compatible with Hyper DBMS engine) for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #ifdef __SSE4_2__
 #include <nmmintrin.h>
 #endif

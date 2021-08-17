@@ -1,3 +1,6 @@
+
+/* An adapted implementation of specific data types (compatible with Hyper dbms engine as well) for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #ifndef H_Types
 #define H_Types
 //---------------------------------------------------------------------------

@@ -1,3 +1,6 @@
+# A script for parsing parameters used in experiments and profiled results by all join algorithms (this is the recently updated script, 
+# so it is used mostly with our reported experimental evaluation) 
+
 import csv
 import os, sys
 

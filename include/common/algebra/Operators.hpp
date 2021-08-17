@@ -1,8 +1,10 @@
 #pragma once
+
+/* An adapted implementation of query plan operators used for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <string>
 #include <memory>
 #include "common/runtime/Database.hpp"
-
 
 namespace algebra {
 

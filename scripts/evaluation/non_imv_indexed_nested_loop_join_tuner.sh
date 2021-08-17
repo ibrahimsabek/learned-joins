@@ -1,3 +1,5 @@
+# A script to run the experiments for all indexed nested loop joins (including learned one) algorithms
+
 #!/bin/sh
 
 process_non_imv_indexed_nested_loop_join()

@@ -1,3 +1,5 @@
+/* An adapted implementation of (vectorized and non-vectorized) build phase in non-partition hash join based on https://github.com/fzhedu/db-imv (NOT USED NOW) */
+
 #include "imv-operator/build.hpp"
 
 #include <map>

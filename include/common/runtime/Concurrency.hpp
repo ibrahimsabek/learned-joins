@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of threading for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "Barrier.hpp"
 #include "common/Compat.hpp"
 #include "common/runtime/Barrier.hpp"

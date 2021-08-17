@@ -1,5 +1,7 @@
 #pragma once
 
+/* Benchmarking non-partition hash join using benchmark_helper (NOT USED NOW) */
+
 #include "benchmarking/benchmark_helper_base.h"
 #include "techniques/non_partition_join_eth_steps.h"
 

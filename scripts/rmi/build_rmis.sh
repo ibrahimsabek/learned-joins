@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
-# An adapted version of build_rmis.sh in the SOSD benchmark 
+
+# An adapted variation of build_rmis.sh implementation based on SOSD https://github.com/learnedsystems/SOSD. This is used to build the RMIs needed for
+# learned indexed nested loop joins offline
+
 #git submodule update --init --recursive
 
 function optimize_rmis() {

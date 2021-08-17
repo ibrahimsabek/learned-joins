@@ -1,5 +1,7 @@
 #pragma once
 
+/* An adapted implementation of a specific string implementation for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include <algorithm>
 #include <cstring>
 #include <experimental/string_view>

@@ -1,5 +1,7 @@
 #pragma once
 
+/* Implementation optimization tricks */
+
 namespace vectorwise {
 /// type to mark position in a vectorwise vector
 using pos_t = uint32_t;

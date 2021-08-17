@@ -1,3 +1,5 @@
+/* An adapted implementation of database operators for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/algebra/Operators.hpp"
 #include <ostream>
 

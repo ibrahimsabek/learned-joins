@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of database for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "common/algebra/Types.hpp"
 #include "common/runtime/MemoryPool.hpp"
 #include "common/runtime/Mmap.hpp"

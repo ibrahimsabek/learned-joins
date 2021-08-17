@@ -1,3 +1,5 @@
+# A script to run the experiments for partitioned join (including learned) algorithms
+
 #!/bin/sh
 
 process_radix_join()

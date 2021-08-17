@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of query builder for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "Operators.hpp"
 #include "common/runtime/Database.hpp"
 #include "vectorwise/VectorAllocator.hpp"

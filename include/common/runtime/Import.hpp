@@ -1,4 +1,7 @@
 #pragma once
+
+/* An interface to import data for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "Database.hpp"
 #include <string>
 

@@ -1,5 +1,7 @@
 #pragma once
 
+/* A generic base class for implementing sort-merge join steps  along with some utilities implementation based on https://systems.ethz.ch/research/data-processing-on-modern-hardware/projects/parallel-and-distributed-joins.html */
+
 #include "utils/data_structures.h"
 #include "utils/math.h"
 #include "utils/memory.h"

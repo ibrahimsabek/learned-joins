@@ -1,3 +1,5 @@
+/* An adapted implementation of SSB query q13 based on https://github.com/fzhedu/db-imv */
+
 #include <deque>
 #include <iostream>
 

@@ -1,4 +1,7 @@
 #pragma once
+
+/* An adapted implementation of thread syncing (barrier-based) for benchmarking with TPCH and SSB join queries based on https://github.com/fzhedu/db-imv */
+
 #include "Util.hpp"
 #include "common/Compat.hpp"
 #include <atomic>

@@ -1,3 +1,5 @@
+# A generator for the second set of configurations needed to run all join algorithms (generates the file include/configs/eth_configs.h)
+
 #!/bin/sh
 
 # Set some default values:
