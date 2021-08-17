@@ -306,48 +306,66 @@ uint64_t inlj_with_rmi_probe_rel_s_partition(Relation<KeyType, PayloadType> * re
 #else
 uint64_t inlj_with_rmi_model_based_build_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
 {
+
     uint64_t i;
     uint64_t matches = 0; 
+    int64_t curr_index;
+
     size_t err;
     uint64_t rmi_guess;
-    uint64_t bound_start, bound_end;
-    int n; uint64_t lower;
-    KeyType * sorted_relation_r_keys_only = build_output->sorted_relation_r_keys_only;
-    uint64_t original_relR_num_tuples = build_output->original_relR->num_tuples;
+    int64_t bound = 1;
+    int64_t size;
+    int64_t l, r;  // will do binary search in range [l, r)
+    int64_t mid;
+
+    KeyType * sorted_relation_r_gapped_keys_only = build_output->sorted_relation_r_gapped_keys_only;
+    int64_t sorted_relation_r_gapped_keys_only_size = build_output->sorted_relation_r_gapped_keys_only_size;  
+    int scaling_factor = INLJ_WITH_LEARNED_GAPS_FACTOR;
 
     for (i = 0; i < rel_s_partition->num_tuples; i++)
     {        
         rmi_guess = INLJ_RMI_NAMESPACE::lookup(rel_s_partition->tuples[i].key, &err);
-        bound_start = rmi_guess - err; 
-        bound_start = (bound_start < 0)? 0 : bound_start;
-        bound_end = rmi_guess + err;
-        bound_end = (bound_end > original_relR_num_tuples - 1)? original_relR_num_tuples - 1 : bound_end;
+        curr_index = rmi_guess * scaling_factor;
 
-        n = bound_end - bound_start + 1; // `end` is inclusive.
-        lower = bound_start;
-
-        // Function adapted from https://github.com/gvinciguerra/rmi_pgm/blob/357acf668c22f927660d6ed11a15408f722ea348/main.cpp#L29.
-        // Authored by Giorgio Vinciguerra.
-        while (const int half = n / 2) {
-            const uint64_t middle = lower + half;
-            // Prefetch next two middles.
-            __builtin_prefetch(&(sorted_relation_r_keys_only[lower + half / 2]), 0, 0);
-            __builtin_prefetch(&(sorted_relation_r_keys_only[middle + half / 2]), 0, 0);
-            lower = (sorted_relation_r_keys_only[middle] <= rel_s_partition->tuples[i].key) ? middle : lower;
-            n -= half;
-        }
-
-        // Scroll back to the first occurrence.
-        while (lower > 0 && sorted_relation_r_keys_only[lower - 1] == rel_s_partition->tuples[i].key) --lower;
-
-        if (sorted_relation_r_keys_only[lower] == rel_s_partition->tuples[i].key) 
+        if(sorted_relation_r_gapped_keys_only[curr_index] == rel_s_partition->tuples[i].key)
+            matches ++;
+        else
         {
-            // Sum over all values with that key.
-            for (unsigned int k = lower; sorted_relation_r_keys_only[k] == rel_s_partition->tuples[i].key && k < original_relR_num_tuples; ++k) {
-                matches ++;
+            if(sorted_relation_r_gapped_keys_only[curr_index] >= rel_s_partition->tuples[i].key)
+            {
+                size = curr_index;
+                while (bound < size &&
+                    sorted_relation_r_gapped_keys_only[curr_index - bound] >= rel_s_partition->tuples[i].key) 
+                {
+                    bound *= 2;
+                }
+                l = curr_index - std::min<int64_t>(bound, size);
+                r = curr_index - bound / 2;
+            }
+            else
+            {
+                size = sorted_relation_r_gapped_keys_only_size - curr_index;
+                while (bound < size && sorted_relation_r_gapped_keys_only[curr_index + bound] < rel_s_partition->tuples[i].key)
+                {
+                    bound *= 2;
+                }
+                l = curr_index + bound / 2;
+                r = curr_index + std::min<int64_t>(bound, size);
             }
 
-        }
+            while (l < r) 
+            {
+                mid = l + (r - l) / 2;
+                if (sorted_relation_r_gapped_keys_only[mid] >= rel_s_partition->tuples[i].key) {
+                    r = mid;
+                } else {
+                    l = mid + 1;
+                }
+            }
+
+            if(sorted_relation_r_gapped_keys_only[l] == rel_s_partition->tuples[i].key)            
+                matches++;
+        }    
     }
 
     return matches;
