@@ -1,2 +1,7 @@
-# learned-imv-joins
-Exploring the learned models along with interleaved multi-vectorization to improve the performance of in-memory joins. In this project, some code blocks are re-used from db-imv repo (https://github.com/fzhedu/db-imv)
+# learned-joins
+
+This is the source code and running commands that are used for "The Case of Learned In-memory Joins" submission. To re-run the reported experiments, do the following steps:
+
+1. Generate the datasets. Download the [SOSD benchmark datasets](https://github.com/learnedsystems/SOSD) using the script file `scripts/sosd/sosd.sh`. 
+
+
