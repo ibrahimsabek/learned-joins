@@ -29,35 +29,13 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         keys_arr = np.fromfile(f, dtype=key_type)
 
     print("Count of loaded elements: ", len(keys_arr))
-    i = 0
-    for key in keys_arr:   
-        if i < 100:
-            print("Current loaded key: ", key)
-            i = i + 1
-        else:
-            break
 
     keys_np = np.sort(keys_arr)
-    i = 0
-    for key in keys_np:   
-        if i < 100:
-            print("Current sorted key: ", key)
-            i = i + 1
-        else:
-            break
 
     if should_be_unique == 1:
         keys_np_unique = np.unique(keys_np, return_index=False, return_inverse=False)
     else: 
         keys_np_unique = keys_np
-
-    i = 0
-    for key in keys_np_unique:   
-        if i < 100:
-            print("Current unique key: ", key)
-            i = i + 1
-        else:
-            break
 
     # sample the sorted key data
     if should_downsample:
@@ -161,4 +139,6 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
 #prepare_binary_format_for_hashing_project("/spinning/sabek/learned_join_datasets/s_UNIFORM_v5_uint32_uint32_640000000.txt", 'uint32', 'uint32', 1, 0, 0.01, "/spinning/sabek/learned_join_datasets/s_UNIFORM_v5_uint32_uint32_640000000_key_uint32")
 
 prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data/consecutive_100M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/consecutive_100M_uint64")
+prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data/consecutive_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/consecutive_200M_uint64")
+prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data/consecutive_90437011_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/consecutive_90437011_uint64")
 
