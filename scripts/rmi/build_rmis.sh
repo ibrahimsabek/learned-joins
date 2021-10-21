@@ -120,13 +120,13 @@ cd $(dirname "$0")/../../RMI && cargo build --release && cd ../build/release
 #build_rmi_set wiki_ts_200M_uint64 /spinning/sabek/learned_join_datasets_sosd/wiki_ts_200M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 #### the following commands are for the learned hashing project ###
-optimize_rmis consecutive_100M_uint64 /spinning/sabek/learned_hashing_datasets/consecutive_100M_uint64 $(dirname "$0")/../../include/rmi_specs 32
-build_rmi_set consecutive_100M_uint64 /spinning/sabek/learned_hashing_datasets/consecutive_100M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+optimize_rmis consecutive_100M_uint64 /spinning/sabek/learned_hash_datasets/consecutive_100M_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set consecutive_100M_uint64 /spinning/sabek/learned_hash_datasets/consecutive_100M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
-optimize_rmis consecutive_200M_uint64 /spinning/sabek/learned_hashing_datasets/consecutive_200M_uint64 $(dirname "$0")/../../include/rmi_specs 32
-build_rmi_set consecutive_200M_uint64 /spinning/sabek/learned_hashing_datasets/consecutive_200M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+optimize_rmis consecutive_200M_uint64 /spinning/sabek/learned_hash_datasets/consecutive_200M_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set consecutive_200M_uint64 /spinning/sabek/learned_hash_datasets/consecutive_200M_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
-optimize_rmis consecutive_90437011_uint64 /spinning/sabek/learned_hashing_datasets/consecutive_90437011_uint64 $(dirname "$0")/../../include/rmi_specs 32
-build_rmi_set consecutive_90437011_uint64 /spinning/sabek/learned_hashing_datasets/consecutive_90437011_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
+optimize_rmis consecutive_90437011_uint64 /spinning/sabek/learned_hash_datasets/consecutive_90437011_uint64 $(dirname "$0")/../../include/rmi_specs 32
+build_rmi_set consecutive_90437011_uint64 /spinning/sabek/learned_hash_datasets/consecutive_90437011_uint64 $(dirname "$0")/../../include/rmi $(dirname "$0")/../../include/rmi_specs /spinning/sabek/rmi_data 32
 
 /bin/bash $(dirname "$0")/generate_all_rmis.sh
