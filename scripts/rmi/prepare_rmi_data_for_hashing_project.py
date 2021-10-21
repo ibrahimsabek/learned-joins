@@ -33,12 +33,18 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
     for key in keys_arr:   
         if i < 100:
             print("Current loaded key: ", key)
+            i = i + 1
+        else
+            break
 
     keys_np = keys_arr.sort()
     i = 0
     for key in keys_np:   
         if i < 100:
             print("Current sorted key: ", key)
+            i = i + 1
+        else:
+            break
 
     if should_be_unique == 1:
         keys_np_unique = np.unique(keys_np, return_index=False, return_inverse=False)
@@ -49,6 +55,9 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
     for key in keys_np_unique:   
         if i < 100:
             print("Current unique key: ", key)
+            i = i + 1
+        else
+            break
 
     # sample the sorted key data
     if should_downsample:
