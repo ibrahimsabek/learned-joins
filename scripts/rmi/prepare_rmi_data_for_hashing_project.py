@@ -34,7 +34,7 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         if i < 100:
             print("Current loaded key: ", key)
             i = i + 1
-        else
+        else:
             break
 
     keys_np = keys_arr.sort()
@@ -56,7 +56,7 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         if i < 100:
             print("Current unique key: ", key)
             i = i + 1
-        else
+        else:
             break
 
     # sample the sorted key data
