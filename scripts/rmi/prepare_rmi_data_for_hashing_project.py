@@ -37,7 +37,7 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         else:
             break
 
-    keys_np = keys_arr.sort()
+    keys_np = np.sort(keys_arr)
     i = 0
     for key in keys_np:   
         if i < 100:
