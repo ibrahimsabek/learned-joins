@@ -29,13 +29,26 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         keys_arr = np.fromfile(f, dtype=key_type)
 
     print("Count of loaded elements: ", len(keys_arr))
+    i = 0
+    for key in keys_arr:   
+        if i < 100:
+            print("Current loaded key: ", key)
 
     keys_np = keys_arr.sort()
+    i = 0
+    for key in keys_np:   
+        if i < 100:
+            print("Current sorted key: ", key)
 
     if should_be_unique == 1:
         keys_np_unique = np.unique(keys_np, return_index=False, return_inverse=False)
     else: 
         keys_np_unique = keys_np
+
+    i = 0
+    for key in keys_np_unique:   
+        if i < 100:
+            print("Current unique key: ", key)
 
     # sample the sorted key data
     if should_downsample:
