@@ -11,6 +11,7 @@ process_non_imv_indexed_nested_loop_join()
     dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
     #dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    #dataset_folder_path=/spinning/sabek/learned_hash_datasets/  #for learned hash projects only
 
     #r_datasets=$1
     #r_datasets_sizes=$2
