@@ -1,3 +1,7 @@
 [submodule "RMI"]
 	path = RMI
 	url = https://github.com/learnedsystems/RMI
+
+[submodule "exotic-hashing/include/recsplit/src/gcem"]
+	path = exotic-hashing/include/mphf/recsplit/src/gcem
+	url = https://github.com/kthohr/gcem

@@ -141,6 +141,14 @@ ELSE(LINUX)
   set(JEVENTSLIB "")
 ENDIF(LINUX)
 
+# ==== Dependencies for perfect hashing ====
+include(${PROJECT_SOURCE_DIR}/exotic-hashing/thirdparty/sdsl-lite.cmake)
+include(${PROJECT_SOURCE_DIR}/exotic-hashing/thirdparty/fst.cmake)
+include(${PROJECT_SOURCE_DIR}/exotic-hashing/thirdparty/hashing.cmake)
+include(${PROJECT_SOURCE_DIR}/exotic-hashing/thirdparty/learned_hashing.cmake)
+include(${PROJECT_SOURCE_DIR}/exotic-hashing/thirdparty/la_vector.cmake)
+
+
 add_library(common
 #  src/common/algebra/Operators.cpp
 #  src/common/algebra/Types.cpp
