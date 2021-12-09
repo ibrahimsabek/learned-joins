@@ -2136,7 +2136,7 @@ void * npj_join_thread(void * param)
 
                 free_bucket_buffer(overflowbuf);
 
-                BARRIER_ARRIVE(args->barrier, rv);
+                //BARRIER_ARRIVE(args->barrier, rv);
             } 
         }
 
