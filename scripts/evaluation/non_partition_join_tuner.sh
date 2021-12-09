@@ -188,7 +188,7 @@ process_non_partition_join()
 }
 
 
-run_nums=5 #10
+run_nums=1 #5 10
 load_relations_for_evaluation=1
 persist_relations_for_evaluation=0
 
