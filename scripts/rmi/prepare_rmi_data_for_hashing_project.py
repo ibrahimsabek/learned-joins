@@ -66,7 +66,7 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         #    f.write(struct.pack("Q", len(keys_arr)))
         #    keys_arr.tofile(f)
 
-        with open('/spinning/sabek/learned_join_datasets/tmp.txt', 'w') as f:
+        with open('/spinning/sabek/learned_hash_datasets/tmp.txt', 'w') as f:
             f.write("#KEY, VAL\n")
             for item in keys_arr:
                 f.write(f'{item} {item}\n')
