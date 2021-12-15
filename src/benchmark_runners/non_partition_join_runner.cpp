@@ -2137,7 +2137,7 @@ void * npj_join_thread(void * param)
                 free_bucket_buffer(overflowbuf);
 
                 //TODO: uncomment it if you have npj_pf_num or run_nums more than 1
-                //BARRIER_ARRIVE(args->barrier, rv);
+                BARRIER_ARRIVE(args->barrier, rv);
             } 
         }
 
