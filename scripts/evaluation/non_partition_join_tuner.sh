@@ -12,7 +12,8 @@ process_non_partition_join()
     curr_ls_default_threshold=2097152 #100 1000 2000 10000 20000 30000 40000 60000 80000 
     curr_ls_default_arch=2097152 #1000 2000 5000 10000 20000 50000 100000 200000 500000 800000 1000000
 
-    dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    dataset_folder_path=/spinning/sabek/learned_hash_datasets/
 
     #r_datasets=$1
     #r_datasets_sizes=$2
@@ -189,7 +190,7 @@ process_non_partition_join()
 
 
 run_nums=1 #5 10
-load_relations_for_evaluation=0 #1
+load_relations_for_evaluation=1 #0
 persist_relations_for_evaluation=0
 
 #unique datasets
@@ -224,8 +225,8 @@ s_datasets_file_num_partitions=(32) #(64 64 64 64 64 64 64 64 64)
 
 #output_folder_path=/spinning/sabek/learned_join_results/npj_with_learned_unique/
 #process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
-output_folder_path=/spinning/sabek/learned_join_results/npj_with_non_learned_unique/
-process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+#output_folder_path=/spinning/sabek/learned_join_results/npj_with_non_learned_unique/
+#process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 
 
 #seq_hole datasets
@@ -310,4 +311,33 @@ s_datasets_file_num_partitions=(32 32 32) #(64 64 64 64 64 64 64 64 64)
 #output_folder_path=/spinning/sabek/learned_join_results/npj_with_learned_lognormal/
 #process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
 #output_folder_path=/spinning/sabek/learned_join_results/npj_with_non_learned_lognormal/
+#process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+
+
+#sosd datasets
+###################
+
+r_datasets=(fb_200M_uint64) 
+s_datasets=(fb_200M_uint64)
+r_datasets_sizes=(200E6)
+s_datasets_sizes=(200E6)
+r_datasets_file_num_partitions=(32) 
+s_datasets_file_num_partitions=(32)
+
+#output_folder_path=/spinning/sabek/learned_join_results/npj_with_learned_fb/
+#process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+output_folder_path=/spinning/sabek/learned_join_results/npj_with_non_learned_fb/
+process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+
+
+r_datasets=(osm_cellids_200M_uint64) 
+s_datasets=(osm_cellids_200M_uint64)
+r_datasets_sizes=(200E6)
+s_datasets_sizes=(200E6)
+r_datasets_file_num_partitions=(32) 
+s_datasets_file_num_partitions=(32)
+
+#output_folder_path=/spinning/sabek/learned_join_results/npj_with_learned_osm/
+#process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+#output_folder_path=/spinning/sabek/learned_join_results/npj_with_non_learned_osm/
 #process_non_partition_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0

@@ -2137,7 +2137,7 @@ void * npj_join_thread(void * param)
                 free_bucket_buffer(overflowbuf);
 
                 //TODO: uncomment it if you have npj_pf_num or run_nums more than 1
-                BARRIER_ARRIVE(args->barrier, rv);
+                //BARRIER_ARRIVE(args->barrier, rv);
             } 
         }
 
@@ -2303,7 +2303,7 @@ int main(int argc, char **argv)
     uint64_t curr_num_tuples_r = RELATION_R_NUM_TUPLES;
     uint64_t curr_num_tuples_s = RELATION_S_NUM_TUPLES; 
 
-#ifdef LOAD_RELATIONS_FOR_EVALUATION
+/*#ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
     string curr_rel_r_folder_path = RELATION_R_FOLDER_PATH;
     string curr_rel_s_folder_path = RELATION_S_FOLDER_PATH;
@@ -2345,8 +2345,9 @@ int main(int argc, char **argv)
     write_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str());    
     #endif
 #endif
+*/
 
-/*#ifdef LOAD_RELATIONS_FOR_EVALUATION
+#ifdef LOAD_RELATIONS_FOR_EVALUATION
     // loading pre-built datasets
     string curr_rel_r_path = RELATION_R_PATH;
     string curr_rel_s_path = RELATION_S_PATH;
@@ -2366,7 +2367,7 @@ int main(int argc, char **argv)
     #ifdef PERSIST_RELATIONS_FOR_EVALUATION
     write_relation<KeyType, PayloadType>(&rel_s, rel_s_path.c_str());
     #endif
-#endif*/
+#endif
 
     int i, rv;
     pthread_barrier_t barrier;
