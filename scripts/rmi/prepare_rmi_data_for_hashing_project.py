@@ -62,14 +62,14 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
         #keys_arr = np.array(keys_list).astype(key_type)
         keys_arr = keys_np_unique
         print("Count of unique keys: ", len(keys_arr))
-        with open(output_key_file_path, "wb") as f:
-            f.write(struct.pack("Q", len(keys_arr)))
-            keys_arr.tofile(f)
+        #with open(output_key_file_path, "wb") as f:
+        #    f.write(struct.pack("Q", len(keys_arr)))
+        #    keys_arr.tofile(f)
 
-        #with open('/spinning/sabek/learned_join_datasets/tmp.txt', 'w') as f:
-        #    f.write("#KEY, VAL\n")
-        #    for item in keys_arr:
-        #        f.write(f'{item} {item}\n')
+        with open('/spinning/sabek/learned_join_datasets/tmp.txt', 'w') as f:
+            f.write("#KEY, VAL\n")
+            for item in keys_arr:
+                f.write(f'{item} {item}\n')
 
     print(" Finished the binarization process")
 
@@ -142,6 +142,6 @@ def prepare_binary_format_for_hashing_project(input_file_path, key_type_str, pay
 #prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/consecutive_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/consecutive_200M_uint64")
 #prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/consecutive_90437011_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/consecutive_90437011_uint64")
 prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/fb_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/fb_200M_uint64")
-prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/osm_cellids_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/osm_cellids_200M_uint64")
-prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/wiki_ts_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/wiki_ts_200M_uint64")
+#prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/osm_cellids_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/osm_cellids_200M_uint64")
+#prepare_binary_format_for_hashing_project("/spinning/sabek/learned-hashing/data_from_dominic/wiki_ts_200M_uint64", 'uint64', 'uint64', 1, 0, 0.01, "/spinning/sabek/learned_hash_datasets/wiki_ts_200M_uint64")
 
