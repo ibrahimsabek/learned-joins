@@ -735,11 +735,11 @@ r_datasets_sizes=(800E6) #(200E6 800E6 200E6 800E6 200E6)
 s_datasets_sizes=(800E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
-input_hash_table_size=(1073741824) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+input_hash_table_size=(266666666) #(1073741824) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_osm_cellids_800M_uint64/
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_osm_cellids_800M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_osm_cellids_800M_uint64_with_chasing_counter/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_osm_cellids_800M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_osm_cellids_800M_uint64_without_bs/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
@@ -754,11 +754,11 @@ r_datasets_sizes=(200E6) #(200E6 800E6 200E6 800E6 200E6)
 s_datasets_sizes=(200E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
-input_hash_table_size=(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+input_hash_table_size=(66666666) #(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 
-#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_wiki_ts_200M_uint64/
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_wiki_ts_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_wiki_ts_200M_uint64_with_chasing_counter/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_wiki_ts_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_wiki_ts_200M_uint64_without_bs/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
