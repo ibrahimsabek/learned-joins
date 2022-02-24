@@ -706,6 +706,7 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'#include <hashtable.hpp>'; echo -n $'\n\n';
              echo -n $'#include <iterator>'; echo -n $'\n\n';
              echo -n $'#include <learned_hashing.hpp>'; echo -n $'\n\n';
+             echo -n $'#include <exotic_hashing.hpp>'; echo -n $'\n\n';
              echo -n $'#include <limits>'; echo -n $'\n\n';
              echo -n $'#include <type_traits>'; echo -n $'\n\n';
              echo -n $'#include <utility>'; echo -n $'\n\n';
