@@ -712,7 +712,7 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'#include <vector>'; echo -n $'\n\n';
              echo -n $'#include "convenience/builtins.hpp"'; echo -n $'\n\n';
              echo -n $'#include <include/mmphf/rank_hash.hpp>'; echo -n $'\n\n';
-             echo -n $'#include "rmi.hpp"'; echo -n $'\n\n';
+             echo -n $'#include <include/rmi.hpp>'; echo -n $'\n\n';
 
              echo -n $'using MURMUR = hashing::MurmurFinalizer<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
 
