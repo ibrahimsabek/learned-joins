@@ -219,11 +219,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
         KeyType keyForSearch;
     
     #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
-                        printf("here inside probe \n");
-
         KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = (KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> *) build_output->ht;
-                        printf("here inside probe before looping \n");
-
         for (i = 0; i < rel_s_partition->num_tuples; i++)
         {
             keyForSearch = rel_s_partition->tuples[i].key; 
@@ -232,6 +228,9 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             // Lower bound lookup
             auto it = ht->operator[](searched);  
             matches += it.key();  
+            if(i % 100000 == 0)
+                printf("here inside probe checking\n");
+
         }
                                 printf("here inside probe after looping \n");
 
@@ -812,8 +811,6 @@ void * inlj_join_thread(void * param)
     auto partition_end_time = high_resolution_clock::now();
 
     //Probe phase
-                    printf("start probing \n");
-
     vector<uint64_t> final_probe_timings_in_ms;
     vector<uint64_t> final_probe_throughputs_mtuples_per_sec;
     vector<uint64_t> final_probe_cycles_vec;
