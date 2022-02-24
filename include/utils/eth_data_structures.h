@@ -399,7 +399,11 @@ struct IndexedNestedLoopJoinThread
     ThreadResult * threadresult;
 
     #ifdef INLJ_WITH_HASH_INDEX
-    Hashtable<KeyType, PayloadType> *  ht;
+        #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+            //TODO
+        #else
+            Hashtable<KeyType, PayloadType> *  ht;
+        #endif
     #endif
 
     KeyType * sorted_relation_r_keys_only;
@@ -468,8 +472,12 @@ struct ETHNonPartitionJoinBuild {
 template<typename KeyType, typename PayloadType>
 struct IndexedNestedLoopJoinBuild {
 #ifdef INLJ_WITH_HASH_INDEX
-    Hashtable<KeyType, PayloadType> * ht;
-    BucketBuffer<KeyType, PayloadType> ** overflowbuf;
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+        //TODO
+    #else
+        Hashtable<KeyType, PayloadType> * ht;
+        BucketBuffer<KeyType, PayloadType> ** overflowbuf;
+    #endif
 #endif
 #ifdef INLJ_WITH_LEARNED_INDEX
     /*learned_sort_for_sort_merge::RMI<KeyType, PayloadType> * rmi;

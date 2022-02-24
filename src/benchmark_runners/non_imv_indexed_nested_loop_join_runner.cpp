@@ -99,159 +99,179 @@ volatile static struct Fun1 {
 } inlj_pfun1[4];
 
 #ifdef INLJ_WITH_HASH_INDEX
-Hashtable<KeyType, PayloadType> * ht;
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+    //TODO
+    #else
+    Hashtable<KeyType, PayloadType> * ht;
+    #endif
 #endif
 
 
 #ifdef INLJ_WITH_HASH_INDEX
 void inlj_with_hash_build_rel_r_partition(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
 {
-    Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
-    BucketBuffer<KeyType, PayloadType>** overflowbuf = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
 
-    uint64_t i;
-#ifndef USE_MURMUR3_HASH
-    const uint64_t hashmask = ht->hash_mask;
-    const uint64_t skipbits = ht->skip_bits;
-#endif
-#ifdef PREFETCH_INLJ
-    size_t prefetch_index = PREFETCH_DISTANCE;
-#endif
-    
-    for(i=0; i < rel_r_partition->num_tuples; i++){
-        Tuple<KeyType, PayloadType> * dest;
-        Bucket<KeyType, PayloadType> * curr, * nxt;
+#ifdef HASH_SCHEME_AND_FUNCTION_MODE
 
-#ifdef PREFETCH_INLJ
-        if (prefetch_index < rel_r_partition->num_tuples) {
-#ifndef USE_MURMUR3_HASH
-            uint64_t idx_prefetch = HASH(rel_r_partition->tuples[prefetch_index++].key,
-                                         hashmask, skipbits);
+    //TODO
+
 #else
-            uint64_t idx_prefetch_hash = murmur_hash_32(rel_r_partition->tuples[prefetch_index++].key);
-            uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
-#endif
-			__builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
-        }
-#endif
 
-#ifndef USE_MURMUR3_HASH
-        uint64_t idx = HASH(rel_r_partition->tuples[i].key, hashmask, skipbits);
-#else
-        uint64_t idx_hash = murmur_hash_32(rel_r_partition->tuples[i].key);
-        uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
-#endif        
-        /* copy the tuple to appropriate hash bucket */
-        /* if full, follow nxt pointer to find correct place */
-        curr = ht->buckets+idx;
-        lock(&curr->latch);
+        Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
+        BucketBuffer<KeyType, PayloadType>** overflowbuf = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
 
-        nxt = curr->next;
+        uint64_t i;
+    #ifndef USE_MURMUR3_HASH
+        const uint64_t hashmask = ht->hash_mask;
+        const uint64_t skipbits = ht->skip_bits;
+    #endif
+    #ifdef PREFETCH_INLJ
+        size_t prefetch_index = PREFETCH_DISTANCE;
+    #endif
+        
+        for(i=0; i < rel_r_partition->num_tuples; i++){
+            Tuple<KeyType, PayloadType> * dest;
+            Bucket<KeyType, PayloadType> * curr, * nxt;
 
-        if(curr->count == BUCKET_SIZE) {
-            if(!nxt || nxt->count == BUCKET_SIZE) {
-                Bucket<KeyType, PayloadType> * b;
-                /* b = (bucket_t*) calloc(1, sizeof(bucket_t)); */
-                /* instead of calloc() everytime, we pre-allocate */
-                get_new_bucket(&b, overflowbuf);
-                curr->next = b;
-                b->next    = nxt;
-                b->count   = 1;
-                dest       = b->tuples;
+    #ifdef PREFETCH_INLJ
+            if (prefetch_index < rel_r_partition->num_tuples) {
+    #ifndef USE_MURMUR3_HASH
+                uint64_t idx_prefetch = HASH(rel_r_partition->tuples[prefetch_index++].key,
+                                            hashmask, skipbits);
+    #else
+                uint64_t idx_prefetch_hash = murmur_hash_32(rel_r_partition->tuples[prefetch_index++].key);
+                uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
+    #endif
+                __builtin_prefetch(ht->buckets + idx_prefetch, 1, 1);
             }
-            else {
-                dest = nxt->tuples + nxt->count;
-                nxt->count ++;
-            }
-        }
-        else 
-        {
-            dest = curr->tuples + curr->count;
-            curr->count ++;
-        }
+    #endif
 
-        *dest = rel_r_partition->tuples[i];
-        unlock(&curr->latch);
-    }
+    #ifndef USE_MURMUR3_HASH
+            uint64_t idx = HASH(rel_r_partition->tuples[i].key, hashmask, skipbits);
+    #else
+            uint64_t idx_hash = murmur_hash_32(rel_r_partition->tuples[i].key);
+            uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
+    #endif        
+            /* copy the tuple to appropriate hash bucket */
+            /* if full, follow nxt pointer to find correct place */
+            curr = ht->buckets+idx;
+            lock(&curr->latch);
+
+            nxt = curr->next;
+
+            if(curr->count == BUCKET_SIZE) {
+                if(!nxt || nxt->count == BUCKET_SIZE) {
+                    Bucket<KeyType, PayloadType> * b;
+                    /* b = (bucket_t*) calloc(1, sizeof(bucket_t)); */
+                    /* instead of calloc() everytime, we pre-allocate */
+                    get_new_bucket(&b, overflowbuf);
+                    curr->next = b;
+                    b->next    = nxt;
+                    b->count   = 1;
+                    dest       = b->tuples;
+                }
+                else {
+                    dest = nxt->tuples + nxt->count;
+                    nxt->count ++;
+                }
+            }
+            else 
+            {
+                dest = curr->tuples + curr->count;
+                curr->count ++;
+            }
+
+            *dest = rel_r_partition->tuples[i];
+            unlock(&curr->latch);
+        }
+#endif
 }
 #endif
 
 #ifdef INLJ_WITH_HASH_INDEX
 uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
 {
-    Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
-    
-    uint64_t i, j;
-    uint64_t matches;
 
-#ifndef USE_MURMUR3_HASH
-    const uint64_t hashmask = ht->hash_mask;
-    const uint64_t skipbits = ht->skip_bits;
-#endif
-#ifdef PREFETCH_INLJ    
-    size_t prefetch_index = PREFETCH_DISTANCE;
-#endif
-    
-    matches = 0; /*int curr_buckts_num;
-    for(i=0; i < ht->num_buckets; i++)
-    {
-        Bucket<KeyType, PayloadType> * b = ht->buckets+i;
-        //if((i < 5) && b && (b->count > 0))
-        //    printf("naive i %ld key %ld \n", i, b->tuples[0].key);
-        curr_buckts_num = 0;
-        do {
-            b = b->next;
+#ifdef HASH_SCHEME_AND_FUNCTION_MODE
+        //TODO
+        return 0;
+#else
+        Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
+        
+        uint64_t i, j;
+        uint64_t matches;
+
+    #ifndef USE_MURMUR3_HASH
+        const uint64_t hashmask = ht->hash_mask;
+        const uint64_t skipbits = ht->skip_bits;
+    #endif
+    #ifdef PREFETCH_INLJ    
+        size_t prefetch_index = PREFETCH_DISTANCE;
+    #endif
+        
+        matches = 0; /*int curr_buckts_num;
+        for(i=0; i < ht->num_buckets; i++)
+        {
+            Bucket<KeyType, PayloadType> * b = ht->buckets+i;
             //if((i < 5) && b && (b->count > 0))
             //    printf("naive i %ld key %ld \n", i, b->tuples[0].key);
-            curr_buckts_num++;
-        } while(b);
-        if((curr_buckts_num > 2) && (i < 100))
-            printf("naive i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
-    }*/
-    //uint64_t chasing_counter = 0;
-    for (i = 0; i < rel_s_partition->num_tuples; i++)
-    {
-#ifdef PREFETCH_INLJ        
-        if (prefetch_index < rel_s_partition->num_tuples) {
-#ifndef USE_MURMUR3_HASH
-			uint64_t idx_prefetch = HASH(rel_s_partition->tuples[prefetch_index++].key,
-                                        hashmask, skipbits);
-#else
-            uint64_t idx_prefetch_hash = murmur_hash_32(rel_s_partition->tuples[prefetch_index++].key);
-            uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
-#endif
-			__builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
-        }
-#endif
-
-#ifndef USE_MURMUR3_HASH        
-        uint64_t idx = HASH(rel_s_partition->tuples[i].key, hashmask, skipbits);        
-#else
-        uint64_t idx_hash = murmur_hash_32(rel_s_partition->tuples[i].key);
-        uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
-#endif
-        Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
-
-        do {
-            //chasing_counter ++;
-        #ifdef SINGLE_TUPLE_PER_BUCKET    
-            if(rel_s_partition->tuples[i].key == b->tuples[0].key){
-                    matches ++;
+            curr_buckts_num = 0;
+            do {
+                b = b->next;
+                //if((i < 5) && b && (b->count > 0))
+                //    printf("naive i %ld key %ld \n", i, b->tuples[0].key);
+                curr_buckts_num++;
+            } while(b);
+            if((curr_buckts_num > 2) && (i < 100))
+                printf("naive i %ld curr_buckets_num %d nbuckets %ld \n", i, curr_buckts_num, ht->num_buckets);
+        }*/
+        //uint64_t chasing_counter = 0;
+        for (i = 0; i < rel_s_partition->num_tuples; i++)
+        {
+    #ifdef PREFETCH_INLJ        
+            if (prefetch_index < rel_s_partition->num_tuples) {
+    #ifndef USE_MURMUR3_HASH
+                uint64_t idx_prefetch = HASH(rel_s_partition->tuples[prefetch_index++].key,
+                                            hashmask, skipbits);
+    #else
+                uint64_t idx_prefetch_hash = murmur_hash_32(rel_s_partition->tuples[prefetch_index++].key);
+                uint64_t idx_prefetch = alt_mod(idx_prefetch_hash, ht->num_buckets);
+    #endif
+                __builtin_prefetch(ht->buckets + idx_prefetch, 0, 1);
             }
-        #else
-            for(j = 0; j < b->count; j++) {
-                if(rel_s_partition->tuples[i].key == b->tuples[j].key){
-                    matches ++;
+    #endif
+
+    #ifndef USE_MURMUR3_HASH        
+            uint64_t idx = HASH(rel_s_partition->tuples[i].key, hashmask, skipbits);        
+    #else
+            uint64_t idx_hash = murmur_hash_32(rel_s_partition->tuples[i].key);
+            uint64_t idx = alt_mod(idx_hash, ht->num_buckets);
+    #endif
+            Bucket<KeyType, PayloadType> * b = ht->buckets+idx;
+
+            do {
+                //chasing_counter ++;
+            #ifdef SINGLE_TUPLE_PER_BUCKET    
+                if(rel_s_partition->tuples[i].key == b->tuples[0].key){
+                        matches ++;
                 }
-            }
-        #endif
+            #else
+                for(j = 0; j < b->count; j++) {
+                    if(rel_s_partition->tuples[i].key == b->tuples[j].key){
+                        matches ++;
+                    }
+                }
+            #endif
 
-            b = b->next;/* follow overflow pointer */
-        } while(b);
+                b = b->next;/* follow overflow pointer */
+            } while(b);
 
-    }
-    //matches = chasing_counter;
-    return matches;
+        }
+        //matches = chasing_counter;
+        return matches;
+#endif
+
+
 }
 #endif
 
@@ -531,23 +551,32 @@ void * inlj_join_thread(void * param)
 #endif
     
 #ifdef INLJ_WITH_HASH_INDEX
-    BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+            //TODO
+    #else
 
-#if INPUT_HASH_TABLE_SIZE       
-    uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
-#else
-    uint32_t nbuckets = (args->original_relR->num_tuples / BUCKET_SIZE / NUM_THREADS);
+        BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
+
+        #if INPUT_HASH_TABLE_SIZE       
+            uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
+        #else
+            uint32_t nbuckets = (args->original_relR->num_tuples / BUCKET_SIZE / NUM_THREADS);
+        #endif
 #endif
 
 #endif    
     if (args->tid == 0) {
         inlj_pf_num = 0;
-#ifdef INLJ_WITH_HASH_INDEX        
-        strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
-        inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
+#ifdef INLJ_WITH_HASH_INDEX   
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+            //TODO
+    #else
+            strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
+            inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
 
-        strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Hashing");
-        inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
+            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Hashing");
+            inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
+    #endif
         inlj_pf_num++;
 #endif
 
@@ -632,18 +661,26 @@ void * inlj_join_thread(void * param)
         for (int rp = 0; rp < RUN_NUMS; ++rp) 
         {
 
-        #ifdef  INLJ_WITH_HASH_INDEX          
-            init_bucket_buffer(&overflowbuf);
-            if(args->tid == 0)
-                allocate_hashtable(&ht, nbuckets);
-                //allocate_hashtable(&args->ht, nbuckets);
+        #ifdef  INLJ_WITH_HASH_INDEX
+            #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+            //TODO
+            #else
+                init_bucket_buffer(&overflowbuf);
+                if(args->tid == 0)
+                    allocate_hashtable(&ht, nbuckets);
+                    //allocate_hashtable(&args->ht, nbuckets);
+            #endif          
         #endif
             BARRIER_ARRIVE(args->barrier, rv);
 
         #ifdef INLJ_WITH_HASH_INDEX    
-            args->ht = ht;
-            build_data.ht = ht;
-            build_data.overflowbuf = &overflowbuf;
+            #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+            //TODO
+            #else
+                args->ht = ht;
+                build_data.ht = ht;
+                build_data.overflowbuf = &overflowbuf;
+            #endif
         #endif
 
         #ifdef INLJ_WITH_LEARNED_INDEX   
@@ -667,12 +704,15 @@ void * inlj_join_thread(void * param)
             #endif
             }  
 
-        #if INLJ_MORSE_SIZE
-            morse_driven(param, inlj_pfun[fid].fun_ptr, &overflowbuf);
+        #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+        //TODO
         #else
-            inlj_pfun[fid].fun_ptr(&build_data, &args->relR, NULL);
+            #if INLJ_MORSE_SIZE
+                morse_driven(param, inlj_pfun[fid].fun_ptr, &overflowbuf);
+            #else
+                inlj_pfun[fid].fun_ptr(&build_data, &args->relR, NULL);
+            #endif
         #endif
-
             BARRIER_ARRIVE(args->barrier, rv);
 
         #ifdef PERF_COUNTERS
@@ -700,10 +740,14 @@ void * inlj_join_thread(void * param)
             if(!((fid == (inlj_pf_num - 1)) && (rp == (RUN_NUMS - 1)))){
             
             #ifdef INLJ_WITH_HASH_INDEX  
-                if(args->tid == 0)
-                    destroy_hashtable(args->ht);
+                #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+                //TODO
+                #else
+                    if(args->tid == 0)
+                            destroy_hashtable(args->ht);
 
-                free_bucket_buffer(overflowbuf);
+                        free_bucket_buffer(overflowbuf);
+                #endif
             #endif
 
                 BARRIER_ARRIVE(args->barrier, rv);
@@ -802,8 +846,12 @@ void * inlj_join_thread(void * param)
 
 void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r, 
                                  Relation<KeyType, PayloadType> * rel_s,
-                        #ifdef INLJ_WITH_HASH_INDEX
-                                 Hashtable<KeyType, PayloadType> * ht, 
+                        #ifdef INLJ_WITH_HASH_INDEX 
+                            #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+                            //TODO
+                            #else
+                                Hashtable<KeyType, PayloadType> * ht,
+                            #endif         
                         #endif
                                  KeyType * sorted_relation_r_keys_only,
                         #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD
@@ -858,7 +906,11 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
     {
         (*(args + i)).tid = i;
     #ifdef INLJ_WITH_HASH_INDEX
-        (*(args + i)).ht = ht; 
+        #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+        //TODO
+        #else
+            (*(args + i)).ht = ht;
+        #endif 
     #endif
         /* assing part of the relR for next thread */
         (*(args + i)).relR.num_tuples = (i == (NUM_THREADS-1)) ? numR : numRthr;
@@ -1088,13 +1140,17 @@ int main(int argc, char **argv)
     pthread_attr_init(&attr);
 
 #ifdef INLJ_WITH_HASH_INDEX
-#if INPUT_HASH_TABLE_SIZE       
-    uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
-#else
-    uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+    //TODO
+    #else
+        #if INPUT_HASH_TABLE_SIZE       
+            uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
+        #else
+            uint32_t nbuckets = (rel_r.num_tuples / BUCKET_SIZE / NUM_THREADS);
 
-#endif        
-    allocate_hashtable(&ht, nbuckets);
+        #endif        
+            allocate_hashtable(&ht, nbuckets);
+    #endif
 #endif
 
 
@@ -1389,7 +1445,11 @@ int main(int argc, char **argv)
   
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
                                 #ifdef INLJ_WITH_HASH_INDEX
-                                    ht, 
+                                    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+                                    //TODO
+                                    #else
+                                        ht,
+                                    #endif 
                                 #endif
                                     sorted_relation_r_keys_only,
                                 #ifdef INLJ_WITH_LEARNED_INDEX_MODEL_BASED_BUILD                                    
