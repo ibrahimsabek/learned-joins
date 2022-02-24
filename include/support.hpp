@@ -5,7 +5,6 @@
 
 #include "include/convenience/builtins.hpp"
 
-namespace masters_thesis::support {
 /**
  * Tape aims to tremendously improve overall performance
  * for allocating small entities T. Usually, mallocing
@@ -54,5 +53,3 @@ class Tape {
     return &begins.back()[index++];
   }
 };
-
-}  // namespace masters_thesis::support

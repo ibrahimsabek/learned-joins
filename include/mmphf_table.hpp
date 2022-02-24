@@ -6,8 +6,6 @@
 // Order is important
 #include "include/convenience/builtins.hpp"
 
-namespace masters_thesis {
-
 template <class Key, class Payload,
           class MMPHF = exotic_hashing::LearnedRank<
               Key, learned_hashing::MonotoneRMIHash<Key, 1000000>>>
@@ -100,4 +98,3 @@ class MMPHFTable {
 
   size_t byte_size() const { return mmphf_byte_size() + directory_byte_size(); }
 };
-}  // namespace masters_thesis

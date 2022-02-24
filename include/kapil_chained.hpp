@@ -14,7 +14,6 @@
 #include "include/convenience/builtins.hpp"
 #include "include/support.hpp"
 
-namespace masters_thesis {
 template <class Key, class Payload, size_t BucketSize, size_t OverAlloc,
           class HashFn,
           bool ManualPrefetch = false,
@@ -323,4 +322,3 @@ class KapilChainedHashTable {
 
   size_t byte_size() const { return model_byte_size() + directory_byte_size(); }
 };
-}  // namespace masters_thesis

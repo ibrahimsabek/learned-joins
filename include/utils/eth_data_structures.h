@@ -400,7 +400,10 @@ struct IndexedNestedLoopJoinThread
 
     #ifdef INLJ_WITH_HASH_INDEX
         #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            //TODO
+            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+                //TODO
+            #endif
+                //TODO
         #else
             Hashtable<KeyType, PayloadType> *  ht;
         #endif
@@ -473,7 +476,10 @@ template<typename KeyType, typename PayloadType>
 struct IndexedNestedLoopJoinBuild {
 #ifdef INLJ_WITH_HASH_INDEX
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-        //TODO
+            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+                //TODO
+            #endif
+                //TODO
     #else
         Hashtable<KeyType, PayloadType> * ht;
         BucketBuffer<KeyType, PayloadType> ** overflowbuf;
