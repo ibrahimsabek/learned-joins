@@ -226,15 +226,19 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             const auto searched = keyForSearch;
 
             // Lower bound lookup
-            try
-            {
+            //try
+            //{
                 auto it = ht->operator[](searched);  
                 matches += it.key();
-            }
-            catch (std::exception& e)
-            {
-                cout << "An exception occurred. Exception Nr. " << e.what() << "at key index " << i << '\n';
-            }  
+
+                                                if (i % 100000 == 0)
+                                                     printf("here inside looping %ld key %ld \n", i, it.key());
+
+            //}
+            //catch (std::exception& e)
+            //{
+            //    cout << "An exception occurred. Exception Nr. " << e.what() << "at key index " << i << '\n';
+            //}  
         }
                                 printf("here inside probe after looping \n");
 
