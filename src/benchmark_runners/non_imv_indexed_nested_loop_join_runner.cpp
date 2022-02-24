@@ -231,8 +231,8 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
                 auto it = ht->operator[](searched);  
                 matches += it.key();
 
-                                                if (i % 100000 == 0)
-                                                     printf("here inside looping %ld key %ld \n", i, it.key());
+            if (i % 100000 == 0)
+                    printf("table size in bytes %ld here inside looping %ld key %ld found %ld with payload %ld \n", ht->directory_byte_size(), i, KeyForSearch, it.key(), it.payload());
 
             //}
             //catch (std::exception& e)
