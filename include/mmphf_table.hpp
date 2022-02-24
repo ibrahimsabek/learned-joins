@@ -4,7 +4,7 @@
 #include <learned_hashing.hpp>
 
 // Order is important
-#include "include/convenience/builtins.hpp"
+#include "convenience/builtins.hpp"
 
 template <class Key, class Payload,
           class MMPHF = exotic_hashing::LearnedRank<

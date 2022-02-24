@@ -14,7 +14,7 @@
  #ifdef INLJ_WITH_HASH_INDEX
         #ifdef HASH_SCHEME_AND_FUNCTION_MODE
             #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
-                #include "include/kapil_chained.hpp"
+                #include "kapil_chained.hpp"
             #endif
                 //TODO
         #endif

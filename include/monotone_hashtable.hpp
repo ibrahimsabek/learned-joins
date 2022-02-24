@@ -11,8 +11,8 @@
 #include <string>
 #include <utility>
 
-#include "include/convenience/builtins.hpp"
-#include "include/support.hpp"
+#include "convenience/builtins.hpp"
+#include "support.hpp"
 
 template <class Key, class Payload, size_t BucketSize,
           class Model = learned_hashing::MonotoneRMIHash<Key, 1000000>,
