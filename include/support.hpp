@@ -5,7 +5,7 @@
 
 #include "convenience/builtins.hpp"
 
-namespace masters_thesis::support {
+namespace support {
 /**
  * Tape aims to tremendously improve overall performance
  * for allocating small entities T. Usually, mallocing
