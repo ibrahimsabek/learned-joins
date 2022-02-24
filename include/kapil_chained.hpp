@@ -6,7 +6,7 @@
 #include <array>
 #include <cstddef>
 #include <iterator>
-#include <include/learned_hashing.hpp>
+#include <learned_hashing.hpp>
 #include <limits>
 #include <string>
 #include <utility>

@@ -240,7 +240,7 @@ target_include_directories(non_partition_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)
-  target_link_libraries(non_partition_join_runner common ${JEVENTSLIB})
+  target_link_libraries(non_partition_join_runner common ${JEVENTSLIB} ${HASHING_LIBRARY} ${LEARNED_HASHING_LIBRARY} ${EXOTIC_HASHING_LIBRARY} ${HASHTABLE_LIBRARY})
 
 
 add_executable(partition_join_runner src/benchmark_runners/partition_join_runner.cpp)
@@ -248,7 +248,7 @@ target_include_directories(partition_join_runner PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>
 PRIVATE src)
-target_link_libraries(partition_join_runner common ${JEVENTSLIB})
+target_link_libraries(partition_join_runner common ${JEVENTSLIB} ${HASHING_LIBRARY} ${LEARNED_HASHING_LIBRARY} ${EXOTIC_HASHING_LIBRARY} ${HASHTABLE_LIBRARY})
 
 add_executable(non_learned_non_imv_sort_join_runner src/benchmark_runners/non_learned_non_imv_sort_join_runner.cpp)
 target_include_directories(non_learned_non_imv_sort_join_runner PUBLIC
@@ -269,7 +269,7 @@ target_include_directories(non_imv_indexed_nested_loop_join_runner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
   PRIVATE src)  
-  target_link_libraries(non_imv_indexed_nested_loop_join_runner common ${JEVENTSLIB} rmi_lib)
+  target_link_libraries(non_imv_indexed_nested_loop_join_runner common ${JEVENTSLIB} rmi_lib ${HASHING_LIBRARY} ${LEARNED_HASHING_LIBRARY} ${EXOTIC_HASHING_LIBRARY} ${HASHTABLE_LIBRARY})
 
 #add_executable(avx512_benchmarker src/benchmark_runners/avx512_benchmarker.cpp)
 #target_include_directories(avx512_benchmarker PUBLIC
