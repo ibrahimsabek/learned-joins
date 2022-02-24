@@ -9,12 +9,12 @@ else()
 endif()
 
 if(LINUX)
-set(CMAKE_C_COMPILER gcc)
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_C_COMPILER clang) #gcc 
+set(CMAKE_CXX_COMPILER clang++) #g++
 ADD_DEFINITIONS(-D_LIBCPP_VERSION=1) # tbb clang compatibility
 else()
-set(CMAKE_C_COMPILER gcc)
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_C_COMPILER clang) #gcc
+set(CMAKE_CXX_COMPILER clang++) #g++
 endif()
 set(CMAKE_CXX_STANDARD 20) #17
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
