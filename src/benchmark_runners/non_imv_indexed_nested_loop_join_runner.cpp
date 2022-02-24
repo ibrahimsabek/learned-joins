@@ -1194,7 +1194,6 @@ int main(int argc, char **argv)
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
         }
         #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
-            printf("Here instantiate\n");
             KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
         #endif
     #else

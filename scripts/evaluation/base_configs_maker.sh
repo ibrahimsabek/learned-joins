@@ -700,7 +700,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
         ##include <stdexcept>
         ##include <string>
      
-        if [ "$HASH_SCHEME_AND_FUNCTION_MODE" != 0 ]; then 
+      if [ "$INLJ_WITH_HASH_INDEX" = 1 ]; then
+         if [ "$HASH_SCHEME_AND_FUNCTION_MODE" != 0 ]; then 
              echo -n $'#include <algorithm>'; echo -n $'\n\n';
              echo -n $'#include <hashing.hpp>'; echo -n $'\n\n';
              echo -n $'#include <hashtable.hpp>'; echo -n $'\n\n';
@@ -727,7 +728,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'#define HASH_OVERALLOC '$HASH_OVERALLOC; echo -n $'\n\n';
              echo -n $'#define HASH_LEARNED_MODEL '$HASH_LEARNED_MODEL; echo -n $'\n\n';             
         fi
-
+      fi
+   
         echo -n $'#define INLJ_RMI_DATA_PATH '$INLJ_RMI_DATA_PATH; echo -n $'\n\n';
 
         echo -n $'#define INLJ_RMI_NAMESPACE '$INLJ_RMI_NAMESPACE; echo -n $'\n\n';
