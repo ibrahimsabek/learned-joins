@@ -607,7 +607,7 @@ void * inlj_join_thread(void * param)
 #ifdef INLJ_WITH_HASH_INDEX   
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
         #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
-            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chained_tradtional");
+            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chain_tradtional");
         #endif
 
             inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
