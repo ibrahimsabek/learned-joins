@@ -714,8 +714,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'#include <include/mmphf/rank_hash.hpp>'; echo -n $'\n\n';
              echo -n $'#include <include/rmi.hpp>'; echo -n $'\n\n';
 
-             echo -n $'using namespace exotic_hashing;'; echo -n $'\n\n';
-             echo -n $'using namespace exotic_hashing::support;'; echo -n $'\n\n';
+            # echo -n $'using namespace exotic_hashing;'; echo -n $'\n\n';
+            # echo -n $'using namespace exotic_hashing::support;'; echo -n $'\n\n';
 
              echo -n $'using MURMUR = hashing::MurmurFinalizer<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
 
