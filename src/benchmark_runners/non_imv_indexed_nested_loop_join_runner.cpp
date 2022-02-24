@@ -231,9 +231,9 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
                 auto it = ht->operator[](searched);  
                 matches += it.key();
             }
-            catch (int e)
+            catch (std::exception& e)
             {
-                cout << "An exception occurred. Exception Nr. " << e << "at key index " << i << '\n';
+                cout << "An exception occurred. Exception Nr. " << e.what() << "at key index " << i << '\n';
             }  
         }
                                 printf("here inside probe after looping \n");
