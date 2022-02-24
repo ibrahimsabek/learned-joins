@@ -66,15 +66,15 @@ free_threadlocal(void * ptr, size_t size)
 }
 
 /** software prefetching function based on ETH implementation */
-inline void prefetch(void * addr) __attribute__((always_inline));
+//inline void prefetch(void * addr) __attribute__((always_inline));
 
-inline void prefetch(void * addr)
-{
-    /* #ifdef __x86_64__ */
-    __asm__ __volatile__ ("prefetcht0 %0" :: "m" (*(uint32_t*)addr));
-    /* _mm_prefetch(addr, _MM_HINT_T0); */
-    /* #endif */
-}
+//inline void prefetch(void * addr)
+//{
+//    /* #ifdef __x86_64__ */
+//    __asm__ __volatile__ ("prefetcht0 %0" :: "m" (*(uint32_t*)addr));
+//    /* _mm_prefetch(addr, _MM_HINT_T0); */
+//    /* #endif */
+//}
 
 /** 
  * Makes a non-temporal write of 64 bytes from src to dst.
