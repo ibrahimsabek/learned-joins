@@ -14,6 +14,8 @@
 #include "convenience/builtins.hpp"
 #include "include/support/support.hpp"
 
+using namespace exotic_hashing;
+
 template <class Key, class Payload, size_t BucketSize, size_t OverAlloc,
           class HashFn,
           bool ManualPrefetch = false,
