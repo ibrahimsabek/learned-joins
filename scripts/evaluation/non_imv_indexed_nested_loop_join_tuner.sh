@@ -75,7 +75,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 -HASH_SCHEME_AND_FUNCTION_MODE $curr_hash_scheme_and_function_mode \
                                                 -HASH_FUN $curr_hash_fun \
                                                 -HASH_OVERALLOC $curr_hash_overalloc \
-                                                -HASH_LEARNED_MODEL $curr_hash_learned_model \                                                
+                                                -HASH_LEARNED_MODEL $curr_hash_learned_model \
                                                 -PREFETCH_INLJ 0 \
                                                 -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
                                                 -NUM_THREADS_FOR_EVALUATION $curr_threads \
