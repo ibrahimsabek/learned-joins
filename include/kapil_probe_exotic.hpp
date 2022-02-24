@@ -12,7 +12,9 @@
 #include <utility>
 
 #include "convenience/builtins.hpp"
-#include "include/support/support.hpp"
+#include "support.hpp"
+
+using namespace learned_imv_joins;
 
 template <class Key, class Payload, size_t BucketSize,
            class MMPHF,

@@ -12,9 +12,9 @@
 #include <utility>
 
 #include "convenience/builtins.hpp"
-#include "include/support/support.hpp"
+#include "support.hpp"
 
-using namespace exotic_hashing;
+using namespace learned_imv_joins;
 
 template <class Key, class Payload, size_t BucketSize, size_t OverAlloc,
           class HashFn,
