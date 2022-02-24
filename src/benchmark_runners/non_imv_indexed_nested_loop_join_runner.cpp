@@ -46,6 +46,32 @@ using namespace chrono;
 #define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
 #define SINGLE_TUPLE_PER_BUCKET
 
+#ifdef INLJ_WITH_HASH_INDEX
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+        #include <algorithm>
+        //#include <cstdint>
+        //#include <cstring>
+        #include <hashing.hpp>
+        #include <hashtable.hpp>
+        //#include <iostream>
+        #include <iterator>
+        #include <learned_hashing.hpp>
+        #include <limits>
+        //#include <masters_thesis.hpp>
+        //#include <ostream>
+        //#include <random>
+        //#include <stdexcept>
+        //#include <string>
+        #include <type_traits>
+        #include <utility>
+        #include <vector>
+
+        #include "include/convenience/builtins.hpp"
+        #include "include/mmphf/rank_hash.hpp"
+        #include "include/rmi.hpp"
+    #endif
+#endif
+
 #ifdef INLJ_WITH_LEARNED_INDEX
 #include "rmi/all_rmis.h"
 using namespace INLJ_RMI_NAMESPACE;
@@ -100,7 +126,7 @@ volatile static struct Fun1 {
 
 #ifdef INLJ_WITH_HASH_INDEX
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-    //TODO
+        //NOTHING
     #else
     Hashtable<KeyType, PayloadType> * ht;
     #endif
@@ -110,13 +136,9 @@ volatile static struct Fun1 {
 #ifdef INLJ_WITH_HASH_INDEX
 void inlj_with_hash_build_rel_r_partition(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r)
 {
-
 #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-
-    //TODO
-
+    //NOTHING
 #else
-
         Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->ht;  
         BucketBuffer<KeyType, PayloadType>** overflowbuf = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_input)->overflowbuf;
 
@@ -191,10 +213,26 @@ void inlj_with_hash_build_rel_r_partition(IndexedNestedLoopJoinBuild<KeyType, Pa
 #ifdef INLJ_WITH_HASH_INDEX
 uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * rel_s_partition, IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_output)
 {
-
 #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-        //TODO
-        return 0;
+        uint64_t i;
+        uint64_t matches = 0; 
+        KeyType keyForSearch;
+    
+    #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+        KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = (KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> *) build_output->ht;
+
+        for (i = 0; i < rel_s_partition->num_tuples; i++)
+        {
+            keyForSearch = rel_s_partition->tuples[i].key; 
+            const auto searched = keyForSearch;
+
+            // Lower bound lookup
+            auto it = ht->operator[](searched);  
+            matches += it.key();  
+        }
+    #endif
+
+        return matches;
 #else
         Hashtable<KeyType, PayloadType>* ht = ((IndexedNestedLoopJoinBuild<KeyType, PayloadType> *)build_output)->ht;  
         
@@ -552,9 +590,8 @@ void * inlj_join_thread(void * param)
     
 #ifdef INLJ_WITH_HASH_INDEX
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            //TODO
+            //NOTHING
     #else
-
         BucketBuffer<KeyType, PayloadType> * overflowbuf; // allocate overflow buffer for each thread
 
         #if INPUT_HASH_TABLE_SIZE       
@@ -569,7 +606,11 @@ void * inlj_join_thread(void * param)
         inlj_pf_num = 0;
 #ifdef INLJ_WITH_HASH_INDEX   
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            //TODO
+        #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chained_tradtional");
+        #endif
+
+            inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
     #else
             strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
             inlj_pfun[inlj_pf_num].fun_ptr = inlj_with_hash_build_rel_r_partition;
@@ -642,6 +683,11 @@ void * inlj_join_thread(void * param)
     build_data.sorted_relation_r_gapped_keys_only_size = args->sorted_relation_r_gapped_keys_only_size;
 #endif
 
+#ifdef INLJ_WITH_HASH_INDEX   
+    #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+    build_data.ht = args->ht;
+    #endif
+#endif
 #ifdef INLJ_WITH_CSS_TREE_INDEX        
     build_data.tree = args->tree;
 #endif
@@ -663,7 +709,7 @@ void * inlj_join_thread(void * param)
 
         #ifdef  INLJ_WITH_HASH_INDEX
             #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            //TODO
+            //NOTHING
             #else
                 init_bucket_buffer(&overflowbuf);
                 if(args->tid == 0)
@@ -675,7 +721,7 @@ void * inlj_join_thread(void * param)
 
         #ifdef INLJ_WITH_HASH_INDEX    
             #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            //TODO
+            //NOTHING
             #else
                 args->ht = ht;
                 build_data.ht = ht;
@@ -705,7 +751,7 @@ void * inlj_join_thread(void * param)
             }  
 
         #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-        //TODO
+        //NOTHING
         #else
             #if INLJ_MORSE_SIZE
                 morse_driven(param, inlj_pfun[fid].fun_ptr, &overflowbuf);
@@ -741,7 +787,7 @@ void * inlj_join_thread(void * param)
             
             #ifdef INLJ_WITH_HASH_INDEX  
                 #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-                //TODO
+                //NOTHING
                 #else
                     if(args->tid == 0)
                             destroy_hashtable(args->ht);
@@ -848,7 +894,7 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
                                  Relation<KeyType, PayloadType> * rel_s,
                         #ifdef INLJ_WITH_HASH_INDEX 
                             #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-                            //TODO
+                                void* ht,
                             #else
                                 Hashtable<KeyType, PayloadType> * ht,
                             #endif         
@@ -907,7 +953,7 @@ void initialize_inlj_join_thread_args(Relation<KeyType, PayloadType> * rel_r,
         (*(args + i)).tid = i;
     #ifdef INLJ_WITH_HASH_INDEX
         #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-        //TODO
+            (*(args + i)).ht = ht;
         #else
             (*(args + i)).ht = ht;
         #endif 
@@ -1141,7 +1187,15 @@ int main(int argc, char **argv)
 
 #ifdef INLJ_WITH_HASH_INDEX
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-    //TODO
+        std::vector<std::pair<KeyType, PayloadType>> ht_data{};
+        ht_data.reserve(rel_r.num_tuples);
+        {
+            for(int j = 0; j < rel_r.num_tuples; j++)
+                ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
+        }
+        #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+            KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
+        #endif
     #else
         #if INPUT_HASH_TABLE_SIZE       
             uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
@@ -1446,7 +1500,7 @@ int main(int argc, char **argv)
     initialize_inlj_join_thread_args(&rel_r, &rel_s, 
                                 #ifdef INLJ_WITH_HASH_INDEX
                                     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-                                    //TODO
+                                        ht
                                     #else
                                         ht,
                                     #endif 

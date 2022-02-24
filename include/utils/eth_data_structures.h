@@ -11,6 +11,15 @@
 #include "utils/eth_generic_task_queue.h"
 #include "utils/learned_sort_for_sort_merge.h"
 
+ #ifdef INLJ_WITH_HASH_INDEX
+        #ifdef HASH_SCHEME_AND_FUNCTION_MODE
+            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+                #include "include/kapil_chained.hpp"
+            #endif
+                //TODO
+        #endif
+    #endif
+
 #ifdef INLJ_WITH_CSS_TREE_INDEX
 #include "utils/CC_CSSTree.h"
 #endif
@@ -400,10 +409,7 @@ struct IndexedNestedLoopJoinThread
 
     #ifdef INLJ_WITH_HASH_INDEX
         #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
-                //TODO
-            #endif
-                //TODO
+            void* ht;
         #else
             Hashtable<KeyType, PayloadType> *  ht;
         #endif
@@ -476,10 +482,7 @@ template<typename KeyType, typename PayloadType>
 struct IndexedNestedLoopJoinBuild {
 #ifdef INLJ_WITH_HASH_INDEX
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
-                //TODO
-            #endif
-                //TODO
+        void* ht;
     #else
         Hashtable<KeyType, PayloadType> * ht;
         BucketBuffer<KeyType, PayloadType> ** overflowbuf;
