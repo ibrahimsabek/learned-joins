@@ -32,7 +32,7 @@ class MonotoneHashtable {
     }
 
     void insert(const Key& key, const Payload& payload,
-                support::Tape<Bucket>& tape) {
+                learned_imv_joins::support::Tape<Bucket>& tape) {
       Bucket* previous = this;
 
       for (Bucket* current = previous; current != nullptr;
@@ -65,7 +65,7 @@ class MonotoneHashtable {
   Model model;
 
   /// allocator for buckets
-  std::unique_ptr<support::Tape<Bucket>> tape;
+  std::unique_ptr<learned_imv_joins::support::Tape<Bucket>> tape;
 
   /**
    * Inserts a given (key,payload) tuple into the hashtable.
@@ -90,7 +90,7 @@ class MonotoneHashtable {
    */
   MonotoneHashtable(std::vector<std::pair<Key, Payload>> data)
       : buckets(1 + data.size() / BucketSize),
-        tape(std::make_unique<support::Tape<Bucket>>()) {
+        tape(std::make_unique<learned_imv_joins::support::Tape<Bucket>>()) {
     // ensure data is sorted
     std::sort(data.begin(), data.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });

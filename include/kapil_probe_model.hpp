@@ -38,7 +38,7 @@ class KapilLinearModelHashTable {
 
 
     bool insert(const Key& key, const Payload& payload,
-                support::Tape<Bucket>& tape) {
+                learned_imv_joins::support::Tape<Bucket>& tape) {
       Bucket* current = this;
 
       for (size_t i = 0; i < BucketSize; i++) {
@@ -80,7 +80,7 @@ class KapilLinearModelHashTable {
 //   Model model;
 
   /// allocator for buckets
-  std::unique_ptr<support::Tape<Bucket>> tape;
+  std::unique_ptr<learned_imv_joins::support::Tape<Bucket>> tape;
 
   /**
    * Inserts a given (key,payload) tuple into the hashtable.
@@ -126,7 +126,7 @@ class KapilLinearModelHashTable {
    */
   KapilLinearModelHashTable(std::vector<std::pair<Key, Payload>> data)
       : buckets((1 + data.size()*(1.00+(OverAlloc/100.00))) / BucketSize),
-        tape(std::make_unique<support::Tape<Bucket>>()) {
+        tape(std::make_unique<learned_imv_joins::support::Tape<Bucket>>()) {
     // ensure data is sorted
     std::sort(data.begin(), data.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
