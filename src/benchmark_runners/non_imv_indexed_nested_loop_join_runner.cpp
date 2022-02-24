@@ -46,7 +46,7 @@ using namespace chrono;
 #define PREFETCH_SLOPES_AND_INTERCEPTS_MAJOR_BCKTS_UNIQUE_KEYS
 #define SINGLE_TUPLE_PER_BUCKET
 
-#ifdef INLJ_WITH_HASH_INDEX
+/*#ifdef INLJ_WITH_HASH_INDEX
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
         #include <algorithm>
         //#include <cstdint>
@@ -66,11 +66,11 @@ using namespace chrono;
         #include <utility>
         #include <vector>
 
-        #include "include/convenience/builtins.hpp"
-        #include "include/mmphf/rank_hash.hpp"
-        #include "include/rmi.hpp"
+        #include "convenience/builtins.hpp"
+        #include "mmphf/rank_hash.hpp"
+        #include "rmi.hpp"
     #endif
-#endif
+#endif*/
 
 #ifdef INLJ_WITH_LEARNED_INDEX
 #include "rmi/all_rmis.h"

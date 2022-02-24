@@ -691,7 +691,29 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'#define INLJ_WITH_CUCKOO_HASH_INDEX '$INLJ_WITH_CUCKOO_HASH_INDEX; echo -n $'\n\n';
         fi
 
-        if [ "$HASH_SCHEME_AND_FUNCTION_MODE" != 0 ]; then
+        ##include <cstdint>
+        ##include <cstring>
+        ##include <iostream>
+        ##include <masters_thesis.hpp>
+        ##include <ostream>
+        ##include <random>
+        ##include <stdexcept>
+        ##include <string>
+     
+        if [ "$HASH_SCHEME_AND_FUNCTION_MODE" != 0 ]; then 
+             echo -n $'#include <algorithm>'; echo -n $'\n\n';
+             echo -n $'#include <hashing.hpp>'; echo -n $'\n\n';
+             echo -n $'#include <hashtable.hpp>'; echo -n $'\n\n';
+             echo -n $'#include <iterator>'; echo -n $'\n\n';
+             echo -n $'#include <learned_hashing.hpp>'; echo -n $'\n\n';
+             echo -n $'#include <limits>'; echo -n $'\n\n';
+             echo -n $'#include <type_traits>'; echo -n $'\n\n';
+             echo -n $'#include <utility>'; echo -n $'\n\n';
+             echo -n $'#include <vector>'; echo -n $'\n\n';
+             echo -n $'#include "convenience/builtins.hpp"'; echo -n $'\n\n';
+             echo -n $'#include "mmphf/rank_hash.hpp"'; echo -n $'\n\n';
+             echo -n $'#include "rmi.hpp"'; echo -n $'\n\n';
+
              echo -n $'using MURMUR = hashing::MurmurFinalizer<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
 
              echo -n $'using RadixSplineHash = learned_hashing::RadixSplineHash<RELATION_KEY_TYPE,18,1024>;'; echo -n $'\n\n';
