@@ -19,7 +19,7 @@
 #include <utility>
 
 #include "convenience/builtins.hpp"
-#include "support.hpp"
+#include "include/support.hpp"
 
 template <class Key, class Payload, size_t BucketSize,
           class MMPHF,

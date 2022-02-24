@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "convenience/builtins.hpp"
-#include "support.hpp"
+#include "include/support.hpp"
 
 template <class Key, class Payload, size_t BucketSize, size_t OverAlloc,
           class Model = learned_hashing::MonotoneRMIHash<Key, 1000000>,
