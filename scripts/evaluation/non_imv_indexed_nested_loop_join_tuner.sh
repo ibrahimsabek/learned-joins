@@ -746,7 +746,8 @@ r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 input_hash_table_size=(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 hash_scheme_and_function_mode=(0)
-hash_fun=(MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURhash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
+hash_fun=(MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR)
+hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash)
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_books_200M_uint32/
