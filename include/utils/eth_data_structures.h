@@ -19,6 +19,9 @@
             #ifdef CHAINLINEARMODEL
                 #include "kapil_chained_model.hpp"
             #endif
+            #ifdef CHAINEXOTIC
+                #include "kapil_chained_exotic.hpp"
+            #endif            
             #ifdef PROBETRADITIONAL
                 #include "kapil_probe.hpp"
             #endif

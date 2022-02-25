@@ -115,7 +115,7 @@ INLJ_WITH_CSS_TREE_INDEX=0
 INLJ_WITH_ART32_TREE_INDEX=0
 INLJ_WITH_CUCKOO_HASH_INDEX=0
 INLJ_WITH_ART64_TREE_INDEX=0
-HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL PROBETRADITIONAL PROBELINEARMODEL CUCKOOTRADITIONAL CUCKOOLINEARMODEL
+HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL CHAINEXOTIC PROBETRADITIONAL PROBELINEARMODEL CUCKOOTRADITIONAL CUCKOOLINEARMODEL
 HASH_FUN=MURMUR #MURMUR XXHASH3 AQUA MULTPRIME
 HASH_OVERALLOC=10
 HASH_LEARNED_MODEL=RadixSplineHash
@@ -728,6 +728,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'using RMIHash = learned_hashing::RMIHash<RELATION_KEY_TYPE,80000000>;'; echo -n $'\n\n'; #1000000(fb,wiki) 20000000(fb,wiki) 80million(osm)
              echo -n $'using PGMHash = learned_hashing::PGMHash<RELATION_KEY_TYPE,4,1>;'; echo -n $'\n\n';
 
+             echo -n $'using MWHC = exotic_hashing::MWHC<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
+
              #echo -n $'using KICKINGSTART = KapilBalancedKicking;'; echo -n $'\n\n';
              #echo -n $'using KICKINGSTART1 = KapilModelBalancedKicking;'; echo -n $'\n\n';
 
@@ -738,6 +740,9 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CHAINLINEARMODEL ]; then
                 echo -n $'#define CHAINLINEARMODEL'; echo -n $'\n\n';
              fi
+             if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CHAINEXOTIC ]; then
+                echo -n $'#define CHAINEXOTIC'; echo -n $'\n\n';
+             fi             
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = PROBETRADITIONAL ]; then
                 echo -n $'#define PROBETRADITIONAL'; echo -n $'\n\n';
              fi             

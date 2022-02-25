@@ -224,6 +224,9 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
     #ifdef CHAINLINEARMODEL           
         KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = (KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> *) build_output->ht;
     #endif
+    #ifdef CHAINEXOTIC           
+        KapilChainedExoticHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_FUN> * ht = (KapilChainedExoticHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_FUN> *) build_output->ht;
+    #endif    
     #ifdef PROBETRADITIONAL
         KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = (KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> *) build_output->ht;
     #endif
@@ -647,6 +650,9 @@ void * inlj_join_thread(void * param)
         #endif
         #ifdef CHAINLINEARMODEL           
             strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chain_linearmodel");
+        #endif
+        #ifdef CHAINEXOTIC           
+            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chain_exotic");
         #endif
         #ifdef PROBETRADITIONAL
             strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Probe_tradtional");
@@ -1252,6 +1258,9 @@ int main(int argc, char **argv)
         #ifdef CHAINLINEARMODEL           
             KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = new KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL>(ht_data);
         #endif        
+        #ifdef CHAINEXOTIC           
+            KapilChainedExoticHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_FUN> * ht = new KapilChainedExoticHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_FUN>(ht_data);
+        #endif
         #ifdef PROBETRADITIONAL
             KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
         #endif
