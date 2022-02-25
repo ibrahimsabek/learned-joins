@@ -232,7 +232,10 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
     #endif
     #ifdef CUCKOOTRADITIONAL
         KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking> * ht = (KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking> *) build_output->ht;
-    #endif            
+    #endif 
+    #ifdef CUCKOOLINEARMODEL
+        KapilCuckooModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL, MURMUR, KapilModelBalancedKicking> * ht = (KapilCuckooModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL, MURMUR, KapilModelBalancedKicking> *) build_output->ht;
+    #endif                
         for (i = 0; i < rel_s_partition->num_tuples; i++)
         {
             keyForSearch = rel_s_partition->tuples[i].key; 
@@ -245,10 +248,15 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             if(searched != 4294967295){
             #ifdef CUCKOOTRADITIONAL
                 auto it = ht->lookup(searched);  
-                matches += (it.has_value())? 1:0;
+                matches += (it.has_value())? 1:0;                
             #else
-                auto it = ht->operator[](searched);
-                matches += (keyForSearch == it.key())? 1:0;
+                #ifdef CUCKOOLINEARMODEL
+                    auto it = ht->lookup(searched);  
+                    matches += (it.has_value())? 1:0;
+                #else
+                    auto it = ht->operator[](searched);
+                    matches += (keyForSearch == it.key())? 1:0;
+                #endif
             #endif
             }
 
@@ -648,6 +656,9 @@ void * inlj_join_thread(void * param)
         #endif        
         #ifdef CUCKOOTRADITIONAL
             strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Cuckoo_tradtional");
+        #endif
+        #ifdef CUCKOOLINEARMODEL
+            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Cuckoo_linearmodel");
         #endif
             inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
     #else
@@ -1250,7 +1261,10 @@ int main(int argc, char **argv)
         #ifdef CUCKOOTRADITIONAL
             KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking> * ht = new KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking>(ht_data);
         #endif
- 
+        #ifdef CUCKOOLINEARMODEL
+            KapilCuckooModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL, MURMUR, KapilModelBalancedKicking> * ht = new KapilCuckooModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL, MURMUR, KapilModelBalancedKicking>(ht_data);
+        #endif
+
         auto build_end_time = high_resolution_clock::now();
         uint32_t deltaT = std::chrono::duration_cast<std::chrono::microseconds>(build_end_time - build_start_time).count();
         printf("---- Build costs time (ms) = %10.4lf\n", deltaT * 1.0 / 1000);

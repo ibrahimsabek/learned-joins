@@ -28,6 +28,9 @@
             #ifdef CUCKOOTRADITIONAL
                 #include "kapil_cuckoo.hpp"
             #endif
+            #ifdef CUCKOOLINEARMODEL
+                #include "kapil_cuckoo_model.hpp"
+            #endif            
                 //TODO
         #endif
     #endif
