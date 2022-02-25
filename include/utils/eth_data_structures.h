@@ -16,6 +16,9 @@
             #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
                 #include "kapil_chained.hpp"
             #endif
+            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINLINEARMODEL
+                #include "kapil_chained_model.hpp"
+            #endif
                 //TODO
         #endif
     #endif

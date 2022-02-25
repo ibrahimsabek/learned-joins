@@ -115,7 +115,7 @@ INLJ_WITH_CSS_TREE_INDEX=0
 INLJ_WITH_ART32_TREE_INDEX=0
 INLJ_WITH_CUCKOO_HASH_INDEX=0
 INLJ_WITH_ART64_TREE_INDEX=0
-HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL
+HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL
 HASH_FUN=MURMUR #XXHASH3 AQUA MULTPRIME
 HASH_OVERALLOC=10
 HASH_LEARNED_MODEL=RadixSplineHash
@@ -725,6 +725,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'using MULTPRIME = hashing::MultPrime64;'; echo -n $'\n\n';
 
              echo -n $'using RadixSplineHash = learned_hashing::RadixSplineHash<RELATION_KEY_TYPE,18,1024>;'; echo -n $'\n\n';
+             echo -n $'using RMIHash = learned_hashing::RMIHash<RELATION_KEY_TYPE,1000000>;'; echo -n $'\n\n';
+             echo -n $'using PGMHash = learned_hashing::PGMHash<RELATION_KEY_TYPE,4,1>;'; echo -n $'\n\n';
 
              echo -n $'#define HASH_SCHEME_AND_FUNCTION_MODE '$HASH_SCHEME_AND_FUNCTION_MODE; echo -n $'\n\n';
              echo -n $'#define HASH_FUN '$HASH_FUN; echo -n $'\n\n';
