@@ -1210,7 +1210,7 @@ int main(int argc, char **argv)
             for(int j = 0; j < rel_r.num_tuples; j++){
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
                 
-                if(rel_r.tuples[j].key == 1270693617)
+                if(rel_r.tuples[j].key == 4294967295)
                     printf("the required key \n");
                 
             }
