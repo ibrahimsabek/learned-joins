@@ -497,10 +497,10 @@ s_datasets_sizes=(640E6 640E6 640E6 640E6 640E6 640E6) #(16E6 32E6 128E6 384E6 6
 r_datasets_file_num_partitions=(32 32 32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 s_datasets_file_num_partitions=(32 32 32 32 32 32) #(64 64 64 64 64 64 64 64 64)
 input_hash_table_size=(213333333 213333333 213333333 213333333 213333333 213333333) #(536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
-hash_scheme_and_function_mode=(CHAINLINEARMODEL CHAINLINEARMODEL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(0)
-hash_fun=(XXHASH3 XXHASH3 XXHASH3 MURMUR AQUA MULTPRIME MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR)
+hash_scheme_and_function_mode=(CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINLINEARMODEL CHAINLINEARMODEL) #(0)
+hash_fun=(XXHASH3 MURMUR AQUA MULTPRIME XXHASH3 XXHASH3 MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR MURMUR)
 hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
-hash_learned_model=(RMIHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash)
+hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RMIHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash)
 
 output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_with_chasing_counter/
