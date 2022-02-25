@@ -232,8 +232,8 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
                 matches += (keyForSearch == it.key())? 1:0;
 
             //if (i % 100000 == 0)
-            if (i > 2900000){
-                if (i % 1000 == 0)
+            if (i > 2953000){
+                //if (i % 1000 == 0)
                     printf("table size in bytes %ld here inside looping %ld key %ld found %ld with payload %ld  matches %ld\n", ht->directory_byte_size(), i, keyForSearch, it.key(), it.payload(), matches);
             }
             //}
