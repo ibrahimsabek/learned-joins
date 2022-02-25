@@ -13,10 +13,10 @@
 
  #ifdef INLJ_WITH_HASH_INDEX
         #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+            #ifdef CHAINTRADITIONAL
                 #include "kapil_chained.hpp"
             #endif
-            #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINLINEARMODEL
+            #ifdef CHAINLINEARMODEL
                 #include "kapil_chained_model.hpp"
             #endif
                 //TODO

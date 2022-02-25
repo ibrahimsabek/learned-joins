@@ -218,11 +218,11 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
         uint64_t matches = 0; 
         KeyType keyForSearch;
     
-    #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+    #ifdef CHAINTRADITIONAL
         KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = (KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> *) build_output->ht;
         printf("here1 \n");
     #endif
-    #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINLINEARMODEL           
+    #ifdef CHAINLINEARMODEL           
         KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = (KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> *) build_output->ht;
         printf("here2 \n");    
     #endif    
@@ -622,10 +622,10 @@ void * inlj_join_thread(void * param)
         inlj_pf_num = 0;
 #ifdef INLJ_WITH_HASH_INDEX   
     #ifdef HASH_SCHEME_AND_FUNCTION_MODE
-        #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+        #ifdef CHAINTRADITIONAL
             strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chain_tradtional");
         #endif
-        #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINLINEARMODEL           
+        #ifdef CHAINLINEARMODEL           
             strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Chain_linearmodel");
         #endif
 
@@ -1215,10 +1215,10 @@ int main(int argc, char **argv)
         }
 
         auto build_start_time = high_resolution_clock::now();
-        #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
+        #ifdef CHAINTRADITIONAL
             KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
         #endif
-        #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINLINEARMODEL           
+        #ifdef CHAINLINEARMODEL           
             KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = new KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL>(ht_data);
         #endif        
         auto build_end_time = high_resolution_clock::now();
