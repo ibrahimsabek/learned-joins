@@ -1204,8 +1204,13 @@ int main(int argc, char **argv)
         std::vector<std::pair<KeyType, PayloadType>> ht_data{};
         ht_data.reserve(rel_r.num_tuples);
         {
-            for(int j = 0; j < rel_r.num_tuples; j++)
+            for(int j = 0; j < rel_r.num_tuples; j++){
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
+                
+                if(rel_r.tuples[j].key == 1270693617)
+                    printf("the required key \n");
+                
+            }
         }
         #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
             KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
