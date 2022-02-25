@@ -1225,7 +1225,7 @@ int main(int argc, char **argv)
             KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = new KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL>(ht_data);
         #endif        
         #ifdef PROBETRADITIONAL
-            KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
+            KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
         #endif
         auto build_end_time = high_resolution_clock::now();
         uint32_t deltaT = std::chrono::duration_cast<std::chrono::microseconds>(build_end_time - build_start_time).count();
