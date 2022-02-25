@@ -225,8 +225,8 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             keyForSearch = rel_s_partition->tuples[i].key; 
             const auto searched = keyForSearch;
 
-            if(i == 2953810)
-                printf("key %ld \n", keyForSearch);
+            //if(i == 2953810)
+            //    printf("key %ld \n", keyForSearch);
 
             // Lower bound lookup
             //try
@@ -1210,8 +1210,8 @@ int main(int argc, char **argv)
             for(int j = 0; j < rel_r.num_tuples; j++){
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
                 
-                if(rel_r.tuples[j].key == 4294967295)
-                    printf("the required key \n");
+                //if(rel_r.tuples[j].key == 4294967295)
+                //    printf("the required key \n");
                 
             }
         }

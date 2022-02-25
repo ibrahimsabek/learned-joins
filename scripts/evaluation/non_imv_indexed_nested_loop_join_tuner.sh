@@ -154,6 +154,8 @@ process_non_imv_indexed_nested_loop_join()
                                                     -INLJ_RMI_DATA_PATH '"'/spinning/sabek/rmi_data'"' \
                                                     -INLJ_RMI_NAMESPACE ${curr_rmi_model} \
                                                     -NUM_THREADS_FOR_EVALUATION $curr_threads \
+                                                    -RELATION_KEY_TYPE uint64 \
+                                                    -RELATION_PAYLOAD_TYPE uint64 \
                                                     -RELATION_R_PATH $curr_r_dataset \
                                                     -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                     -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
