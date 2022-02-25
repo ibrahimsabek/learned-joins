@@ -116,7 +116,7 @@ INLJ_WITH_ART32_TREE_INDEX=0
 INLJ_WITH_CUCKOO_HASH_INDEX=0
 INLJ_WITH_ART64_TREE_INDEX=0
 HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL
-HASH_FUN=MURMUR
+HASH_FUN=MURMUR #XXHASH3 AQUA MULTPRIME
 HASH_OVERALLOC=10
 HASH_LEARNED_MODEL=RadixSplineHash
 INLJ_RMI_DATA_PATH='"'/spinning/sabek/rmi_data'"'
@@ -720,6 +720,9 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
             # echo -n $'using namespace exotic_hashing::support;'; echo -n $'\n\n';
 
              echo -n $'using MURMUR = hashing::MurmurFinalizer<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
+             echo -n $'using XXHASH3 = hashing::XXHash3<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
+             echo -n $'using AQUA = hashing::AquaHash<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
+             echo -n $'using MULTPRIME = hashing::MultPrime64;'; echo -n $'\n\n';
 
              echo -n $'using RadixSplineHash = learned_hashing::RadixSplineHash<RELATION_KEY_TYPE,18,1024>;'; echo -n $'\n\n';
 

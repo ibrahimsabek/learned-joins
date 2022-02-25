@@ -229,8 +229,6 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             //    printf("key %ld \n", keyForSearch);
 
             // Lower bound lookup
-            //try
-            //{
             if(searched != 4294967295){
                 auto it = ht->operator[](searched);  
                 matches += (keyForSearch == it.key())? 1:0;
@@ -241,11 +239,6 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
                 //if (i % 1000 == 0)
             //        printf("table size in bytes %ld here inside looping %ld key %ld found %ld with payload %ld  matches %ld\n", ht->directory_byte_size(), i, keyForSearch, it.key(), it.payload(), matches);
             //}
-            //}
-            //catch (std::exception& e)
-            //{
-            //    cout << "An exception occurred. Exception Nr. " << e.what() << "at key index " << i << '\n';
-            //}  
         }
         printf("matches %ld \n", matches);
 
@@ -1211,15 +1204,17 @@ int main(int argc, char **argv)
         {
             for(int j = 0; j < rel_r.num_tuples; j++){
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
-                
-                //if(rel_r.tuples[j].key == 4294967295)
-                //    printf("the required key \n");
-                
             }
         }
+
+        auto build_start_time = high_resolution_clock::now();
         #if HASH_SCHEME_AND_FUNCTION_MODE == CHAINTRADITIONAL
             KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
         #endif
+        auto build_end_time = high_resolution_clock::now();
+        uint32_t deltaT = std::chrono::duration_cast<std::chrono::microseconds>(build_end_time - build_start_time).count();
+        printf("---- Build costs time (ms) = %10.4lf\n", deltaT * 1.0 / 1000);
+
     #else
         #if INPUT_HASH_TABLE_SIZE       
             uint32_t nbuckets = INPUT_HASH_TABLE_SIZE;
