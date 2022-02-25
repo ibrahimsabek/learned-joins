@@ -19,6 +19,9 @@
             #ifdef CHAINLINEARMODEL
                 #include "kapil_chained_model.hpp"
             #endif
+            #ifdef PROBERADITIONAL
+                #include "kapil_probe.hpp"
+            #endif
                 //TODO
         #endif
     #endif
