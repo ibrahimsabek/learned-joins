@@ -231,7 +231,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
         KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = (KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> *) build_output->ht;
     #endif
     #ifdef CUCKOOTRADITIONAL
-        KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KICKINGSTART> * ht = (KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KICKINGSTART> *) build_output->ht;
+        KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking> * ht = (KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking> *) build_output->ht;
     #endif            
         for (i = 0; i < rel_s_partition->num_tuples; i++)
         {
@@ -1243,7 +1243,7 @@ int main(int argc, char **argv)
             KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = new KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL>(ht_data);
         #endif        
         #ifdef CUCKOOTRADITIONAL
-            KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KICKINGSTART> * ht = new KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KICKINGSTART>(ht_data);
+            KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking> * ht = new KapilCuckooHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN, MURMUR, KapilBalancedKicking>(ht_data);
         #endif
  
         auto build_end_time = high_resolution_clock::now();
