@@ -245,10 +245,11 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             if(searched != 4294967295){
             #ifdef CUCKOOTRADITIONAL
                 auto it = ht->lookup(searched);  
+                matches += (o.has_value())? 1:0;
             #else
                 auto it = ht->operator[](searched);
-            #endif
                 matches += (keyForSearch == it.key())? 1:0;
+            #endif
             }
 
             //if (i % 100000 == 0)
