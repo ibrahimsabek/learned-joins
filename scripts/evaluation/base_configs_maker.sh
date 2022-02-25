@@ -728,8 +728,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'using RMIHash = learned_hashing::RMIHash<RELATION_KEY_TYPE,80000000>;'; echo -n $'\n\n'; #1000000(fb,wiki) 20000000(fb,wiki) 80million(osm)
              echo -n $'using PGMHash = learned_hashing::PGMHash<RELATION_KEY_TYPE,4,1>;'; echo -n $'\n\n';
 
-             echo -n $'using KICKINGSTART = KapilBalancedKicking;'; echo -n $'\n\n';
-             echo -n $'using KICKINGSTART1 = KapilModelBalancedKicking;'; echo -n $'\n\n';
+             #echo -n $'using KICKINGSTART = KapilBalancedKicking;'; echo -n $'\n\n';
+             #echo -n $'using KICKINGSTART1 = KapilModelBalancedKicking;'; echo -n $'\n\n';
 
              echo -n $'#define HASH_SCHEME_AND_FUNCTION_MODE '$HASH_SCHEME_AND_FUNCTION_MODE; echo -n $'\n\n';
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CHAINTRADITIONAL ]; then
