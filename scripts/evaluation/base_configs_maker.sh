@@ -115,8 +115,8 @@ INLJ_WITH_CSS_TREE_INDEX=0
 INLJ_WITH_ART32_TREE_INDEX=0
 INLJ_WITH_CUCKOO_HASH_INDEX=0
 INLJ_WITH_ART64_TREE_INDEX=0
-HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL PROBETRADITIONAL PROBELINEARMODEL
-HASH_FUN=MURMUR #XXHASH3 AQUA MULTPRIME
+HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL PROBETRADITIONAL PROBELINEARMODEL CUCKOOTRADITIONAL
+HASH_FUN=MURMUR #MURMUR XXHASH3 AQUA MULTPRIME
 HASH_OVERALLOC=10
 HASH_LEARNED_MODEL=RadixSplineHash
 INLJ_RMI_DATA_PATH='"'/spinning/sabek/rmi_data'"'
@@ -728,6 +728,9 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'using RMIHash = learned_hashing::RMIHash<RELATION_KEY_TYPE,80000000>;'; echo -n $'\n\n'; #1000000(fb,wiki) 20000000(fb,wiki) 80million(osm)
              echo -n $'using PGMHash = learned_hashing::PGMHash<RELATION_KEY_TYPE,4,1>;'; echo -n $'\n\n';
 
+             echo -n $'using KICKINGSTART = KapilBalancedKicking;'; echo -n $'\n\n';
+             echo -n $'using KICKINGSTART1 = KapilModelBalancedKicking;'; echo -n $'\n\n';
+
              echo -n $'#define HASH_SCHEME_AND_FUNCTION_MODE '$HASH_SCHEME_AND_FUNCTION_MODE; echo -n $'\n\n';
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CHAINTRADITIONAL ]; then
                 echo -n $'#define CHAINTRADITIONAL'; echo -n $'\n\n';
@@ -741,6 +744,10 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = PROBELINEARMODEL ]; then
                 echo -n $'#define PROBELINEARMODEL'; echo -n $'\n\n';
              fi
+             if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CUCKOOTRADITIONAL ]; then
+                echo -n $'#define CUCKOOTRADITIONAL'; echo -n $'\n\n';
+             fi
+
              echo -n $'#define HASH_FUN '$HASH_FUN; echo -n $'\n\n';
              echo -n $'#define HASH_OVERALLOC '$HASH_OVERALLOC; echo -n $'\n\n';
              echo -n $'#define HASH_LEARNED_MODEL '$HASH_LEARNED_MODEL; echo -n $'\n\n';             

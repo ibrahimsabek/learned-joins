@@ -20,7 +20,6 @@
 
 #include "convenience/builtins.hpp"
 
-namespace kapilhashtable {
    /**
     * Place entry in bucket with more available space.
     * If both are full, kick from either bucket with 50% chance
@@ -489,4 +488,3 @@ namespace kapilhashtable {
    //         }
    //      }
    //   };
-} // namespace hashtable

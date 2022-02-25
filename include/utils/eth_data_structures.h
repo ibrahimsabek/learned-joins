@@ -24,7 +24,10 @@
             #endif
             #ifdef PROBELINEARMODEL
                 #include "kapil_probe_model.hpp"
-            #endif            
+            #endif
+            #ifdef CUCKOOTRADITIONAL
+                #include "kapil_cuckoo.hpp"
+            #endif
                 //TODO
         #endif
     #endif
