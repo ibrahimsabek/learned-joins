@@ -243,7 +243,11 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
 
             // Lower bound lookup
             if(searched != 4294967295){
-                auto it = ht->operator[](searched);  
+            #ifdef CUCKOOTRADITIONAL
+                auto it = ht->lookup(searched);  
+            #else
+                auto it = ht->operator[](searched);
+            #endif
                 matches += (keyForSearch == it.key())? 1:0;
             }
 
