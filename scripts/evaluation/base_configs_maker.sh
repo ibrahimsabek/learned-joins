@@ -730,10 +730,10 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
 
              echo -n $'#define HASH_SCHEME_AND_FUNCTION_MODE '$HASH_SCHEME_AND_FUNCTION_MODE; echo -n $'\n\n';
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CHAINTRADITIONAL ]; then
-                echo -n $'#define CHAINTRADITIONAL ' echo -n $'\n\n';
+                echo -n $'#define CHAINTRADITIONAL'; echo -n $'\n\n';
              fi
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = CHAINLINEARMODEL ]; then
-                echo -n $'#define CHAINTRADITIONAL ' echo -n $'\n\n';
+                echo -n $'#define CHAINLINEARMODEL'; echo -n $'\n\n';
              fi
              echo -n $'#define HASH_FUN '$HASH_FUN; echo -n $'\n\n';
              echo -n $'#define HASH_OVERALLOC '$HASH_OVERALLOC; echo -n $'\n\n';
