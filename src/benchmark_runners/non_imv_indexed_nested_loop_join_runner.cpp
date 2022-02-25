@@ -220,11 +220,9 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
     
     #ifdef CHAINTRADITIONAL
         KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = (KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> *) build_output->ht;
-        printf("here1 \n");
     #endif
     #ifdef CHAINLINEARMODEL           
         KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = (KapilChainedModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> *) build_output->ht;
-        printf("here2 \n");    
     #endif    
         for (i = 0; i < rel_s_partition->num_tuples; i++)
         {
