@@ -247,7 +247,7 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             //    cout << "An exception occurred. Exception Nr. " << e.what() << "at key index " << i << '\n';
             //}  
         }
-                                printf("here inside probe after looping \n");
+        printf("matches %ld \n", matches);
 
     #endif
 
