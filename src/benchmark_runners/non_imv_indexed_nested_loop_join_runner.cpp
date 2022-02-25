@@ -226,6 +226,9 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
     #endif
     #ifdef PROBETRADITIONAL
         KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = (KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> *) build_output->ht;
+    #endif
+    #ifdef PROBELINEARMODEL           
+        KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = (KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> *) build_output->ht;
     #endif        
         for (i = 0; i < rel_s_partition->num_tuples; i++)
         {
@@ -632,6 +635,9 @@ void * inlj_join_thread(void * param)
         #ifdef PROBETRADITIONAL
             strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Probe_tradtional");
         #endif
+        #ifdef PROBELINEARMODEL           
+            strcpy(inlj_pfun1[inlj_pf_num].fun_name, "Probe_linearmodel");
+        #endif        
             inlj_pfun1[inlj_pf_num].fun_ptr = inlj_with_hash_probe_rel_s_partition;
     #else
             strcpy(inlj_pfun[inlj_pf_num].fun_name, "Hashing");
@@ -1227,6 +1233,9 @@ int main(int argc, char **argv)
         #ifdef PROBETRADITIONAL
             KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilLinearHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
         #endif
+        #ifdef PROBELINEARMODEL           
+            KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL> * ht = new KapilLinearModelHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_LEARNED_MODEL>(ht_data);
+        #endif        
         auto build_end_time = high_resolution_clock::now();
         uint32_t deltaT = std::chrono::duration_cast<std::chrono::microseconds>(build_end_time - build_start_time).count();
         printf("---- Build costs time (ms) = %10.4lf\n", deltaT * 1.0 / 1000);

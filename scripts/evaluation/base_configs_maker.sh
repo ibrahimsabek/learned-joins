@@ -115,7 +115,7 @@ INLJ_WITH_CSS_TREE_INDEX=0
 INLJ_WITH_ART32_TREE_INDEX=0
 INLJ_WITH_CUCKOO_HASH_INDEX=0
 INLJ_WITH_ART64_TREE_INDEX=0
-HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL PROBETRADITIONAL
+HASH_SCHEME_AND_FUNCTION_MODE=0 #CHAINTRADITIONAL CHAINLINEARMODEL PROBETRADITIONAL PROBELINEARMODEL
 HASH_FUN=MURMUR #XXHASH3 AQUA MULTPRIME
 HASH_OVERALLOC=10
 HASH_LEARNED_MODEL=RadixSplineHash
@@ -738,6 +738,9 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = PROBETRADITIONAL ]; then
                 echo -n $'#define PROBETRADITIONAL'; echo -n $'\n\n';
              fi             
+             if [ "$HASH_SCHEME_AND_FUNCTION_MODE" = PROBELINEARMODEL ]; then
+                echo -n $'#define PROBELINEARMODEL'; echo -n $'\n\n';
+             fi
              echo -n $'#define HASH_FUN '$HASH_FUN; echo -n $'\n\n';
              echo -n $'#define HASH_OVERALLOC '$HASH_OVERALLOC; echo -n $'\n\n';
              echo -n $'#define HASH_LEARNED_MODEL '$HASH_LEARNED_MODEL; echo -n $'\n\n';             

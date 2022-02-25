@@ -22,6 +22,9 @@
             #ifdef PROBETRADITIONAL
                 #include "kapil_probe.hpp"
             #endif
+            #ifdef PROBELINEARMODEL
+                #include "kapil_probe_model.hpp"
+            #endif            
                 //TODO
         #endif
     #endif
