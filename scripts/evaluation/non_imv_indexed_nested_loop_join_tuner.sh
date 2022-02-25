@@ -79,8 +79,8 @@ process_non_imv_indexed_nested_loop_join()
                                                 -PREFETCH_INLJ 0 \
                                                 -RUN_LEARNED_TECHNIQUES_WITH_FIRST_LEVEL_ONLY 1 \
                                                 -NUM_THREADS_FOR_EVALUATION $curr_threads \
-                                                -RELATION_KEY_TYPE uint32 \
-                                                -RELATION_PAYLOAD_TYPE uint32 \
+                                                -RELATION_KEY_TYPE uint32_t \
+                                                -RELATION_PAYLOAD_TYPE uint32_t \
                                                 -RELATION_R_PATH $curr_r_dataset \
                                                 -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                 -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
