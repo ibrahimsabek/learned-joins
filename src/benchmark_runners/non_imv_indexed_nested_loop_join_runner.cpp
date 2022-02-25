@@ -231,8 +231,10 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             // Lower bound lookup
             //try
             //{
+            if(searched != 4294967295){
                 auto it = ht->operator[](searched);  
                 matches += (keyForSearch == it.key())? 1:0;
+            }
 
             //if (i % 100000 == 0)
             //if (i > 2953000){
