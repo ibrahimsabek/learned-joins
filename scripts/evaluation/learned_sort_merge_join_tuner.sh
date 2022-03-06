@@ -140,8 +140,8 @@ process_learned_sort_merge_join()
 
                                                     make > /dev/null
 
-                                                    perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
-                                                    #./learned_imv_sort_join_runner
+                                                    #perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
+                                                    ./learned_imv_sort_join_runner
 
                                                     cd ../../scripts/evaluation/
                                             done 
@@ -253,8 +253,8 @@ process_learned_sort_merge_join()
 
                                                     make > /dev/null
 
-                                                    perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
-                                                    #./learned_imv_sort_join_runner
+                                                    #perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
+                                                    ./learned_imv_sort_join_runner
 
                                                     cd ../../scripts/evaluation/
                                             done 
