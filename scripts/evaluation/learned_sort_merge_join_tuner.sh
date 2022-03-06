@@ -21,8 +21,8 @@ process_learned_sort_merge_join()
     #LS_FOR_SORT_MERGE_DEFAULT_BATCH_SZ=10 #optional: 10 20 50 100
 
     #dataset_folder_path=/spinning/sabek/learned_join_datasets/
-    #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
-    dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
 
     #r_datasets=$1
     #r_datasets_sizes=$2
@@ -140,6 +140,7 @@ process_learned_sort_merge_join()
 
                                                     make > /dev/null
 
+                                                    #perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
                                                     ./learned_imv_sort_join_runner
 
                                                     cd ../../scripts/evaluation/
@@ -272,7 +273,7 @@ process_learned_sort_merge_join()
 
 }
 
-run_nums=5 #1 10
+run_nums=1 #1 10
 load_relations_for_evaluation=1
 persist_relations_for_evaluation=0
 
@@ -440,10 +441,10 @@ s_datasets_sizes=(200E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd_fb_200M_uint64/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
-#output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_sosd_fb_200M_uint64/
-#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd_fb_200M_uint64/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_sosd_fb_200M_uint64/
+process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
 
 
 r_datasets=(osm_cellids_800M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
