@@ -89,7 +89,8 @@ process_sort_merge_join()
 
                         make > /dev/null
 
-                        ./non_learned_non_imv_sort_join_runner
+                        perf stat -e dTLB-load-misses,iTLB-load-misses ./non_learned_non_imv_sort_join_runner > /dev/null
+                        #./non_learned_non_imv_sort_join_runner
 
                         cd ../../scripts/evaluation/
                     done    
