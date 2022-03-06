@@ -252,8 +252,8 @@ process_learned_sort_merge_join()
 
                                                     make > /dev/null
 
-                                                    perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
-                                                    #./learned_imv_sort_join_runner
+                                                    #perf stat -e dTLB-load-misses,iTLB-load-misses ./learned_imv_sort_join_runner > /dev/null
+                                                    ./learned_imv_sort_join_runner
 
                                                     cd ../../scripts/evaluation/
                                             done 
@@ -415,8 +415,8 @@ s_datasets_sizes=(200E6) #(200E6 800E6 200E6 800E6 200E6)
 r_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32) #(32 32 32 32 32)
 
-output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_200M_uint32/
-process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
+#output_folder_path=/spinning/sabek/learned_join_results/sj_with_learned_sosd_books_200M_uint32/
+#process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0
 #output_folder_path=/spinning/sabek/learned_join_results/sj_with_mpsm_sosd_books_200M_uint32/
 #process_learned_sort_merge_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1
 
