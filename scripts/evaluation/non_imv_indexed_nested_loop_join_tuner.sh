@@ -97,7 +97,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 #-CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                 #-CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
 
-                sh $(dirname "$0")/eth_configs_maker.sh   -BUCKET_SIZE 1 \ #3
+                sh $(dirname "$0")/eth_configs_maker.sh   -BUCKET_SIZE 1 \
                                                 -PREFETCH_DISTANCE 128 \
                                                 -USE_MURMUR3_HASH 1 \
                                                 -INPUT_HASH_TABLE_SIZE $curr_input_hash_table_size
