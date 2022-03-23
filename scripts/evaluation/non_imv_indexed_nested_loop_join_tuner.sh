@@ -86,8 +86,8 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
                                                 -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
                                                 -RELATION_S_PATH $curr_s_dataset \
-                                                -RELATION_KEY_TYPE uint64 \
-                                                -RELATION_PAYLOAD_TYPE uint64 \
+                                                -RELATION_KEY_TYPE uint64_t \
+                                                -RELATION_PAYLOAD_TYPE uint64_t \
                                                 -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                 -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
                                                 -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
@@ -156,8 +156,8 @@ process_non_imv_indexed_nested_loop_join()
                                                     -INLJ_RMI_DATA_PATH '"'/spinning/sabek/rmi_data'"' \
                                                     -INLJ_RMI_NAMESPACE ${curr_rmi_model} \
                                                     -NUM_THREADS_FOR_EVALUATION $curr_threads \
-                                                    -RELATION_KEY_TYPE uint64 \
-                                                    -RELATION_PAYLOAD_TYPE uint64 \
+                                                    -RELATION_KEY_TYPE uint64_t \
+                                                    -RELATION_PAYLOAD_TYPE uint64_t \
                                                     -RELATION_R_PATH $curr_r_dataset \
                                                     -RELATION_R_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                     -RELATION_R_FILE_NAME '"'${r_datasets[$ds]}'"' \
