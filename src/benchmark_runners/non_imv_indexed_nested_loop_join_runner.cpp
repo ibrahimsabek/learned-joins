@@ -250,15 +250,18 @@ uint64_t inlj_with_hash_probe_rel_s_partition(Relation<KeyType, PayloadType> * r
             // Lower bound lookup
             if(searched != 4294967295){
             #ifdef CUCKOOTRADITIONAL
-                auto it = ht->lookup(searched);  
-                matches += (it.has_value())? 1:0;                
+                /*auto it = ht->lookup(searched);  
+                matches += (it.has_value())? 1:0;*/
+                matches += (ht->lookup(searched))? 1:0;                
             #else
                 #ifdef CUCKOOLINEARMODEL
-                    auto it = ht->lookup(searched);  
-                    matches += (it.has_value())? 1:0;
+                    /*auto it = ht->lookup(searched);  
+                    matches += (it.has_value())? 1:0;*/
+                    matches += (ht->lookup(searched))? 1:0;                    
                 #else
-                    auto it = ht->operator[](searched);
-                    matches += (keyForSearch == it.key())? 1:0;
+                    /*auto it = ht->operator[](searched);
+                    matches += (keyForSearch == it.key())? 1:0;*/
+                    matches += (ht->operator[](searched))? 1:0;                    
                 #endif
             #endif
             }
