@@ -97,7 +97,7 @@ class KapilLinearHashTable {
     assert(index < buckets.size());
     auto start=index;
 
-    for(;(index-start<500);)
+    for(;(index-start<50000);)
     {
       // std::cout<<"index: "<<index<<std::endl;
       if(buckets[index%buckets.size()].insert(key, payload, *tape))
@@ -228,7 +228,7 @@ class KapilLinearHashTable {
    *
    * @param key the key to search
    */
-  forceinline Iterator operator[](const Key& key) const {
+  forceinline int operator[](const Key& key) const {
     assert(key != Sentinel);
 
     // will become NOOP at compile time if ManualPrefetch == false
@@ -245,7 +245,7 @@ class KapilLinearHashTable {
 
     // std::cout<<" key: "<<key<<std::endl;
 
-    for(;directory_ind<start+500;)
+    for(;directory_ind<start+50000;)
     {
        auto bucket = &buckets[directory_ind%buckets.size()];
 
@@ -253,13 +253,23 @@ class KapilLinearHashTable {
       // this nested loop construction anyways.
 
       // std::cout<<"probe rate: "<<directory_ind+1-start<<std::endl;
+      // bool exit=false;
         for (size_t i = 0; i < BucketSize; i++)
        {
           const auto& current_key = bucket->keys[i];
-          if (current_key == Sentinel) break;
-          if (current_key == key) return {directory_ind, i, bucket, *this};
+          if (current_key == Sentinel) {
+            return 0;
+            // return end();
+            }
+          if (current_key == key){ 
+            return 1;
+            // return {directory_ind, i, bucket, *this};
+          }
         }
-
+      // if(exit)
+      // {
+      //   break;
+      // }
       directory_ind++;  
 
       //   prefetch_next(bucket);
@@ -267,12 +277,12 @@ class KapilLinearHashTable {
     }
 
    
-   while(true)
-   {
-     std::cout<<"ERROR"<<std::endl;
-   }
-
-    return end();
+  //  while(true)
+  //  {
+  //    std::cout<<"ERROR"<<std::endl;
+  //  }
+    return 0;
+    // return end();
   }
 
   std::string name() {

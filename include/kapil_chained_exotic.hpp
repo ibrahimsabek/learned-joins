@@ -87,7 +87,7 @@ class KapilChainedExoticHashTable {
    * construction interface.
    */
   forceinline void insert(const Key& key, const Payload& payload) {
-    const auto index = mmphf(key);
+    const auto index = mmphf(key)%buckets.size(); 
     assert(index >= 0);
     assert(index < buckets.size());
     buckets[index].insert(key, payload, *tape);
@@ -216,11 +216,11 @@ class KapilChainedExoticHashTable {
     // };
 
     // obtain directory bucket
-    const size_t directory_ind = mmphf(key);
+    const size_t directory_ind = mmphf(key)%buckets.size();
     auto bucket = &buckets[directory_ind];
 
 
-    return {directory_ind, 0, bucket, *this};
+    //return {directory_ind, 0, bucket, *this};
 
     // prefetch_next(bucket);
 
@@ -293,8 +293,11 @@ class KapilChainedExoticHashTable {
     while (bucket != nullptr) {
       for (size_t i = 0; i < BucketSize; i++) {
         const auto& current_key = bucket->keys[i];
-        if (current_key == Sentinel) break;
-        if (current_key == key) return {directory_ind, i, bucket, *this};
+        if (current_key == Sentinel) return 0;
+        if (current_key == key) {
+          return 1;
+          // return {directory_ind, i, bucket, *this};
+        }
       }
 
       bucket = bucket->next;
