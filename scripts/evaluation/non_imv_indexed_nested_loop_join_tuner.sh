@@ -9,8 +9,8 @@ process_non_imv_indexed_nested_loop_join()
     css_fanouts=(33) #(10 33 40)
 
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
-    #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
-    dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
     #dataset_folder_path=/spinning/sabek/learned_hash_datasets/  #for learned hash projects only
 
     #r_datasets=$1
@@ -563,8 +563,8 @@ hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplineHash PGMHash
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal/
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal_hashbench/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal_hashbench/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_lognormal/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_lognormal/
@@ -839,8 +839,8 @@ hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplin
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64_with_chasing_counter/
-#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64_hashbench/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size 
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64_hashbench/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_fb_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_fb_200M_uint64_without_bs/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
