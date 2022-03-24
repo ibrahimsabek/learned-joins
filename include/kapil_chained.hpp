@@ -38,15 +38,15 @@ class KapilChainedHashTable {
     void insert(const Key& key, const Payload& payload,
                 learned_imv_joins::support::Tape<Bucket>& tape) {
       Bucket* previous = this;
-        std::cout<<"Inside bucket insert 0 key: "<< key << std::endl;     
+        //std::cout<<"Inside bucket insert 0 key: "<< key << std::endl;     
 
       for (Bucket* current = previous; current != nullptr;
            current = current->next) {
-        std::cout<<"Inside bucket insert 1 key: "<< key << std::endl;     
+        //std::cout<<"Inside bucket insert 1 key: "<< key << std::endl;     
         for (size_t i = 0; i < BucketSize; i++) {
-        std::cout<<"Inside bucket insert 2 key: "<< key << "current key: " << current->keys[i] << " sentinl: "<< Sentinel << std::endl;       
+        //std::cout<<"Inside bucket insert 2 key: "<< key << "current key: " << current->keys[i] << " sentinl: "<< Sentinel << std::endl;       
           if (current->keys[i] == Sentinel) {
-                  std::cout<<"Inside bucket insert 3 key: "<< key << std::endl;       
+                  //std::cout<<"Inside bucket insert 3 key: "<< key << std::endl;       
             current->keys[i] = key;
             current->payloads[i] = payload;
             return;
@@ -117,7 +117,12 @@ class KapilChainedHashTable {
     // optimizations during lookup etc & enable implementing
     // efficient iterators in the first place.
     std::cout<<"Insert start "<<std::endl;
-    for (const auto& d : data) insert(d.first, d.second);
+    for (const auto& d : data)
+    {
+      std::cout<<"d.first  "<< d.first <<  " d.second "<< d.second<<std::endl;
+      insert(d.first, d.second);
+    } 
+    
     std::cout<<"Insert end "<<std::endl;
 
   }
