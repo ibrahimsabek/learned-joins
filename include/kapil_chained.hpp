@@ -38,15 +38,10 @@ class KapilChainedHashTable {
     void insert(const Key& key, const Payload& payload,
                 learned_imv_joins::support::Tape<Bucket>& tape) {
       Bucket* previous = this;
-        //std::cout<<"Inside bucket insert 0 key: "<< key << std::endl;     
-
       for (Bucket* current = previous; current != nullptr;
            current = current->next) {
-        //std::cout<<"Inside bucket insert 1 key: "<< key << std::endl;     
         for (size_t i = 0; i < BucketSize; i++) {
-        //std::cout<<"Inside bucket insert 2 key: "<< key << "current key: " << current->keys[i] << " sentinl: "<< Sentinel << std::endl;       
           if (current->keys[i] == Sentinel) {
-                  //std::cout<<"Inside bucket insert 3 key: "<< key << std::endl;       
             current->keys[i] = key;
             current->payloads[i] = payload;
             return;
@@ -99,11 +94,7 @@ class KapilChainedHashTable {
   KapilChainedHashTable(std::vector<std::pair<Key, Payload>> data)
       : buckets((1 + data.size()*(1.00+(OverAlloc/100.00))) / BucketSize),
         tape(std::make_unique<learned_imv_joins::support::Tape<Bucket>>()) {
-          for (const auto& d : data)
-    {
-      std::cout<<"d.first  "<< d.first <<  " d.second "<< d.second<<std::endl;
-    
-    } 
+  
     // ensure data is sorted
     std::sort(data.begin(), data.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
@@ -121,15 +112,7 @@ class KapilChainedHashTable {
     // since we sorted above, this will permit further
     // optimizations during lookup etc & enable implementing
     // efficient iterators in the first place.
-    std::cout<<"Insert start "<<std::endl;
-    for (const auto& d : data)
-    {
-      //std::cout<<"d.first  "<< d.first <<  " d.second "<< d.second<<std::endl;
-      insert(d.first, d.second);
-    } 
-    
-    std::cout<<"Insert end "<<std::endl;
-
+    for (const auto& d : data) insert(d.first, d.second);
   }
 
   class Iterator {
@@ -303,14 +286,14 @@ class KapilChainedHashTable {
     // this nested loop construction anyways.
 
     // int bucket_count=1;
-    std::cout<<"Lookup start "<<std::endl;
+    //std::cout<<"Lookup start "<<std::endl;
     while (bucket != nullptr) {
       for (size_t i = 0; i < BucketSize; i++) {
         const auto& current_key = bucket->keys[i];
         if (current_key == Sentinel) break;
         if (current_key == key) {
           // std::cout<<"bucket count: "<<bucket_count<<std::endl;
-              std::cout<<"Lookup end 1"<<std::endl;
+              //std::cout<<"Lookup end 1"<<std::endl;
           return 1;
           
           // return {directory_ind, i, bucket, *this};
@@ -321,7 +304,7 @@ class KapilChainedHashTable {
     //   prefetch_next(bucket);
     }
     
-    std::cout<<"Lookup end 2"<<std::endl;
+    //std::cout<<"Lookup end 2"<<std::endl;
     // std::cout<<"bucket count: "<<bucket_count<<std::endl;
     return 0;
     // return end();
