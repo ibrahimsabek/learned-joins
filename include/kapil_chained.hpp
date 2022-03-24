@@ -112,7 +112,10 @@ class KapilChainedHashTable {
     // since we sorted above, this will permit further
     // optimizations during lookup etc & enable implementing
     // efficient iterators in the first place.
+    std::cout<<"Insert start "<<std::endl;
     for (const auto& d : data) insert(d.first, d.second);
+    std::cout<<"Insert end "<<std::endl;
+
   }
 
   class Iterator {
@@ -286,14 +289,16 @@ class KapilChainedHashTable {
     // this nested loop construction anyways.
 
     // int bucket_count=1;
-
+    std::cout<<"Lookup start "<<std::endl;
     while (bucket != nullptr) {
       for (size_t i = 0; i < BucketSize; i++) {
         const auto& current_key = bucket->keys[i];
         if (current_key == Sentinel) break;
         if (current_key == key) {
           // std::cout<<"bucket count: "<<bucket_count<<std::endl;
+              std::cout<<"Lookup end 1"<<std::endl;
           return 1;
+          
           // return {directory_ind, i, bucket, *this};
           }
       }
@@ -301,7 +306,8 @@ class KapilChainedHashTable {
       bucket = bucket->next;
     //   prefetch_next(bucket);
     }
-
+    
+    std::cout<<"Lookup end 2"<<std::endl;
     // std::cout<<"bucket count: "<<bucket_count<<std::endl;
     return 0;
     // return end();
