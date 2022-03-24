@@ -38,6 +38,7 @@ class KapilChainedHashTable {
     void insert(const Key& key, const Payload& payload,
                 learned_imv_joins::support::Tape<Bucket>& tape) {
       Bucket* previous = this;
+        std::cout<<"Inside bucket insert 0 key: "<< key << td::endl;     
 
       for (Bucket* current = previous; current != nullptr;
            current = current->next) {
