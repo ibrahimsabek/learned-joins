@@ -440,7 +440,7 @@ process_non_imv_indexed_nested_loop_join()
     fi
 }
 
-run_nums=5 #1 10
+run_nums=3 #1 5 10
 load_relations_for_evaluation=1 #0
 persist_relations_for_evaluation=0 #1
 

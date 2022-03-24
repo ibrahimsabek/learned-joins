@@ -110,6 +110,7 @@ struct StateSIMDForHashINLJ {
 volatile static char inlj_g_lock = 0, inlj_g_lock_morse = 0;
 volatile static uint64_t inlj_total_num = 0, inlj_global_curse = 0, inlj_global_morse_size;
 PerfEvents perf_event;
+uint64_t build_time = 0;
 
 typedef void (*INLJBuildFun)(IndexedNestedLoopJoinBuild<KeyType, PayloadType> *build_input, Relation<KeyType, PayloadType> * rel_r_partition, Relation<KeyType, PayloadType> * tmp_r);
 volatile static struct Fun {
@@ -866,6 +867,7 @@ void * inlj_join_thread(void * param)
     auto partition_end_time = high_resolution_clock::now();
 
     //Probe phase
+    vector<uint64_t> final_build_timings_in_ms;
     vector<uint64_t> final_probe_timings_in_ms;
     vector<uint64_t> final_probe_throughputs_mtuples_per_sec;
     vector<uint64_t> final_probe_cycles_vec;
@@ -920,6 +922,7 @@ void * inlj_join_thread(void * param)
             for(int rp = 0; rp < RUN_NUMS/2; ++rp)
                 top = curr_probe_timings_in_ms.top();
             //std::sort(curr_probe_timings_in_ms.begin(), curr_probe_timings_in_ms.end());
+            final_build_timings_in_ms.push_back(build_time);
             final_probe_timings_in_ms.push_back(top.first);
             final_probe_throughputs_mtuples_per_sec.push_back(
                 (uint64_t)(((args->original_relR->num_tuples + args->original_relS->num_tuples))/(1000.00 * top.first)));
@@ -934,7 +937,8 @@ void * inlj_join_thread(void * param)
 
     if(args->tid == 0){
         std::vector<std::pair<std::string, std::vector<uint64_t>>> final_results = 
-            {{"Join_in_ms", final_probe_timings_in_ms}, 
+            {{"Build_in_ms", final_build_timings_in_ms}, 
+             {"Join_in_ms", final_probe_timings_in_ms}, 
              {"Throughput_in_mtuples_per_sec", final_probe_throughputs_mtuples_per_sec},
              {"Cycles", final_probe_cycles_vec},
              {"LLC_misses", final_probe_llc_misses_vec},
@@ -1250,7 +1254,7 @@ int main(int argc, char **argv)
         ht_data.reserve(rel_r.num_tuples);
         {
             for(int j = 0; j < rel_r.num_tuples; j++){
-                std::cout << "rel_r.tuples[j].key " << rel_r.tuples[j].key << std::endl;    
+                //std::cout << "rel_r.tuples[j].key " << rel_r.tuples[j].key << std::endl;    
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
             }
         }
@@ -1281,6 +1285,7 @@ int main(int argc, char **argv)
         auto build_end_time = high_resolution_clock::now();
         uint32_t deltaT = std::chrono::duration_cast<std::chrono::microseconds>(build_end_time - build_start_time).count();
         printf("---- Build costs time (ms) = %10.4lf\n", deltaT * 1.0 / 1000);
+        build_time = deltaT * 1.0 / 1000;
 
     #else
         #if INPUT_HASH_TABLE_SIZE       
