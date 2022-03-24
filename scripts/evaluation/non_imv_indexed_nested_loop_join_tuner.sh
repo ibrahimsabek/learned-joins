@@ -86,8 +86,8 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
                                                 -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
                                                 -RELATION_S_PATH $curr_s_dataset \
-                                                -RELATION_KEY_TYPE uint64_t \
-                                                -RELATION_PAYLOAD_TYPE uint64_t \
+                                                -RELATION_KEY_TYPE uint32_t \
+                                                -RELATION_PAYLOAD_TYPE uint32_t \
                                                 -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                 -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
                                                 -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
