@@ -611,7 +611,7 @@ hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineH
 
 r_datasets=(r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
 s_datasets=(s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
-r_datasets_sizes=(10E6 50E6 150E6 300E6 600E6)#(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6)
+r_datasets_sizes=(10E6 50E6 150E6 300E6 600E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6)
 s_datasets_sizes=(150E6 150E6 150E6 150E6 150E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6)
 r_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
