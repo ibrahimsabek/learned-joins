@@ -99,6 +99,11 @@ class KapilChainedHashTable {
   KapilChainedHashTable(std::vector<std::pair<Key, Payload>> data)
       : buckets((1 + data.size()*(1.00+(OverAlloc/100.00))) / BucketSize),
         tape(std::make_unique<learned_imv_joins::support::Tape<Bucket>>()) {
+          for (const auto& d : data)
+    {
+      std::cout<<"d.first  "<< d.first <<  " d.second "<< d.second<<std::endl;
+    
+    } 
     // ensure data is sorted
     std::sort(data.begin(), data.end(),
               [](const auto& a, const auto& b) { return a.first < b.first; });
@@ -119,7 +124,7 @@ class KapilChainedHashTable {
     std::cout<<"Insert start "<<std::endl;
     for (const auto& d : data)
     {
-      std::cout<<"d.first  "<< d.first <<  " d.second "<< d.second<<std::endl;
+      //std::cout<<"d.first  "<< d.first <<  " d.second "<< d.second<<std::endl;
       insert(d.first, d.second);
     } 
     
