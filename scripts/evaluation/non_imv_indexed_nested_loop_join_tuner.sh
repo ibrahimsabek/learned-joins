@@ -9,8 +9,8 @@ process_non_imv_indexed_nested_loop_join()
     css_fanouts=(33) #(10 33 40)
 
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
-    dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
-    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
+    dataset_folder_path=/spinning/sabek/learned_join_datasets/
     #dataset_folder_path=/spinning/sabek/learned_hash_datasets/  #for learned hash projects only
 
     #r_datasets=$1
@@ -86,8 +86,8 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
                                                 -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
                                                 -RELATION_S_PATH $curr_s_dataset \
-                                                -RELATION_KEY_TYPE uint32_t \
-                                                -RELATION_PAYLOAD_TYPE uint32_t \
+                                                -RELATION_KEY_TYPE uint64_t \
+                                                -RELATION_PAYLOAD_TYPE uint64_t \
                                                 -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                 -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
                                                 -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
@@ -611,11 +611,11 @@ hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineH
 
 r_datasets=(r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
 s_datasets=(s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
-r_datasets_sizes=(640E6 640E6 640E6 640E6 640E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6)
-s_datasets_sizes=(640E6 640E6 640E6 640E6 640E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6)
+r_datasets_sizes=(10E6 50E6 150E6 300E6 600E6)#(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6)
+s_datasets_sizes=(150E6 150E6 150E6 150E6 150E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6)
 r_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
-input_hash_table_size=(640000000 640000000 640000000 640000000 640000000) #66666666 (536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+input_hash_table_size=(10000000 50000000 150000000 300000000 600000000) #66666666 (536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
 hash_scheme_and_function_mode=(CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL) #(CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL CHAINLINEARMODEL CHAINLINEARMODEL CHAINLINEARMODEL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(0)
 hash_fun=(MURMUR MURMUR MURMUR MURMUR MURMUR) #(XXHASH3 MURMUR AQUA MULTPRIME)
 hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
