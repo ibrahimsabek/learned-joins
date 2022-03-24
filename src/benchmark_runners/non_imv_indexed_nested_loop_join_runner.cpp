@@ -1250,6 +1250,7 @@ int main(int argc, char **argv)
         ht_data.reserve(rel_r.num_tuples);
         {
             for(int j = 0; j < rel_r.num_tuples; j++){
+                std::cout << "rel_r.tuples[j].key " << rel_r.tuples[j].key << std::endl;    
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
             }
         }
