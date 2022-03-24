@@ -99,7 +99,7 @@ process_non_imv_indexed_nested_loop_join()
                                                 #-CUSTOM_CPU_MAPPING '"'../../include/configs/cpu-mapping_berners_lee.txt'"' \
                                                 #-CUSTOM_CPU_MAPPING_V2 '"'../../include/configs/cpu-mapping-v2_berners_lee.txt'"'
 
-                sh $(dirname "$0")/eth_configs_maker.sh   -BUCKET_SIZE 1 \
+                sh $(dirname "$0")/eth_configs_maker.sh   -BUCKET_SIZE 3 \
                                                 -PREFETCH_DISTANCE 128 \
                                                 -USE_MURMUR3_HASH 1 \
                                                 -INPUT_HASH_TABLE_SIZE $curr_input_hash_table_size
@@ -510,16 +510,16 @@ r_datasets_sizes=(10E6 50E6 150E6 300E6 600E6) #(200E6 800E6 200E6 800E6 200E6) 
 s_datasets_sizes=(150E6 150E6 150E6 150E6 150E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6) (640E6 640E6 640E6 640E6 640E6)
 r_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
-input_hash_table_size=(10000000 50000000 150000000 300000000 600000000) #66666666 (536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
-hash_scheme_and_function_mode=(PROBELINEARMODEL PROBELINEARMODEL PROBELINEARMODEL PROBELINEARMODEL PROBELINEARMODEL) #(CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL CHAINLINEARMODEL CHAINLINEARMODEL CHAINLINEARMODEL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(0)
+input_hash_table_size=(3000000 15000000 50000000 100000000 200000000) #(10000000 50000000 150000000 300000000 600000000) 66666666 (536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+hash_scheme_and_function_mode=(CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL CHAINLINEARMODEL CHAINLINEARMODEL CHAINLINEARMODEL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(0)
 hash_fun=(MURMUR MURMUR MURMUR MURMUR MURMUR) #(XXHASH3 MURMUR AQUA MULTPRIME)
 hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplineHash PGMHash
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_with_chasing_counter/
-#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_hashbench/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 0 0 $input_hash_table_size
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_hashbench/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_model_based_build_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique_without_bs/
@@ -563,8 +563,8 @@ hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplineHash PGMHash
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal/
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal_hashbench/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal_hashbench/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_lognormal/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_lognormal/
