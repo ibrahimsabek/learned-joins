@@ -41,8 +41,11 @@ class KapilChainedHashTable {
 
       for (Bucket* current = previous; current != nullptr;
            current = current->next) {
+        std::cout<<"Inside bucket insert 1 key: "<< key << td::endl;     
         for (size_t i = 0; i < BucketSize; i++) {
+        std::cout<<"Inside bucket insert 2 key: "<< key << td::endl;       
           if (current->keys[i] == Sentinel) {
+                  std::cout<<"Inside bucket insert 3 key: "<< key << td::endl;       
             current->keys[i] = key;
             current->payloads[i] = payload;
             return;
