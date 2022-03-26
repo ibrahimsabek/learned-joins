@@ -6,11 +6,14 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstring>
+#include <string>
 
 #include "utils/data_structures.h"
 #include "utils/memory.h"
 //#include "utils/eth_data_structures.h"
 #include "utils/data_generation.h"
+#include "utils/datasets.hpp"
 
 #include "config.h"            /* autoconf header */
 #include "configs/base_configs.h"
@@ -847,7 +850,75 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
         return -1; 
     }
 
+    ///TODO: temporary checkup for hash benchmarking SOSD datasets
+    #ifdef HASH_LEARNED_MODEL
+    std::vector<std::pair<KeyType, PayloadType>> data{};
+    data.reserve(num_tuples);
+    {
+      if (std::strcmp(filename,"fb_200M_uint64"))
+      {
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::FB, num_tuples);
+
+        std::transform(
+            keys.begin(), keys.end(), std::back_inserter(data),
+            [](const KeyType& key) { return std::make_pair(key, key - 5); });
+      } 
+      else if (std::strcmp(filename,"osm_cellids_200M_uint64"))
+      {
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::OSM, num_tuples);
+
+        std::transform(
+            keys.begin(), keys.end(), std::back_inserter(data),
+            [](const KeyType& key) { return std::make_pair(key, key - 5); });
+      }   
+      else if (std::strcmp(filename,"wiki_ts_200M_uint64"))
+      {
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::WIKI, num_tuples);
+
+        std::transform(
+            keys.begin(), keys.end(), std::back_inserter(data),
+            [](const KeyType& key) { return std::make_pair(key, key - 5); });
+      }   
+      else if (std::strcmp(filename,"r_UNIQUE_v5_uint32_uint32_640000000"))
+      {
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::GAPPED_10, num_tuples);
+
+        std::transform(
+            keys.begin(), keys.end(), std::back_inserter(data),
+            [](const KeyType& key) { return std::make_pair(key, key - 5); });
+      }
+      else if (std::strcmp(filename,"r_SEQ_HOLE_v5_uint32_uint32_640000000"))
+      {
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::SEQUENTIAL, num_tuples);
+
+        std::transform(
+            keys.begin(), keys.end(), std::back_inserter(data),
+            [](const KeyType& key) { return std::make_pair(key, key - 5); });
+      }
+      else if (std::strcmp(filename,"r_UNIFORM_v5_uint32_uint32_640000000"))
+      {
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::UNIFORM, num_tuples);
+
+        std::transform(
+            keys.begin(), keys.end(), std::back_inserter(data),
+            [](const KeyType& key) { return std::make_pair(key, key - 5); });
+      }            
+      else
+      {
+         perror("Unrecognized file!");
+         return -1;
+      }
+
+    }
+
+    for(uint64_t i = 0; i < num_tuples; i++)
+    {
+        relation->tuples[i].key = data[i].first;
+        relation->tuples[i].payload = data[i].second;
+    }
+    #else
     read_relation_threaded(relation, nthreads, folder_path, filename, file_extension);
+    #endif
 
     return 0;
 }

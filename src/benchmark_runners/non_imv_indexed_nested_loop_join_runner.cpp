@@ -1187,11 +1187,11 @@ int main(int argc, char **argv)
 
     curr_rel_r_file_extension = RELATION_R_FILE_EXTENSION;
 
-////////
-    load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
+//////// ucomment if not using hash benchmarking datasets
+    //load_relation_threaded<KeyType, PayloadType>(&sorted_relation_r, RELATION_R_FILE_NUM_PARTITIONS, curr_rel_r_folder_path.c_str(), sorted_r_file_name.c_str(), curr_rel_r_file_extension.c_str(), curr_num_tuples_r);
 
-    for(int j = 0; j < rel_r.num_tuples; j++)
-        sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
+    //for(int j = 0; j < rel_r.num_tuples; j++)
+        //sorted_relation_r_keys_only[j] = sorted_relation_r.tuples[j].key;
 //////
 
 ///// here for tpch only ////

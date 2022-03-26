@@ -10,8 +10,8 @@ process_non_imv_indexed_nested_loop_join()
 
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_tpch/
     #dataset_folder_path=/spinning/sabek/learned_join_datasets_sosd/
-    dataset_folder_path=/spinning/sabek/learned_join_datasets/
-    #dataset_folder_path=/spinning/sabek/learned_hash_datasets/  #for learned hash projects only
+    #dataset_folder_path=/spinning/sabek/learned_join_datasets/
+    dataset_folder_path=/spinning/sabek/learned_hash_datasets/  #for learned hash projects only (SOSD datasets)
 
     #r_datasets=$1
     #r_datasets_sizes=$2
@@ -86,8 +86,8 @@ process_non_imv_indexed_nested_loop_join()
                                                 -RELATION_R_NUM_TUPLES $curr_r_dataset_size \
                                                 -RELATION_R_FILE_NUM_PARTITIONS $curr_r_dataset_file_num_partitions \
                                                 -RELATION_S_PATH $curr_s_dataset \
-                                                -RELATION_KEY_TYPE uint32_t \
-                                                -RELATION_PAYLOAD_TYPE uint32_t \
+                                                -RELATION_KEY_TYPE uint64_t \
+                                                -RELATION_PAYLOAD_TYPE uint64_t \
                                                 -RELATION_S_FOLDER_PATH '"'$dataset_folder_path'"' \
                                                 -RELATION_S_FILE_NAME '"'${s_datasets[$ds]}'"' \
                                                 -RELATION_S_FILE_EXTENSION ${s_datasets_file_extension} \
@@ -505,7 +505,7 @@ hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RMIHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash)
 
 r_datasets=(r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
-s_datasets=(s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v5_uint32_uint32_640000000 s_UNIQUE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
+s_datasets=(r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000 r_UNIQUE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
 r_datasets_sizes=(10E6 50E6 150E6 300E6 600E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6) (640E6 640E6 640E6 640E6 640E6)
 s_datasets_sizes=(150E6 150E6 150E6 150E6 150E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6) (640E6 640E6 640E6 640E6 640E6)
 r_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
@@ -518,8 +518,8 @@ hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplin
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_with_chasing_counter/
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_hashbench/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_unique_hashbench/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_model_based_build_index_unique/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_unique_without_bs/
@@ -551,7 +551,7 @@ hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash)
 
 r_datasets=(r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000) #(r_LOGNORMAL_v1_uint32_uint32_segma_1_16000000 r_LOGNORMAL_v2_uint32_uint32_segma_1_32000000 r_LOGNORMAL_v3_uint32_uint32_segma_1_128000000 r_LOGNORMAL_v4_uint32_uint32_segma_1_384000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v6_uint32_uint32_segma_1_896000000 r_LOGNORMAL_v7_uint32_uint32_segma_1_1152000000 r_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000 r_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000)
-s_datasets=(s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000) #(s_LOGNORMAL_v1_uint32_uint32_segma_1_16000000 s_LOGNORMAL_v2_uint32_uint32_segma_1_32000000 s_LOGNORMAL_v3_uint32_uint32_segma_1_128000000 s_LOGNORMAL_v4_uint32_uint32_segma_1_384000000 s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 s_LOGNORMAL_v6_uint32_uint32_segma_1_896000000 s_LOGNORMAL_v7_uint32_uint32_segma_1_1152000000 s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000 s_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000)
+s_datasets=(r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 r_LOGNORMAL_v5_uint32_uint32_segma_1_640000000) #(s_LOGNORMAL_v1_uint32_uint32_segma_1_16000000 s_LOGNORMAL_v2_uint32_uint32_segma_1_32000000 s_LOGNORMAL_v3_uint32_uint32_segma_1_128000000 s_LOGNORMAL_v4_uint32_uint32_segma_1_384000000 s_LOGNORMAL_v5_uint32_uint32_segma_1_640000000 s_LOGNORMAL_v6_uint32_uint32_segma_1_896000000 s_LOGNORMAL_v7_uint32_uint32_segma_1_1152000000 s_LOGNORMAL_v8_uint32_uint32_segma_1_1664000000 s_LOGNORMAL_v9_uint32_uint32_segma_1_1920000000)
 r_datasets_sizes=(10E6 50E6 150E6 300E6 600E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6) (640E6 640E6 640E6 640E6 640E6)
 s_datasets_sizes=(150E6 150E6 150E6 150E6 150E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6) (640E6 640E6 640E6 640E6 640E6)
 r_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
@@ -563,8 +563,8 @@ hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplineHash PGMHash
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal/
-output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal_hashbench/
-process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
+#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_lognormal_hashbench/
+#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_lognormal/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_csstree_index_lognormal/
@@ -636,7 +636,7 @@ hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
 hash_learned_model=(RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash)
 
 #r_datasets=(r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
-#s_datasets=(s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000 s_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
+#s_datasets=(r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000 r_SEQ_HOLE_v5_uint32_uint32_640000000) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
 #r_datasets_sizes=(640E6 640E6 640E6 640E6 640E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 50E6 150E6 300E6 600E6)
 #s_datasets_sizes=(640E6 640E6 640E6 640E6 640E6) #(200E6 800E6 200E6 800E6 200E6) (150E6 150E6 150E6 150E6 150E6)
 #r_datasets_file_num_partitions=(32 32 32 32 32 32) #(32 32 32 32 32)
@@ -839,8 +839,8 @@ hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RMIHash) #RMIHash RadixSplin
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64_with_chasing_counter/
-#output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64_hashbench/
-#process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size 
+output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_fb_200M_uint64_hashbench/
+process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 1 0 0 0 $input_hash_table_size 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_fb_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_learned_index_sosd_fb_200M_uint64_without_bs/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 1 0 0 $input_hash_table_size
