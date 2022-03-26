@@ -855,6 +855,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
     std::vector<std::pair<KeyType, PayloadType>> data{};
     data.reserve(num_tuples);
     {
+        std::cout << "here is filename: "<< filename << std::endl;
       if (std::strcmp(filename,"fb_200M_uint64"))
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::FB, num_tuples);
