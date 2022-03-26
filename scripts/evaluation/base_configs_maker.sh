@@ -724,8 +724,8 @@ echo "$(echo -n '#pragma once'; echo -n $'\n\n';
              echo -n $'using AQUA = hashing::AquaHash<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
              echo -n $'using MULTPRIME = hashing::MultPrime64;'; echo -n $'\n\n';
 
-             echo -n $'using RadixSplineHash = learned_hashing::RadixSplineHash<RELATION_KEY_TYPE,18,1024>;'; echo -n $'\n\n';
-             echo -n $'using RMIHash = learned_hashing::RMIHash<RELATION_KEY_TYPE,80000000>;'; echo -n $'\n\n'; #1000000(fb,wiki) 20000000(fb,wiki) 80million(osm)
+             echo -n $'using RadixSplineHash = learned_hashing::RadixSplineHash<RELATION_KEY_TYPE,18,10000000>;'; echo -n $'\n\n';
+             echo -n $'using RMIHash = learned_hashing::RMIHash<RELATION_KEY_TYPE,100000000>;'; echo -n $'\n\n'; #1000000(fb,wiki) 20000000(fb,wiki) 80million(osm)
              echo -n $'using PGMHash = learned_hashing::PGMHash<RELATION_KEY_TYPE,4,1>;'; echo -n $'\n\n';
 
              echo -n $'using MWHC = exotic_hashing::MWHC<RELATION_KEY_TYPE>;'; echo -n $'\n\n';
