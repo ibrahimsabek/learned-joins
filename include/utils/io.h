@@ -855,8 +855,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
     std::vector<std::pair<KeyType, PayloadType>> data{};
     data.reserve(num_tuples);
     {
-        std::cout << "here is filename: "<< filename << std::endl;
-      if (std::strcmp(filename,"fb_200M_uint64"))
+      if (std::strcmp(filename,"fb_200M_uint64") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::FB, num_tuples);
 
@@ -864,7 +863,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
       } 
-      else if (std::strcmp(filename,"osm_cellids_200M_uint64"))
+      else if (std::strcmp(filename,"osm_cellids_200M_uint64") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::OSM, num_tuples);
 
@@ -872,7 +871,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
       }   
-      else if (std::strcmp(filename,"wiki_ts_200M_uint64"))
+      else if (std::strcmp(filename,"wiki_ts_200M_uint64") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::WIKI, num_tuples);
 
@@ -880,7 +879,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
       }   
-      else if (std::strcmp(filename,"r_UNIQUE_v5_uint32_uint32_640000000"))
+      else if (std::strcmp(filename,"r_UNIQUE_v5_uint32_uint32_640000000") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::GAPPED_10, num_tuples);
 
@@ -888,7 +887,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
       }
-      else if (std::strcmp(filename,"r_SEQ_HOLE_v5_uint32_uint32_640000000"))
+      else if (std::strcmp(filename,"r_SEQ_HOLE_v5_uint32_uint32_640000000") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::SEQUENTIAL, num_tuples);
 
@@ -896,7 +895,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
       }
-      else if (std::strcmp(filename,"r_UNIFORM_v5_uint32_uint32_640000000"))
+      else if (std::strcmp(filename,"r_UNIFORM_v5_uint32_uint32_640000000") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::UNIFORM, num_tuples);
 
