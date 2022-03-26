@@ -863,7 +863,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
       } 
-      else if (std::strcmp(filename,"osm_cellids_200M_uint64") == 0)
+      else if (std::strcmp(filename,"osm_cellids_800M_uint64") == 0)
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::OSM, num_tuples);
 
