@@ -246,7 +246,8 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
           i++;
         }
 
-        // std::cout<<" j is: "<<j<<" i is: "<<i<<std::endl;
+         std::cout<<" j is: "<<j<<" i is: "<<i<<std::endl;
+
       break;
     }
     case ID::WIKI: {
