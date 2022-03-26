@@ -220,8 +220,8 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
     }
     case ID::OSM: {
       if (ds_osm.empty()) {
-        //ds_osm = load<Data>("/home/kapil/PhDAcads/benchmark_hashing/SOSD/scripts/data/osm_cellids_200M_uint64");
-        ds_osm = load<Data>("/spinning/sabek/learned_hash_datasets/osm_cellids_200M_uint64");
+        //ds_osm = load<Data>("/home/kapil/PhDAcads/benchmark_hashing/SOSD/scripts/data/osm_cellids_800M_uint64");
+        ds_osm = load<Data>("/spinning/sabek/learned_hash_datasets/osm_cellids_800M_uint64");
         std::shuffle(ds_osm.begin(), ds_osm.end(),rng);
       }
 
