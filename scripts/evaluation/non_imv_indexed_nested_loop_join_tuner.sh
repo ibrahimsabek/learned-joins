@@ -874,17 +874,17 @@ hash_learned_model=(RMIHash RMIHash RMIHash RMIHash RadixSplineHash RadixSplineH
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_art32tree_index_sosd_osm_cellids_800M_uint64/
 #process_non_imv_indexed_nested_loop_join $r_datasets $r_datasets_sizes $r_datasets_file_num_partitions $s_datasets $s_datasets_sizes $s_datasets_file_num_partitions $output_folder_path $run_nums $load_relations_for_evaluation $persist_relations_for_evaluation 0 0 0 1 $input_hash_table_size
 
-r_datasets=(wiki_ts_200M_uint64 wiki_ts_200M_uint64 wiki_ts_200M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
-s_datasets=(wiki_ts_200M_uint64 wiki_ts_200M_uint64 wiki_ts_200M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
-r_datasets_sizes=(10E6 25E6 50E6 100E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 25E6 50E6 100E6 200E6)
-s_datasets_sizes=(25E6 25E6 25E6 25E6) #(200E6 800E6 200E6 800E6 200E6) (50E6 50E6 50E6 50E6 50E6)
+r_datasets=(wiki_ts_200M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64) 
+s_datasets=(wiki_ts_200M_uint64 wiki_ts_200M_uint64) #(books_200M_uint32 books_800M_uint64 fb_200M_uint64 osm_cellids_800M_uint64 wiki_ts_200M_uint64)
+r_datasets_sizes=(100E6 100E6) #(200E6 800E6 200E6 800E6 200E6) (10E6 25E6 50E6 100E6 200E6)
+s_datasets_sizes=(25E6 25E6) #(200E6 800E6 200E6 800E6 200E6) (50E6 50E6 50E6 50E6 50E6)
 r_datasets_file_num_partitions=(32 32 32 32 32 32 32 32) #(32 32 32 32 32)
 s_datasets_file_num_partitions=(32 32 32 32 32 32 32 32) #(32 32 32 32 32)
-input_hash_table_size=(10000000 25000000 50000000 100000000) #66666666 (536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
-hash_scheme_and_function_mode=(CHAINEXOTIC CHAINEXOTIC CHAINEXOTIC CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL PROBELINEARMODEL PROBELINEARMODEL) #(CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL CHAINLINEARMODEL CHAINLINEARMODEL CHAINLINEARMODEL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(0)
+input_hash_table_size=(100000000 100000000) #66666666 (536870912) #(16777216(for_16E6) 33554432(for_32E6) 134217728(for_128E6) 536870912(for_640E6) 1073741824(for_1664E6) 2147483648(for_1920E6))
+hash_scheme_and_function_mode=(PROBELINEARMODEL PROBELINEARMODEL CHAINEXOTIC CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL PROBELINEARMODEL PROBELINEARMODEL) #(CHAINEXOTIC CUCKOOLINEARMODEL CUCKOOLINEARMODEL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL CUCKOOTRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL PROBETRADITIONAL CHAINLINEARMODEL CHAINLINEARMODEL CHAINLINEARMODEL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL CHAINTRADITIONAL) #(0)
 hash_fun=(MWHC MWHC MWHC MWHC MURMUR MURMUR MURMUR) #(XXHASH3 MURMUR AQUA MULTPRIME)
 hash_overalloc=(10 10 10 10 10 10 10 10 10 10 10 10)
-hash_learned_model=(RMIHash RMIHash RMIHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash) #RMIHash RadixSplineHash PGMHash
+hash_learned_model=(RMIHash RadixSplineHash RadixSplineHash RadixSplineHash RadixSplineHash) #RMIHash RadixSplineHash PGMHash
 
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_wiki_ts_200M_uint64/
 #output_folder_path=/spinning/sabek/learned_join_results/non_imv_inlj_with_hash_index_sosd_wiki_ts_200M_uint64_with_chasing_counter/
