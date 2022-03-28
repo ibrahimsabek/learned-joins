@@ -44,7 +44,7 @@ template<class KeyType, class PayloadType>
 int load_relation(Relation<KeyType, PayloadType>* relation, const char * filename, uint64_t num_tuples);
 
 template<class KeyType, class PayloadType>
-int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthreads, const char * folder_path, const char * filename, const char * file_extension, uint64_t num_tuples);
+int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthreads, const char * folder_path, const char * filename, const char * file_extension, uint64_t num_tuples, int is_s_relation = 0);
 
 /**
  * Free memory allocated for only tuples.
@@ -838,7 +838,7 @@ void read_relation_threaded(Relation<KeyType, PayloadType>* rel, int nthreads, c
 }
 
 template<class KeyType, class PayloadType>
-int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthreads, const char * folder_path, const char * filename, const char * file_extension, uint64_t num_tuples)
+int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthreads, const char * folder_path, const char * filename, const char * file_extension, uint64_t num_tuples, int is_s_relation = 0)
 {
     relation->num_tuples = num_tuples;
 
@@ -857,7 +857,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
     {
       if (std::strcmp(filename,"fb_200M_uint64") == 0)
       {
-        auto keys = dataset::load_cached<KeyType>(dataset::ID::FB, num_tuples);
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::FB, num_tuples, is_s_relation);
 
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),
@@ -865,7 +865,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
       } 
       else if (std::strcmp(filename,"osm_cellids_800M_uint64") == 0)
       {
-        auto keys = dataset::load_cached<KeyType>(dataset::ID::OSM, num_tuples);
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::OSM, num_tuples, is_s_relation);
 
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),
@@ -873,7 +873,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
       }   
       else if (std::strcmp(filename,"wiki_ts_200M_uint64") == 0)
       {
-        auto keys = dataset::load_cached<KeyType>(dataset::ID::WIKI, num_tuples);
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::WIKI, num_tuples, is_s_relation);
 
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),
@@ -881,7 +881,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
       }   
       else if (std::strcmp(filename,"r_UNIQUE_v5_uint32_uint32_640000000") == 0)
       {
-        auto keys = dataset::load_cached<KeyType>(dataset::ID::GAPPED_10, num_tuples);
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::GAPPED_10, num_tuples, is_s_relation);
 
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),
@@ -889,7 +889,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
       }
       else if (std::strcmp(filename,"r_SEQ_HOLE_v5_uint32_uint32_640000000") == 0)
       {
-        auto keys = dataset::load_cached<KeyType>(dataset::ID::SEQUENTIAL, num_tuples);
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::SEQUENTIAL, num_tuples, is_s_relation);
 
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),
@@ -897,7 +897,7 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
       }
       else if (std::strcmp(filename,"r_UNIFORM_v5_uint32_uint32_640000000") == 0)
       {
-        auto keys = dataset::load_cached<KeyType>(dataset::ID::UNIFORM, num_tuples);
+        auto keys = dataset::load_cached<KeyType>(dataset::ID::UNIFORM, num_tuples, is_s_relation);
 
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),

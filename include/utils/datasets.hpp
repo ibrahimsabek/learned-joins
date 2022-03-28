@@ -125,9 +125,12 @@ inline std::string name(ID id) {
 };
 
 template <class Data = std::uint64_t>
-std::vector<Data> load_cached(ID id, size_t dataset_size) {
+std::vector<Data> load_cached(ID id, size_t dataset_size, int is_s_relation) {
   static std::random_device rd;
   static std::default_random_engine rng(rd());
+
+  static std::random_device rd2;
+  static std::default_random_engine rng2(rd2());
 
   // cache generated & sampled datasets to speed up repeated benchmarks
   static std::unordered_map<ID, std::unordered_map<size_t, std::vector<Data>>>
@@ -154,14 +157,20 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
       std::uniform_int_distribution<size_t> dist(0, 99999);
       for (size_t i = 0, num = 0; i < ds.size(); i++) {
         do num++;
-        while (dist(rng) < 10000);
+        if(is_s_relation == 1)
+          while (dist(rng2) < 10000);
+        else
+          while (dist(rng) < 10000);
         ds[i] = num;
       }
       break;
     }
     case ID::UNIFORM: {
       std::uniform_int_distribution<Data> dist(0, std::pow(2, 40));
-      for (size_t i = 0; i < ds.size(); i++) ds[i] = dist(rng);
+      if(is_s_relation == 1)
+        for (size_t i = 0; i < ds.size(); i++) ds[i] = dist(rng2);
+      else
+        for (size_t i = 0; i < ds.size(); i++) ds[i] = dist(rng);
       break;
     }
     case ID::NORMAL: {
@@ -170,7 +179,11 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
       std::normal_distribution<> dist(mean, std_dev);
       for (size_t i = 0; i < ds.size(); i++) {
         // cutoff after 3 * std_dev
-        const auto rand_val = std::max(mean - 3 * std_dev,
+        if(is_s_relation == 1)
+          const auto rand_val = std::max(mean - 3 * std_dev,
+                                       std::min(mean + 3 * std_dev, dist(rng2)));        
+        else
+          const auto rand_val = std::max(mean - 3 * std_dev,
                                        std::min(mean + 3 * std_dev, dist(rng)));
 
         assert(rand_val >= mean - 3 * std_dev);
@@ -190,17 +203,17 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
         //ds_fb = load<Data>("/home/kapil/PhDAcads/benchmark_hashing/SOSD/scripts/data/fb_200M_uint64");
         ds_fb = load<Data>("/spinning/sabek/learned_hash_datasets/fb_200M_uint64");
 
-        std::cout << " before shuffle" << std::endl;
+        /*std::cout << " before shuffle" << std::endl;
         for (int i = 0; (i < 100) || (i > ds_fb.size() - 100); i++)
         {
                 std::cout << "rel_r.tuples[i].key " << ds_fb[i] << " rel_r.tuples[i].payload " <<  ds_fb[i] << std::endl;    
-        }
+        }*/
         std::shuffle(ds_fb.begin(), ds_fb.end(),rng);
-        std::cout << " after shuffle" << std::endl;
+        /*std::cout << " after shuffle" << std::endl;
         for (int i = 0; (i < 100) || (i > ds_fb.size() - 100); i++)
         {
                 std::cout << "rel_r.tuples[i].key " << ds_fb[i] << " rel_r.tuples[i].payload " <<  ds_fb[i] << std::endl;    
-        }
+        }*/
       }
       // ds file does not exist
       if (ds_fb.empty()) return {};
@@ -226,7 +239,11 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
         i++;
       }
 
+      if(is_s_relation == 1)
+        std::shuffle(ds.begin(), ds.end(), rng2);
+
        std::cout<<" j is: "<<j<<" i is: "<<i<<std::endl;
+      
       break;
     }
     case ID::OSM: {
@@ -256,6 +273,9 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
           ds[i] = ds_osm[j]-pow(2,62);
           i++;
         }
+
+      if(is_s_relation == 1)
+        std::shuffle(ds.begin(), ds.end(), rng2);
 
          std::cout<<" j is: "<<j<<" i is: "<<i<<std::endl;
 
@@ -287,6 +307,9 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
         ds[i] = ds_wiki[j];
         i++;
       }  
+
+      if(is_s_relation == 1)
+        std::shuffle(ds.begin(), ds.end(), rng2);
 
        std::cout<<" j is: "<<j<<" i is: "<<i<<std::endl;
       break;
