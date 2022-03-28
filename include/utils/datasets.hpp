@@ -189,7 +189,18 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
       if (ds_fb.empty()) {
         //ds_fb = load<Data>("/home/kapil/PhDAcads/benchmark_hashing/SOSD/scripts/data/fb_200M_uint64");
         ds_fb = load<Data>("/spinning/sabek/learned_hash_datasets/fb_200M_uint64");
+
+        std::cout << " before shuffle" << std::endl;
+        for (int i = 0; (i < 100) || (i > ds_fb.size() - 100); i++)
+        {
+                std::cout << "rel_r.tuples[i].key " << ds_fb[i] << " rel_r.tuples[i].payload " <<  ds_fb[i] << std::endl;    
+        }
         std::shuffle(ds_fb.begin(), ds_fb.end(),rng);
+        std::cout << " after shuffle" << std::endl;
+        for (int i = 0; (i < 100) || (i > ds_fb.size() - 100); i++)
+        {
+                std::cout << "rel_r.tuples[i].key " << ds_fb[i] << " rel_r.tuples[i].payload " <<  ds_fb[i] << std::endl;    
+        }
       }
       // ds file does not exist
       if (ds_fb.empty()) return {};

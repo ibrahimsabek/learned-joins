@@ -859,12 +859,6 @@ int load_relation_threaded(Relation<KeyType, PayloadType>* relation, int nthread
       {
         auto keys = dataset::load_cached<KeyType>(dataset::ID::FB, num_tuples);
 
-        std::cout << " fb in io.h" << std::endl;
-        for (int i = 0; (i < 100) || (i > num_tuples - 100); i++)
-        {
-                std::cout << "rel_r.tuples[i].key " << keys[i] << " rel_r.tuples[i].payload " <<  keys[i] << std::endl;    
-        }
-
         std::transform(
             keys.begin(), keys.end(), std::back_inserter(data),
             [](const KeyType& key) { return std::make_pair(key, key - 5); });
