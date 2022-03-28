@@ -156,10 +156,12 @@ std::vector<Data> load_cached(ID id, size_t dataset_size, int is_s_relation) {
     case ID::GAPPED_10: {
       std::uniform_int_distribution<size_t> dist(0, 99999);
       for (size_t i = 0, num = 0; i < ds.size(); i++) {
-        do num++;
+        
         if(is_s_relation == 1)
+          do num++;
           while (dist(rng2) < 10000);
         else
+          do num++;
           while (dist(rng) < 10000);
         ds[i] = num;
       }
