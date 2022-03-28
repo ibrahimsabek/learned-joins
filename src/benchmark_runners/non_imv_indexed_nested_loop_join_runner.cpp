@@ -1259,6 +1259,16 @@ int main(int argc, char **argv)
             }
         }
 
+        for (int i = 0; (i < 100) || (i > rel_r.num_tuples - 100); i++)
+        {
+                std::cout << "rel_r.tuples[i].key " << rel_r.tuples[i].key << " rel_r.tuples[i].payload " << rel_r.tuples[i].payload << std::endl;    
+        }
+
+        for (int i = 0; (i < 100) || (i > rel_s.num_tuples - 100); i++)
+        {
+                std::cout << "rel_s.tuples[i].key " << rel_s.tuples[i].key << " rel_s.tuples[i].payload " << rel_s.tuples[i].payload << std::endl;    
+        }
+
         auto build_start_time = high_resolution_clock::now();
         #ifdef CHAINTRADITIONAL
             KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN> * ht = new KapilChainedHashTable<KeyType, PayloadType, BUCKET_SIZE, HASH_OVERALLOC, HASH_FUN>(ht_data);
