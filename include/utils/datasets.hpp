@@ -304,7 +304,7 @@ std::vector<Data> load_cached(ID id, size_t dataset_size) {
     if (key == std::numeric_limits<Data>::max()) key--;
 
   // deduplicate, sort before caching to avoid additional work in the future
-  deduplicate_and_sort(ds);
+  //deduplicate_and_sort(ds);
 
   // cache dataset for future use
   const auto it = datasets.find(id);
