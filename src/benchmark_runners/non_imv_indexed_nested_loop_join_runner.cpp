@@ -1112,6 +1112,16 @@ int main(int argc, char **argv)
     //load_relation<KeyType, PayloadType>(&rel_r, curr_rel_r_path.c_str(), curr_num_tuples_r);
     //load_relation<KeyType, PayloadType>(&rel_s, curr_rel_s_path.c_str(), curr_num_tuples_s);    
 ////////////////////////
+        std::cout << " point 1" << std::endl;
+        for (int i = 0; (i < 100) || (i > rel_r.num_tuples - 100); i++)
+        {
+                std::cout << "rel_r.tuples[i].key " << rel_r.tuples[i].key << " rel_r.tuples[i].payload " << rel_r.tuples[i].payload << std::endl;    
+        }
+
+        for (int i = 0; (i < 100) || (i > rel_s.num_tuples - 100); i++)
+        {
+                std::cout << "rel_s.tuples[i].key " << rel_s.tuples[i].key << " rel_s.tuples[i].payload " << rel_s.tuples[i].payload << std::endl;    
+        }
 
 #else
 
@@ -1258,7 +1268,7 @@ int main(int argc, char **argv)
                 ht_data.push_back(std::make_pair(rel_r.tuples[j].key, rel_r.tuples[j].payload));
             }
         }
-
+        std::cout << " point 2" << std::endl;
         for (int i = 0; (i < 100) || (i > rel_r.num_tuples - 100); i++)
         {
                 std::cout << "rel_r.tuples[i].key " << rel_r.tuples[i].key << " rel_r.tuples[i].payload " << rel_r.tuples[i].payload << std::endl;    
