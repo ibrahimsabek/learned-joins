@@ -181,22 +181,31 @@ std::vector<Data> load_cached(ID id, size_t dataset_size, int is_s_relation) {
       std::normal_distribution<> dist(mean, std_dev);
       for (size_t i = 0; i < ds.size(); i++) {
         // cutoff after 3 * std_dev
-        if(is_s_relation == 1)
+        if(is_s_relation == 1){
           const auto rand_val = std::max(mean - 3 * std_dev,
                                        std::min(mean + 3 * std_dev, dist(rng2)));        
-        else
+          assert(rand_val >= mean - 3 * std_dev);
+          assert(rand_val <= mean + 3 * std_dev);
+
+          // rescale to [0, 2^50)
+          const auto rescaled =
+              (rand_val - (mean - 3 * std_dev)) * std::pow(2, 40);
+
+          // round
+          ds[i] = std::floor(rescaled);
+        }else{
           const auto rand_val = std::max(mean - 3 * std_dev,
                                        std::min(mean + 3 * std_dev, dist(rng)));
+          assert(rand_val >= mean - 3 * std_dev);
+          assert(rand_val <= mean + 3 * std_dev);
 
-        assert(rand_val >= mean - 3 * std_dev);
-        assert(rand_val <= mean + 3 * std_dev);
+          // rescale to [0, 2^50)
+          const auto rescaled =
+              (rand_val - (mean - 3 * std_dev)) * std::pow(2, 40);
 
-        // rescale to [0, 2^50)
-        const auto rescaled =
-            (rand_val - (mean - 3 * std_dev)) * std::pow(2, 40);
-
-        // round
-        ds[i] = std::floor(rescaled);
+          // round
+          ds[i] = std::floor(rescaled);
+        } 
       }
       break;
     }
