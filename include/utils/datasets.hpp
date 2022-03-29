@@ -151,6 +151,12 @@ std::vector<Data> load_cached(ID id, size_t dataset_size, int is_s_relation) {
   switch (id) {
     case ID::SEQUENTIAL: {
       for (size_t i = 0; i < ds.size(); i++) ds[i] = i*10 + 20000;
+      
+      if(is_s_relation == 1)
+        std::shuffle(ds.begin(), ds.end(),rng2);
+      else
+        std::shuffle(ds.begin(), ds.end(),rng);
+
       break;
     }
     case ID::GAPPED_10: {
