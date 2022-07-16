@@ -1,6 +1,6 @@
 # learned-joins
 
-This is the source code and running commands that are used for "The Case of Learned In-memory Joins" submission. A configuration file is provided to build this project with CMake. In the project directory, run:
+This is the source code and running commands that are used for "Revisiting In-Memory Join Algorithms with Learned Models" submission. A configuration file is provided to build this project with CMake. In the project directory, run:
 
 ```
 mkdir -p build/release
