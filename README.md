@@ -1,6 +1,6 @@
 # learned-joins
 
-This is the source code and running commands that are used for "The Case for Learned In-Memory Joins" submission. A configuration file is provided to build this project with CMake. In the project directory, run:
+This repository contains most of the source code and running commands that are used for "The Case for Learned In-Memory Joins" paper in VLDB 2023. A configuration file is provided to build this project with CMake. In the project directory, run:
 
 ```
 mkdir -p build/release
